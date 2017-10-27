@@ -7,16 +7,21 @@ from google.cloud import translate
 from google.oauth2 import service_account
 from langdetect import detect
 from datetime import datetime
+from matplotlib import pyplot as plt
+from collections import Counter
+import nltk
+from nltk.stem import *
 import codecs
 
-def remove_duplicate(items):
+def remove_duplicate(items,print = False):
     dups = set()
     uniqs = []
     for item in items:
         if item not in dups:
             dups.add(item)
             uniqs.append(item)
-    print(str(len(items) - len(uniqs)) + ' duplicate items have been removed.')
+    if print:
+        print(str(len(items) - len(uniqs)) + ' duplicate items have been removed.')
     return uniqs
 
 def read_words_in_file(file_path):
@@ -29,7 +34,7 @@ def write_to_file(words, file_path):
     for stop_word in stop_words:
         myfile.write("%s\n" % stop_word)
     myfile.close()
-    
+
 def data_processing(col_names, target_folder_path,date_threshold = '', save_csv = True):
     df = data_integration(col_names,target_folder_path)
     
@@ -173,3 +178,82 @@ def translate_reviews(df):
         if i % 100 == 0: 
             print(str(i+1) +' reviews have been processed!')
     return df    
+
+    def get_counter_contents(counter):
+    """
+    Get the labels and counts in the counters
+    """
+    labels, values = zip(*counter.items())
+    return labels, values
+
+def plot_hists(values):
+    """
+    Plot the histogram with the given value. Since the histogram is skewed to the right, I also plot a hist at
+    the range [0,9] at a detailed look
+    """
+    plt.figure()
+    fig, axes = plt.subplots(1, 2,figsize=(15,8)) # Create two subplots side by side
+
+    # A histogram of the entire frequency dataset
+    axes[0].hist(values, bins=50)
+    axes[0].set_title('Histogram of the frequency of all the words')
+    # Set common labels
+    axes[0].set_xlabel('Word Frequency')
+    axes[0].set_ylabel('# Unique Words')
+
+    # A histogram with a narrow range to get a detailed look at the left-most bin
+    axes[1].hist(values, range=(0,10))
+    axes[1].set_title('Histogram of the frequency of words with range [0,9]')
+    # Set common labels
+    axes[1].set_xlabel('Word Frequency')
+    axes[1].set_ylabel('# Unique Words')
+    plt.show()
+
+def word_process(word):
+    wnLemm = WordNetLemmatizer()
+    word_processed = wnLemm.lemmatize(word)
+    word_processed = word_processed.lower()
+    return word_processed
+
+def get_stop_words(file_path):
+    stop_words = [word_process(word) for word in read_words_in_file(file_path)]
+    stop_words = remove_duplicate(stop_words)
+    return stop_words
+
+def clean_words(counter, stop_words):
+    words = []
+    values = []
+    for i in range(len(counter)-1,-1,-1):
+        word = counter[i][0]
+        if word in stop_words or len(word) == 1 or word.isdigit() == True:
+            del counter[i]
+        else:
+            words.insert(0,word)
+            values.insert(0,counter[i][1])
+    return words, values
+
+def plot_bar_plots(X, Y,label_x='', label_y='',title=''):
+    fig = plt.figure(figsize=(10, 6))
+    width = .35
+    indices = np.arange(len(X))
+    plt.bar(indices, Y, width = width)
+    plt.xticks(indices+width/2, X)
+    plt.xlabel(label_x)
+    plt.ylabel(label_y)
+    plt.title(title)
+    
+def compute_keywords_freq(reviews, viz = True):
+    counter = Counter()
+    for review in reviews:
+        counter.update([word_process(word) for word in re.findall(r'\w+', review)])
+    counter = counter.most_common()
+    stop_words = get_stop_words(stop_words_file_path)
+    words, freq = clean_words(counter, stop_words)
+    if viz:
+        plot_bar_plots(words[:10], values[:10],'High Frequent Keywords','Frequency','Words with the Top Frequency')
+    return words, values
+
+def read_exist_output(file_path):
+    xl = pd.ExcelFile(file_path)
+    df = xl.parse(xl.sheet_names[0]).fillna('')
+    return df
