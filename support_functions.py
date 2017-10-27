@@ -7,7 +7,29 @@ from google.cloud import translate
 from google.oauth2 import service_account
 from langdetect import detect
 from datetime import datetime
+import codecs
 
+def remove_duplicate(items):
+    dups = set()
+    uniqs = []
+    for item in items:
+        if item not in dups:
+            dups.add(item)
+            uniqs.append(item)
+    print(str(len(items) - len(uniqs)) + ' duplicate items have been removed.')
+    return uniqs
+
+def read_words_in_file(file_path):
+    with codecs.open(file_path,encoding='utf-8', errors='ignore') as myfile:
+        words = re.findall(r'\w+', myfile.read())
+    return words
+
+def write_to_file(words, file_path):
+    myfile = open(stop_word_file, "w")
+    for stop_word in stop_words:
+        myfile.write("%s\n" % stop_word)
+    myfile.close()
+    
 def data_processing(col_names, target_folder_path,date_threshold = '', save_csv = True):
     df = data_integration(col_names,target_folder_path)
     
