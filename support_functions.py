@@ -5,6 +5,10 @@ import glob
 import re
 from google.cloud import translate
 from google.oauth2 import service_account
+from google.cloud import language
+from google.cloud.language import enums
+from google.cloud.language import types
+import argparse
 from langdetect import detect
 from datetime import datetime
 from matplotlib import pyplot as plt
@@ -179,7 +183,7 @@ def translate_reviews(df):
             print(str(i+1) +' reviews have been processed!')
     return df    
 
-    def get_counter_contents(counter):
+def get_counter_contents(counter):
     """
     Get the labels and counts in the counters
     """
@@ -242,7 +246,7 @@ def plot_bar_plots(X, Y,label_x='', label_y='',title=''):
     plt.ylabel(label_y)
     plt.title(title)
     
-def compute_keywords_freq(reviews, viz = True):
+def compute_keywords_freq(reviews, stop_words_file_path = 'Data/stop_words/stop_words.txt',viz = False):
     counter = Counter()
     for review in reviews:
         counter.update([word_process(word) for word in re.findall(r'\w+', review)])
@@ -250,10 +254,67 @@ def compute_keywords_freq(reviews, viz = True):
     stop_words = get_stop_words(stop_words_file_path)
     words, freq = clean_words(counter, stop_words)
     if viz:
-        plot_bar_plots(words[:10], values[:10],'High Frequent Keywords','Frequency','Words with the Top Frequency')
-    return words, values
+        plot_bar_plots(words[:10], freq[:10],'High Frequent Keywords','Frequency','Words with the Top Frequency')
+    return words, freq
 
 def read_exist_output(file_path):
     xl = pd.ExcelFile(file_path)
     df = xl.parse(xl.sheet_names[0]).fillna('')
+    return df
+
+def interpret_sentiment(annotations):
+    score = annotations.document_sentiment.score 
+    magnitude = annotations.document_sentiment.magnitude/len(annotations.sentences) # Take the average
+    sent_scores = []
+    sent_magnitudes = []
+    for index, sentence in enumerate(annotations.sentences):
+        sent_scores.append(sentence.sentiment.score)
+        sent_magnitudes.append(sentence.sentiment.magnitude)
+    return score, magnitude, sent_scores, sent_magnitudes
+
+def get_sentiment(client,content):
+    document = types.Document(
+        content=content,
+        type=enums.Document.Type.PLAIN_TEXT)
+    annotations = client.analyze_sentiment(document=document)
+    score, magnitude, sent_socres, sent_magnitudes = interpret_sentiment(annotations)
+    return score, magnitude, sent_socres, sent_magnitudes
+
+def sentiment_analysize(texts):
+    credentials = service_account.Credentials.from_service_account_file(
+    '/Users/ivanzhou/Github/Credentials/GCloud-Translation.json')
+    #client = language.LanguageServiceClient(credentials=credentials)
+    client = language.LanguageServiceClient()
+    scores = np.zeros(len(texts))
+    magnitudes = np.zeros(len(texts))
+    sent_scores_list = []
+    sent_magnitudes_list = []
+    count = 0
+    for i, review in enumerate(texts):
+        scores[i], magnitudes[i], sent_scores, sent_magnitudes = get_sentiment(client,review)
+        sent_scores_list.append(sent_scores)
+        sent_magnitudes_list.append(sent_magnitudes)
+    return scores, magnitudes, sent_scores_list, sent_magnitudes_list
+
+def discretize_sentiment(score, magnitudes):
+    if np.abs(magnitudes) <= 0.25 or np.abs(score)  <= 0.15 :
+        sentiment = 'Neutral'
+    elif score > 0:
+        sentiment = 'Positive'
+    else:
+        sentiment = 'Negative'
+    return sentiment
+
+def measure_sentiments(df):
+    scores, magnitudes, sent_scores_list, sent_magnitudes_list = sentiment_analysize(df['Translated Reviews'])
+    df['sentiment_score'] = scores
+    df['sentiment_magnitude'] = magnitudes
+    df['score_by_sentence'] = sent_scores_list
+    df['magnitude_by_sentence'] = sent_magnitudes_list
+    
+    sentiments = []
+    for i in range(len(df)):
+        sentiment = discretize_sentiment(scores[i], magnitudes[i])
+        sentiments.append(sentiment)
+    df['Sentiment'] = sentiments
     return df
