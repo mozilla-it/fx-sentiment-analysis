@@ -46,7 +46,8 @@ def data_processing(col_names, target_folder_path,date_threshold = '', save_csv 
         df = filter_by_date(df, date_threshold) # Remove rows whose date is before the given date thershold
 
     df = translate_reviews(df) # Translate non-English reviews
-
+    df = measure_sentiments(df) # Sentiment Analysis
+    df = identify_keywords(df)
     # Save into an output file in the target folder
     if save_csv:
         output_path = target_folder_path + 'output_py.xlsx'
@@ -181,6 +182,7 @@ def translate_reviews(df):
                 df.iloc[i,translated_review_col_id] = 'Error: no language detected!'
         if i % 100 == 0: 
             print(str(i+1) +' reviews have been processed!')
+    print('All reviews have been processed!')
     return df    
 
 def get_counter_contents(counter):
@@ -245,8 +247,9 @@ def plot_bar_plots(X, Y,label_x='', label_y='',title=''):
     plt.xlabel(label_x)
     plt.ylabel(label_y)
     plt.title(title)
+    plt.show()
     
-def compute_keywords_freq(reviews, stop_words_file_path = 'Data/stop_words/stop_words.txt',viz = False):
+def compute_keywords_freq(reviews, stop_words_file_path = 'Data/stop_words/stop_words.txt',viz = False,n_top_words = 15):
     counter = Counter()
     for review in reviews:
         counter.update([word_process(word) for word in re.findall(r'\w+', review)])
@@ -254,7 +257,7 @@ def compute_keywords_freq(reviews, stop_words_file_path = 'Data/stop_words/stop_
     stop_words = get_stop_words(stop_words_file_path)
     words, freq = clean_words(counter, stop_words)
     if viz:
-        plot_bar_plots(words[:10], freq[:10],'High Frequent Keywords','Frequency','Words with the Top Frequency')
+        plot_bar_plots(words[:n_top_words], freq[:n_top_words],'High Frequent Keywords','Frequency','Words with the Top Frequency')
     return words, freq
 
 def read_exist_output(file_path):
@@ -280,11 +283,7 @@ def get_sentiment(client,content):
     score, magnitude, sent_socres, sent_magnitudes = interpret_sentiment(annotations)
     return score, magnitude, sent_socres, sent_magnitudes
 
-def sentiment_analysize(texts):
-    credentials = service_account.Credentials.from_service_account_file(
-    '/Users/ivanzhou/Github/Credentials/GCloud-Translation.json')
-    #client = language.LanguageServiceClient(credentials=credentials)
-    client = language.LanguageServiceClient()
+def sentiment_analysize(texts,client):
     scores = np.zeros(len(texts))
     magnitudes = np.zeros(len(texts))
     sent_scores_list = []
@@ -306,15 +305,37 @@ def discretize_sentiment(score, magnitudes):
     return sentiment
 
 def measure_sentiments(df):
-    scores, magnitudes, sent_scores_list, sent_magnitudes_list = sentiment_analysize(df['Translated Reviews'])
+    credentials = service_account.Credentials.from_service_account_file('/Users/ivanzhou/Github/Credentials/GCloud-Translation.json')
+    client = language.LanguageServiceClient(credentials=credentials)
+    #client = language.LanguageServiceClient()
+    scores, magnitudes, sent_scores_list, sent_magnitudes_list = sentiment_analysize(df['Translated Reviews'],client)
     df['sentiment_score'] = scores
     df['sentiment_magnitude'] = magnitudes
     df['score_by_sentence'] = sent_scores_list
     df['magnitude_by_sentence'] = sent_magnitudes_list
     
     sentiments = []
+    print('Start Sentiment Analysis: ' + str(len(df)) + ' reviews: ')
     for i in range(len(df)):
         sentiment = discretize_sentiment(scores[i], magnitudes[i])
         sentiments.append(sentiment)
+        if i%100 == 0:
+            print(str(i+1) + ' reviews have been processed!')
+    print('All reviews have been processed!')
+    
     df['Sentiment'] = sentiments
+    return df
+
+def identify_keywords(df,n_top_words=30):
+    allWords, allWordsFreq = compute_keywords_freq(df['Translated Reviews'],viz = False)
+    topWords = allWords[:n_top_words]
+    keywords_list = []
+    for review in df['Translated Reviews']:
+        counter = Counter([word_process(word) for word in re.findall(r'\w+', review)]) # count all the words and their frequency in the file
+        words = []
+        for word in topWords:
+            if counter[word] > 0:
+                words.append(word)
+        keywords_list.append(words)
+    df['Keywords'] = keywords_list
     return df
