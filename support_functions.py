@@ -44,7 +44,6 @@ def data_processing(col_names, target_folder_path,date_threshold = '', save_csv 
     
     if len(date_threshold) > 0:
         df = filter_by_date(df, date_threshold) # Remove rows whose date is before the given date thershold
-
     df = translate_reviews(df) # Translate non-English reviews
     df = measure_sentiments(df) # Sentiment Analysis
     df = identify_keywords(df)
@@ -159,11 +158,7 @@ def translate_reviews(df):
     """
     This function scans through each review and translate the non-English reviews
     """
-    # Set Credentials
-    credentials = service_account.Credentials.from_service_account_file(
-    '/Users/ivanzhou/Github/Credentials/GCloud-Translation.json')
-    translate_client = translate.Client(credentials=credentials) # Set up the Translate Client
-    
+    translate_client = translate.Client()
     # Get column index: for the convenience of extraction
     original_review_col_id = df.columns.get_loc('Original Reviews') # Get the index of the target column 
     translated_review_col_id = df.columns.get_loc('Translated Reviews') # Get the index of the target column 
@@ -305,9 +300,7 @@ def discretize_sentiment(score, magnitudes):
     return sentiment
 
 def measure_sentiments(df):
-    credentials = service_account.Credentials.from_service_account_file('/Users/ivanzhou/Github/Credentials/GCloud-Translation.json')
-    client = language.LanguageServiceClient(credentials=credentials)
-    #client = language.LanguageServiceClient()
+    client = language.LanguageServiceClient()
     scores, magnitudes, sent_scores_list, sent_magnitudes_list = sentiment_analysize(df['Translated Reviews'],client)
     df['sentiment_score'] = scores
     df['sentiment_magnitude'] = magnitudes
