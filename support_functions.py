@@ -16,6 +16,7 @@ from collections import Counter
 import nltk
 from nltk.stem import *
 import codecs
+import time
 
 def remove_duplicate(items,print = False):
     dups = set()
@@ -279,15 +280,22 @@ def get_sentiment(client,content):
     return score, magnitude, sent_socres, sent_magnitudes
 
 def sentiment_analysize(texts,client):
+    print('Start Sentiment Analysis: ' + str(len(texts)) + ' reviews: ')
     scores = np.zeros(len(texts))
     magnitudes = np.zeros(len(texts))
     sent_scores_list = []
     sent_magnitudes_list = []
     count = 0
     for i, review in enumerate(texts):
+        if i == 500:
+            print('500 reviews have been processed, and the programme need to be paused for 60 seconds!')
+            time.sleep(60)
         scores[i], magnitudes[i], sent_scores, sent_magnitudes = get_sentiment(client,review)
         sent_scores_list.append(sent_scores)
         sent_magnitudes_list.append(sent_magnitudes)
+        if i%100 == 0:
+            print(str(i+1) + ' reviews have been processed!')
+    print('All reviews have been processed!')
     return scores, magnitudes, sent_scores_list, sent_magnitudes_list
 
 def discretize_sentiment(score, magnitudes):
@@ -308,14 +316,9 @@ def measure_sentiments(df):
     df['magnitude_by_sentence'] = sent_magnitudes_list
     
     sentiments = []
-    print('Start Sentiment Analysis: ' + str(len(df)) + ' reviews: ')
     for i in range(len(df)):
         sentiment = discretize_sentiment(scores[i], magnitudes[i])
         sentiments.append(sentiment)
-        if i%100 == 0:
-            print(str(i+1) + ' reviews have been processed!')
-    print('All reviews have been processed!')
-    
     df['Sentiment'] = sentiments
     return df
 
