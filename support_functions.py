@@ -212,8 +212,8 @@ def plot_hists(values):
     plt.show()
 
 def word_process(word):
-    wnLemm = WordNetLemmatizer()
-    word_processed = wnLemm.lemmatize(word)
+    sbStem = SnowballStemmer("english")
+    word_processed = sbStem.stem(word)
     word_processed = word_processed.lower()
     return word_processed
 
@@ -335,3 +335,4 @@ def identify_keywords(df,n_top_words=30):
         keywords_list.append(words)
     df['Keywords'] = keywords_list
     return df
+
