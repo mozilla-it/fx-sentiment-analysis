@@ -57,9 +57,6 @@ def data_processing(col_names, target_folder_path,date_threshold = '', save_csv 
     df = measure_sentiments(df) # Sentiment Analysis
     df = identify_keywords(df)
     df = categorize(df)
-    target_folder_path = 'Data/2017_10_16/'
-    file_path = target_folder_path + 'output_py.xlsx'
-    df = read_exist_output(file_path)
     df_comp_counts = freq_count(df,'Components')
     df_features_counts = freq_count(df,'Features')
     # Save into an output file in the target folder
@@ -72,6 +69,7 @@ def data_processing(col_names, target_folder_path,date_threshold = '', save_csv 
         df_comp_counts.to_excel(writer,sheet_name='Component Count',index= False)
         df_features_counts.to_excel(writer,sheet_name='Feature Count',index= False)
         writer.save()
+        print('Output has been saved to: ' + target_folder_path)
     return df
 
 def read_all_data(col_names,target_folder_path):
@@ -94,7 +92,7 @@ def read_all_data(col_names,target_folder_path):
                 SurveyGizmo_Processed = process_surveygizmo_df(SurveyGizmo_df,col_names)
                 df = pd.concat([df,SurveyGizmo_Processed]) # Merged the dataframes
             else:
-                Appbot_df = pd.read_csv(file_path).fillna('')
+                Appbot_df = pd.read_csv(file_path, encoding='latin-1').fillna('')
                 Appbot_Processed = process_appbot_df(Appbot_df,col_names)
                 df = pd.concat([df,Appbot_Processed]) # Merged the dataframes
     return df
