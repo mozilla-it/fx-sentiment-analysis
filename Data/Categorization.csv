@@ -49,9 +49,9 @@ Save Logins,Disable
 Logins,Save
 Logins,Edit
 Logins,Search
-Touch ID & Passcode,Enable
-Touch ID & Passcode,Disable
-Touch ID & Passcode,Change
+Touch ID & Passcode & Password,Enable
+Touch ID & Passcode & Password,Disable
+Touch ID & Passcode & Password,Change
 Tracking Protection,Enable
 Tracking Protection,Disable
 History/cookies/cache,Sync
@@ -71,3 +71,12 @@ Files,Open in other apps
 Link/URL,Open
 Link/URL,Share
 Link/URL,Copy
+Firefox/Browser/App,Like
+Firefox/Browser/App,Update
+Firefox/Browser/App,Touch
+Firefox/Browser/App,Use
+Firefox/Browser/App,Download
+Firefox/Browser/App,Release
+Firefox/Browser/App,Thank
+Firefox/Browser/App,Crash
+Password,Save

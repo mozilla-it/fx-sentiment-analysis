@@ -18,6 +18,9 @@ from nltk.stem import *
 import codecs
 import time
 
+global cate_file_path 
+cate_file_path = 'Data/Categorization.csv'
+
 def remove_duplicate(items,print = False):
     dups = set()
     uniqs = []
@@ -48,6 +51,7 @@ def data_processing(col_names, target_folder_path,date_threshold = '', save_csv 
     df = translate_reviews(df) # Translate non-English reviews
     df = measure_sentiments(df) # Sentiment Analysis
     df = identify_keywords(df)
+    df = categorize(df)
     # Save into an output file in the target folder
     if save_csv:
         output_path = target_folder_path + 'output_py.xlsx'
@@ -119,7 +123,7 @@ def process_appbot_df(Appbot,col_names):
     Appbot_Processed['Date'] =  pd.to_datetime(Appbot['Date']).dt.date
     Appbot_Processed['Version'] =  Appbot['Version']
     Appbot_Processed['Rating'] =  Appbot['Rating']
-    Appbot_Processed['Emotion'] =  Appbot['Emotion']
+    #Appbot_Processed['Emotion'] =  Appbot['Emotion']
     Appbot_Processed['Original Reviews'] = Appbot[['Subject','Body']].apply(lambda x : '{}. {}'.format(x[0],x[1]), axis=1)
     Appbot_Processed['Translated Reviews'] = Appbot[['Translated Subject','Translated Body']].apply(lambda x : '{}. {}'.format(x[0],x[1]), axis=1)
     print('Finish processing the Appbot Data!\n')
@@ -135,7 +139,7 @@ def process_surveygizmo_df(SurveyGizmo,col_names):
     SurveyGizmo_Processed['Source'] = 'Browser'
     SurveyGizmo_Processed['Date'] = pd.to_datetime(SurveyGizmo[SurveyGizmo.columns[0]]).dt.date
     SurveyGizmo_Processed['Version'] = extract_version_SG(SurveyGizmo[SurveyGizmo.columns[3]])
-    SurveyGizmo_Processed['Emotion'] = SurveyGizmo[SurveyGizmo.columns[5]]
+    #SurveyGizmo_Processed['Emotion'] = SurveyGizmo[SurveyGizmo.columns[5]]
     SurveyGizmo_Processed['Original Reviews'] = SurveyGizmo[[SurveyGizmo.columns[6],SurveyGizmo.columns[7]]].apply(lambda x : '{}{}'.format(x[0],x[1]), axis=1)
     SurveyGizmo_Processed['Translated Reviews'] = ''
 
@@ -310,10 +314,10 @@ def discretize_sentiment(score, magnitudes):
 def measure_sentiments(df):
     client = language.LanguageServiceClient()
     scores, magnitudes, sent_scores_list, sent_magnitudes_list = sentiment_analysize(df['Translated Reviews'],client)
-    df['sentiment_score'] = scores
-    df['sentiment_magnitude'] = magnitudes
-    df['score_by_sentence'] = sent_scores_list
-    df['magnitude_by_sentence'] = sent_magnitudes_list
+    #df['sentiment_score'] = scores
+    #df['sentiment_magnitude'] = magnitudes
+    #df['score_by_sentence'] = sent_scores_list
+    #df['magnitude_by_sentence'] = sent_magnitudes_list
     
     sentiments = []
     for i in range(len(df)):
@@ -336,3 +340,142 @@ def identify_keywords(df,n_top_words=30):
     df['Keywords'] = keywords_list
     return df
 
+def process_words_list(words_list):
+    words_processed_list = []
+    words_processed_dict = {}
+    for words in words_list:
+        if len(words.split(' '))>1: # Phrases
+            word_processed = []
+            word_list = re.findall(r'\w+', words)
+            for word in word_list:
+                word_processed.append(word_process(word))
+            words_processed_list.append(word_processed)
+            words_processed_dict[repr(word_processed)] = words
+        else: # Single word
+            words_processed = word_process(words)
+            words_processed_list.append(words_processed)
+            words_processed_dict[words_processed] = words
+        if '/' in words or '&' in words: # There is a OR condition, record keywords separately
+            word_list = re.split('/| & ',words)
+            for word in word_list:
+                word_processed = word_process(word)
+                words_processed_list.append(word_processed)
+                words_processed_dict[word_processed] = words
+        
+    return words_processed_list, words_processed_dict
+
+def process_texts(texts):
+    """
+    Function to process review texts
+    Output is a list of processed reviews
+    """
+    texts_processed = []
+    for text in texts:
+        text_processed = []
+        words = re.findall(r'\w+', text)
+        for word in words:
+            text_processed.append(word_process(word))
+        texts_processed.append(text_processed)
+    return texts_processed
+
+def find_word_pair_in_text(text, word1,word2,distance = 5):
+    """
+    The function check if two words are present in the given text within the given distance
+    outputs:
+    - found: boolean, if the two words are found
+    indices as the word pair may present for more than once
+    """
+    found = False
+    for i in range(len(text)):
+        if text[i] == word1: # Find the first word
+            for j in range(max(i-distance,0),min(i+distance,len(text))): 
+                if text[j] == word2: # Find the second word in the neighbours
+                    found = True
+                    return found
+    return found
+
+def find_phrase_in_text(text,phrase):
+    """
+    Phrase is given in a list of words
+    """
+    found = False
+    for i in range(len(phrase)-1):
+        for j in range(i+1,len(phrase)):
+            result = find_word_pair_in_text(text, phrase[i],phrase[j])
+            if result:
+                found = True
+                return found
+    return found
+
+def find_words(texts,target_words):
+    """
+    Function to find a list of target words in a list of texts
+    """
+    texts_processed = process_texts(texts)
+    words_processed, words_processed_dict = process_words_list(target_words)
+
+    words_in_texts = []
+    for text in texts_processed:
+        words_in_text = []
+        for words in words_processed:
+            if isinstance(words, list): # Is a Phrase
+                found = find_phrase_in_text(text,words)
+                if found:
+                    words_in_text.append(words_processed_dict[repr(words)])
+            else: # Is a single word
+                if words in text:
+                    words_output = words_processed_dict[words]
+                    if words_output not in words_in_text:
+                        words_in_text.append(words_output)
+        words_in_text = str(words_in_text).replace('[','').replace(']','').replace('\'','')
+        words_in_texts.append(words_in_text)  
+    return words_in_texts
+
+def preprocess_cate(cate_file_path):
+    """
+    Function to pre-process the categorization data
+    """
+    cate_file = pd.read_csv(cate_file_path)
+    cate_file = cate_file.iloc[:,0:2] # Only look at the first two columns
+    cate_file = cate_file.dropna(axis=0, how='all') # Drop rows with both columns
+    component_prior = 'Unknown' # Initialize
+    for i in range(len(cate_file)):
+        if pd.isnull(cate_file.iloc[i,0]):
+            cate_file.iloc[i,0] = component_prior
+        else:
+            component_prior = cate_file.iloc[i,0]
+    cate_file.to_csv(cate_file_path, index=False)
+    return cate_file
+
+def categorize(df):
+    cate_file = pd.read_csv(cate_file_path)
+    components = list(cate_file['Components'].unique())
+    features = list(cate_file['Feature'].unique())
+    print('Start to categorize: ' + str(len(df)) + ' reviews: ')
+    texts = df['Translated Reviews']
+    # Find the pre-defined components and features in the texts
+    components_found = find_words(texts,components)
+    features_found = find_words(texts,features)
+
+    # If there is a text that has no component but has features, add "Firefox" as the component
+    for i in range(len(texts)):
+        if len(components_found[i]) == 0:
+            if len(features_found[i]) >0: # General Browser Issue
+                components_found[i] = 'Firefox/Browser/App'
+            else:
+                components_found[i] = 'Others'
+
+
+    # Identify keywords (excluding stop words and components)
+    keywords,freq = compute_keywords_freq(texts)
+    for component in components:
+        for word in re.findall(r'\w+', component) :
+            word_processed = word_process(word)
+            if word_processed in keywords:
+                keywords.remove(word_processed)
+    top_keywords = keywords[:30]
+    keywords_found = find_words(texts,top_keywords)
+    df['Components'] = components_found
+    df['Features'] = features_found
+    df['Keywords'] = keywords_found
+    return df
