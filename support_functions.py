@@ -48,11 +48,13 @@ def write_to_file(words, file_path):
         myfile.write("%s\n" % stop_word)
     myfile.close()
 
-def data_processing(col_names, target_folder_path,date_threshold = '', save_csv = True):
+def data_processing(col_names, target_folder_path,date_threshold = '', version_threshold = '',save_csv = True):
     df = read_all_data(col_names,target_folder_path)
     
     if len(date_threshold) > 0:
         df = filter_by_date(df, date_threshold) # Remove rows whose date is before the given date thershold
+    if version_threshold > 0:
+        df = filter_by_version(df, version_threshold) # Remove rows whose version is before the given date thershold
     df = translate_reviews(df) # Translate non-English reviews
     df = measure_sentiments(df) # Sentiment Analysis
     df = identify_keywords(df)
@@ -92,7 +94,7 @@ def read_all_data(col_names,target_folder_path):
                 SurveyGizmo_Processed = process_surveygizmo_df(SurveyGizmo_df,col_names)
                 df = pd.concat([df,SurveyGizmo_Processed]) # Merged the dataframes
             else:
-                Appbot_df = pd.read_csv(file_path, encoding='latin-1').fillna('')
+                Appbot_df = pd.read_csv(file_path).fillna('')
                 Appbot_Processed = process_appbot_df(Appbot_df,col_names)
                 df = pd.concat([df,Appbot_Processed]) # Merged the dataframes
     return df
@@ -161,6 +163,18 @@ def filter_by_date(df, date_threshold):
     filtered_id = df['Date'] >= date # Index of the row to drop 
     print(str(len(df) - sum(filtered_id)) + ' records are before the specified date (' + 
           date.strftime("%B") + ' ' + str(date.day) + ', ' + str(date.year) + '). They will be dropped!\n')
+
+    df_filtered = df[filtered_id]
+
+    return df_filtered
+
+def filter_by_version(df, version_threshold):
+    """
+    The function remove rows whose date is before the given date threshold
+    """
+    filtered_id = df['Version'] >= version_threshold # Index of the row to drop 
+    print(str(len(df) - sum(filtered_id)) + ' records are before the specified version (' + 
+          str(version_threshold) +'). They will be dropped!\n')
 
     df_filtered = df[filtered_id]
 
