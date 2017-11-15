@@ -21,6 +21,11 @@ import time
 global cate_file_path 
 cate_file_path = 'Data/Categorization.csv'
 
+def read_exist_output(file_path):
+    xl = pd.ExcelFile(file_path)
+    df = xl.parse(xl.sheet_names[0]).fillna('')
+    return df
+
 def remove_duplicate(items,print = False):
     dups = set()
     uniqs = []
@@ -44,7 +49,7 @@ def write_to_file(words, file_path):
     myfile.close()
 
 def data_processing(col_names, target_folder_path,date_threshold = '', save_csv = True):
-    df = data_integration(col_names,target_folder_path)
+    df = read_all_data(col_names,target_folder_path)
     
     if len(date_threshold) > 0:
         df = filter_by_date(df, date_threshold) # Remove rows whose date is before the given date thershold
@@ -52,29 +57,29 @@ def data_processing(col_names, target_folder_path,date_threshold = '', save_csv 
     df = measure_sentiments(df) # Sentiment Analysis
     df = identify_keywords(df)
     df = categorize(df)
+    target_folder_path = 'Data/2017_10_16/'
+    file_path = target_folder_path + 'output_py.xlsx'
+    df = read_exist_output(file_path)
+    df_comp_counts = freq_count(df,'Components')
+    df_features_counts = freq_count(df,'Features')
     # Save into an output file in the target folder
+    
     if save_csv:
         output_path = target_folder_path + 'output_py.xlsx'
+        writer = pd.ExcelWriter(output_path, engine='xlsxwriter')
         # df.to_csv(output_path,encoding='utf-8')
-        df.to_excel(output_path,sheet_name='Sheet1',index= False)
-    return df
-    
-def data_integration(col_names,target_folder_path):
-    """
-    Function to read, process, and integrate the data
-    """
-    Appbot, SurveyGizmo = read_data(target_folder_path)
-    Appbot_Processed = process_appbot_df(Appbot,col_names)
-    SurveyGizmo_Processed = process_surveygizmo_df(SurveyGizmo,col_names)
-    df = pd.concat([Appbot_Processed,SurveyGizmo_Processed]) # Merged the dataframes
-    
+        df.to_excel(writer,sheet_name='Main',index= False)
+        df_comp_counts.to_excel(writer,sheet_name='Component Count',index= False)
+        df_features_counts.to_excel(writer,sheet_name='Feature Count',index= False)
+        writer.save()
     return df
 
-def read_data(target_folder_path):
+def read_all_data(col_names,target_folder_path):
     """
     Function to read through all the datasets in the target folder
     todo: add support to the senario where there are multiple Appbot/SurveyGizmo files in the folder
     """
+    df = pd.DataFrame()
     # Read in all the dataset
     file_paths = glob.glob(target_folder_path + '*')
     for file_path in file_paths:
@@ -86,9 +91,13 @@ def read_data(target_folder_path):
             if file_format == 'xlsx':
                 xl = pd.ExcelFile(file_path)
                 SurveyGizmo_df = xl.parse(xl.sheet_names[0]).fillna('')
+                SurveyGizmo_Processed = process_surveygizmo_df(SurveyGizmo_df,col_names)
+                df = pd.concat([df,SurveyGizmo_Processed]) # Merged the dataframes
             else:
                 Appbot_df = pd.read_csv(file_path).fillna('')
-    return Appbot_df, SurveyGizmo_df
+                Appbot_Processed = process_appbot_df(Appbot_df,col_names)
+                df = pd.concat([df,Appbot_Processed]) # Merged the dataframes
+    return df
 
 def create_empty_df(n,col_names):
     df = pd.DataFrame('', index=range(n), columns=col_names)
@@ -185,11 +194,15 @@ def translate_reviews(df):
     print('All reviews have been processed!')
     return df    
 
-def get_counter_contents(counter):
+def get_counter_contents(counter,sorted = False):
     """
     Get the labels and counts in the counters
     """
     labels, values = zip(*counter.items())
+    if sorted:
+        ind_sorted = np.array(values).argsort()[::-1]
+        labels = np.array(labels)[ind_sorted]
+        values = np.array(values)[ind_sorted]
     return labels, values
 
 def plot_hists(values):
@@ -259,11 +272,6 @@ def compute_keywords_freq(reviews, stop_words_file_path = 'Data/stop_words/stop_
     if viz:
         plot_bar_plots(words[:n_top_words], freq[:n_top_words],'High Frequent Keywords','Frequency','Words with the Top Frequency')
     return words, freq
-
-def read_exist_output(file_path):
-    xl = pd.ExcelFile(file_path)
-    df = xl.parse(xl.sheet_names[0]).fillna('')
-    return df
 
 def interpret_sentiment(annotations):
     score = annotations.document_sentiment.score 
@@ -479,3 +487,16 @@ def categorize(df):
     df['Features'] = features_found
     df['Keywords'] = keywords_found
     return df
+
+def freq_count(df,target):
+    """
+    Count the # different items in the input df and return a new df with the freq counts
+    """
+    counter = Counter()
+    for content in df[target]:
+        counter.update([word for word in content.split(', ')])
+    labels, values = get_counter_contents(counter,sorted = True)
+    df_output=create_empty_df(len(labels),[target,'# Reviews'])
+    df_output[target] = labels
+    df_output['# Reviews'] = values
+    return df_output
