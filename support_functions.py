@@ -56,11 +56,11 @@ def data_processing(col_names, target_folder_path,date_threshold = '', version_t
     if version_threshold > 0:
         df = filter_by_version(df, version_threshold) # Remove rows whose version is before the given date thershold
     df = translate_reviews(df) # Translate non-English reviews
-    df = measure_sentiments(df) # Sentiment Analysis
-    df = identify_keywords(df)
-    df = categorize(df)
-    df_comp_counts = freq_count(df,'Components')
-    df_features_counts = freq_count(df,'Features')
+    #df = measure_sentiments(df) # Sentiment Analysis
+    #df = identify_keywords(df)
+    #df = categorize(df)
+    #df_comp_counts = freq_count(df,'Components')
+    #df_features_counts = freq_count(df,'Features')
     # Save into an output file in the target folder
     
     if save_csv:
@@ -68,8 +68,8 @@ def data_processing(col_names, target_folder_path,date_threshold = '', version_t
         writer = pd.ExcelWriter(output_path, engine='xlsxwriter')
         # df.to_csv(output_path,encoding='utf-8')
         df.to_excel(writer,sheet_name='Main',index= False)
-        df_comp_counts.to_excel(writer,sheet_name='Component Count',index= False)
-        df_features_counts.to_excel(writer,sheet_name='Feature Count',index= False)
+        #df_comp_counts.to_excel(writer,sheet_name='Component Count',index= False)
+        #df_features_counts.to_excel(writer,sheet_name='Feature Count',index= False)
         writer.save()
         print('Output has been saved to: ' + target_folder_path)
     return df
@@ -115,10 +115,16 @@ def extract_version_SG(SG_Col):
         locator = string.find("FxiOS/") # Locate the target term in each string
         if locator > 0: # Find the keyword
             version_code = string.split("FxiOS/",1)[1].split(' ')[0]  # Example: 10.0b6373
-            version = re.findall("^\d+\.\d+\.\d+|^\d+\.\d+", version_code)[0] # Extract the float number in the string
+            version = re.findall("^\d+\.\d+\.\d+|^\d+\.\d+", version_code)[0] # Extract the float number in the string with multiple dot
+            digits = version.split('.')
+            if len(digits)>=2: # 10.1 or 10.0.1
+                version = float(digits[0] + '.' + digits[1]) # Temporary use - just capture the first two digits so that we can return as a number
+            else: 
+                version = int(version)
         else:
-            version = ''
+            version = 0
         version_list.append(version)
+        #print('Origin: ' + string + ', Version: ' + str(version))
     return version_list
 
 def process_appbot_df(Appbot,col_names):
@@ -143,13 +149,12 @@ def process_surveygizmo_df(SurveyGizmo,col_names):
     Function to Process the SurveyGizmo Dataframe
     """
     SurveyGizmo_Processed = create_empty_df(len(SurveyGizmo),col_names) # Initialize a new dataframe
-    
     SurveyGizmo_Processed['Store'] = 'iOS'
-    SurveyGizmo_Processed['Source'] = 'Browser'
+    SurveyGizmo_Processed['Source'] = 'SurveyGizmo'
     SurveyGizmo_Processed['Date'] = pd.to_datetime(SurveyGizmo[SurveyGizmo.columns[0]]).dt.date
-    SurveyGizmo_Processed['Version'] = extract_version_SG(SurveyGizmo[SurveyGizmo.columns[3]])
+    SurveyGizmo_Processed['Version'] = extract_version_SG(SurveyGizmo['Extended User Agent'])
     #SurveyGizmo_Processed['Emotion'] = SurveyGizmo[SurveyGizmo.columns[5]]
-    SurveyGizmo_Processed['Original Reviews'] = SurveyGizmo[[SurveyGizmo.columns[6],SurveyGizmo.columns[7]]].apply(lambda x : '{}{}'.format(x[0],x[1]), axis=1)
+    SurveyGizmo_Processed['Original Reviews'] = SurveyGizmo[[SurveyGizmo.columns[5],SurveyGizmo.columns[6]]].apply(lambda x : '{}{}'.format(x[0],x[1]), axis=1)
     SurveyGizmo_Processed['Translated Reviews'] = ''
 
     print('Finish processing the SurveyGizmo Data!\n')
@@ -172,6 +177,7 @@ def filter_by_version(df, version_threshold):
     """
     The function remove rows whose date is before the given date threshold
     """
+
     filtered_id = df['Version'] >= version_threshold # Index of the row to drop 
     print(str(len(df) - sum(filtered_id)) + ' records are before the specified version (' + 
           str(version_threshold) +'). They will be dropped!\n')
@@ -200,6 +206,7 @@ def translate_reviews(df):
                 else: # Otherwise, call Google Cloud API for translation
                     df.iloc[i,translated_review_col_id] = translate_client.translate(orginal_review, target_language='en')['translatedText']   
             except:
+                print(orginal_review)
                 df.iloc[i,translated_review_col_id] = 'Error: no language detected!'
         if i % 100 == 0: 
             print(str(i+1) +' reviews have been processed!')
@@ -287,7 +294,7 @@ def compute_keywords_freq(reviews, stop_words_file_path = 'Data/stop_words/stop_
 
 def interpret_sentiment(annotations):
     score = annotations.document_sentiment.score 
-    magnitude = annotations.document_sentiment.magnitude/len(annotations.sentences) # Take the average
+    magnitude = annotations.document_sentiment.magnitude/max(1,len(annotations.sentences)) # Take the average
     sent_scores = []
     sent_magnitudes = []
     for index, sentence in enumerate(annotations.sentences):
