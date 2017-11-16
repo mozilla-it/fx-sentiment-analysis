@@ -29,6 +29,7 @@ Page,Share
 Private Mode,Enable
 Private Mode,Disable
 Accounts,Sign in
+Accounts,Log in
 Accounts,Sign out
 Accounts,Create an account
 Accounts,Change/reset password
@@ -52,7 +53,7 @@ Logins,Search
 Touch ID & Passcode & Password,Enable
 Touch ID & Passcode & Password,Disable
 Touch ID & Passcode & Password,Change
-Tracking Protection,Enable
+Tracking Protection/Privacy,Enable
 Tracking Protection,Disable
 History/cookies/cache,Sync
 History/cookies/cache,Delete
@@ -78,5 +79,9 @@ Firefox/Browser/App,Use
 Firefox/Browser/App,Download
 Firefox/Browser/App,Release
 Firefox/Browser/App,Thank
+Firefox/Browser/App,Ad
 Firefox/Browser/App,Crash
+Firefox/Browser/App,icon
+Firefox/Browser/App,Moz://a
+Firefox/Browser/App,Quantum
 Password,Save

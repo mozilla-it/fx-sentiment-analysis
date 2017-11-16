@@ -56,11 +56,11 @@ def data_processing(col_names, target_folder_path,date_threshold = '', version_t
     if version_threshold > 0:
         df = filter_by_version(df, version_threshold) # Remove rows whose version is before the given date thershold
     df = translate_reviews(df) # Translate non-English reviews
-    #df = measure_sentiments(df) # Sentiment Analysis
-    #df = identify_keywords(df)
-    #df = categorize(df)
-    #df_comp_counts = freq_count(df,'Components')
-    #df_features_counts = freq_count(df,'Features')
+    df = measure_sentiments(df) # Sentiment Analysis
+    df = identify_keywords(df)
+    df = categorize(df)
+    df_comp_counts = freq_count(df,'Components')
+    df_features_counts = freq_count(df,'Features')
     # Save into an output file in the target folder
     
     if save_csv:
@@ -68,8 +68,8 @@ def data_processing(col_names, target_folder_path,date_threshold = '', version_t
         writer = pd.ExcelWriter(output_path, engine='xlsxwriter')
         # df.to_csv(output_path,encoding='utf-8')
         df.to_excel(writer,sheet_name='Main',index= False)
-        #df_comp_counts.to_excel(writer,sheet_name='Component Count',index= False)
-        #df_features_counts.to_excel(writer,sheet_name='Feature Count',index= False)
+        df_comp_counts.to_excel(writer,sheet_name='Component Count',index= False)
+        df_features_counts.to_excel(writer,sheet_name='Feature Count',index= False)
         writer.save()
         print('Output has been saved to: ' + target_folder_path)
     return df

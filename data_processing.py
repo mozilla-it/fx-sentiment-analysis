@@ -1,7 +1,7 @@
 from support_functions import *
 
-#target_folder_path = 'Data/2017_11_14/'
-target_folder_path = 'Data/temp/'
+target_folder_path = 'Data/2017_11_14/'
+#target_folder_path = 'Data/temp/'
 
 date_threshold = '2017-11-01'
 version_threshold = 10
