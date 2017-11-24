@@ -659,6 +659,7 @@ app
 please
 free
 iOS
+macOS
 web
 iphone
 mobile

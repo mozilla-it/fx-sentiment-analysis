@@ -28,6 +28,7 @@ Page,Reload
 Page,Share
 Private Mode,Enable
 Private Mode,Disable
+Dark Mode,Enable
 Accounts,Sign in
 Accounts,Log in
 Accounts,Sign out
@@ -38,7 +39,7 @@ Accounts,Delete
 Default search engine,Change
 Default search engine,Search suggestion
 Default search engine,Add
-Homepage,Set
+Home page,Set
 Homepage,Change
 Homepage,Clear
 Mail ,Set default mail

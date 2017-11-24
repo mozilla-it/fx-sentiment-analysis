@@ -17,6 +17,9 @@ import nltk
 from nltk.stem import *
 import codecs
 import time
+import re
+import nltk
+from nltk.tag import PerceptronTagger
 
 global cate_file_path 
 cate_file_path = 'Data/Categorization.csv'
@@ -519,3 +522,74 @@ def freq_count(df,target):
     df_output[target] = labels
     df_output['# Reviews'] = values
     return df_output
+
+# Noun Phrase Extraction Support Functions
+tagger = PerceptronTagger()
+pos_tag = tagger.tag
+# Extract none phrases
+grammar = r"""
+    NP: {<DT>? <JJ>* <NN|NNP|NNS|NNPS>} # NP
+    P: {<IN>}           # Preposition
+    V: {<V.*>}          # Verb
+    PP: {<P> <NP>}      # PP -> P NP
+    VP: {<JJ>* <V> <NP|PP>+}  # VP -> V (NP|PP)*
+    RP: {<RB|RBR|RBS>}
+    VR: {<V> <RP>}
+"""
+chunker = nltk.RegexpParser(grammar) # Create phrase tree
+
+def leaves(tree, label_type = 'VP'):
+    """Finds leaf nodes of target phrases in a chunk tree."""
+    for subtree in tree.subtrees(filter = lambda t: t.label()==label_type):
+        yield subtree.leaves()
+
+def get_terms(tree,label_type):
+    for leaf in leaves(tree,label_type):
+        term = [word_process(w) for w,t in leaf]
+        yield term
+            
+def flatten(npTokenList):
+    """
+    Flatten phrase lists to get tokens for analysis
+    """
+    finalList =[]
+    for phrase in npTokenList:
+        token = ''
+        for word in phrase:
+            token += word + ' '
+        finalList.append(token.rstrip())
+    return finalList
+
+def get_phrases(review,label_type='VP'):
+    """
+    This function get the pre-defined phrases from the given reviews
+    """
+    sentences = split_text(review)
+    phrases_lists = []
+    for sentence in sentences:
+        words = re.findall(r'\w+', sentence)  
+        if len(words) > 0: # Some sentence may be made up of only '????.' 
+            phrases_lists.append(flatten([word for word in get_terms(chunker.parse(pos_tag(words)),label_type)]))
+    phrases = [phrase for phrase_list in phrases_lists for phrase in phrase_list] # Flattern the list
+    return phrases
+
+def split_text(text):
+    """
+    Function to split text into seperate sentences
+    """
+    sentences = re.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', text)
+    return sentences
+
+def parse_and_analyze(sentence):
+    """for experiment use only"""
+    words = re.findall(r'\w+',sentence)
+    return pos_tag(words)
+
+def extract_phrases(texts):
+    texts = texts.as_matrix()
+    phrases_list = []
+    for text in texts:
+        phrases = get_phrases(text,'VP')
+        phrases = str(phrases).replace('[','').replace(']','').replace('\'','')
+        phrases_list.append(phrases)
+    return phrases_list
