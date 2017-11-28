@@ -482,7 +482,10 @@ def categorize(df):
     components = list(cate_file['Components'].unique())
     features = list(cate_file['Feature'].unique())
     print('Start to categorize: ' + str(len(df)) + ' reviews: ')
-    texts = df['Translated Reviews']
+    #Identify the target phrases
+    df['Verb Phrases'] = extract_phrases(df['Translated Reviews'],'VP')
+    df['Noun Phrases'] = extract_phrases(df['Translated Reviews'],'NP')
+    texts = df['Verb Phrases']
     # Find the pre-defined components and features in the texts
     components_found = find_words(texts,components)
     features_found = find_words(texts,features)
@@ -495,8 +498,7 @@ def categorize(df):
             else:
                 components_found[i] = 'Others'
 
-
-    # Identify keywords (excluding stop words and components)
+    # Identify keywords (excluding stop words and components) in the given texts
     keywords,freq = compute_keywords_freq(texts)
     for component in components:
         for word in re.findall(r'\w+', component) :
@@ -585,11 +587,17 @@ def parse_and_analyze(sentence):
     words = re.findall(r'\w+',sentence)
     return pos_tag(words)
 
-def extract_phrases(texts):
+def extract_phrases(texts,target_phrase_type):
+    """
+    Function to extract phrases of the target type
+    :param texts: Group of texts in dataframe
+    :param target_phrase_type: define the type of the phrases to catch, e.g. VP, NP
+    :return: a list of phrases identified
+    """
     texts = texts.as_matrix()
     phrases_list = []
     for text in texts:
-        phrases = get_phrases(text,'VP')
+        phrases = get_phrases(text,target_phrase_type)
         phrases = str(phrases).replace('[','').replace(']','').replace('\'','')
         phrases_list.append(phrases)
     return phrases_list
