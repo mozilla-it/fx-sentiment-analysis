@@ -513,6 +513,7 @@ def categorize(df):
     df['Components'] = components_found
     df['Features'] = features_found
     df['Keywords'] = keywords_found
+    df = df.replace(np.nan, '', regex=True)
     return df
 
 def freq_count(df,target):
@@ -613,7 +614,7 @@ def measure_sim_tfidf(texts, viz = False):
     :return: similarity matrix
     """
     vect = TfidfVectorizer(min_df=1)
-    tfidf = vect.fit_transform(feedbacks)
+    tfidf = vect.fit_transform(texts)
     similarity_matrix = (tfidf * tfidf.T).A
     if viz:
         plot_heatmap(similarity_matrix, title = 'Heatmap of the Similarity Matrix')
@@ -630,3 +631,25 @@ def plot_heatmap(data,title = ''):
     if len(title) > 0:
         plt.title(title)
     plt.show()
+
+def cut_feedbacks(feedbacks, length = 2):
+    """
+    Function to cut long feedbacks into sentences with specified length
+    :param feedbacks: feedbacks in dataframe
+    :param length: maximum length of a group of sentences
+    :return: a list of cut sentences and a dictionary that map each sentence ID to feedback ID
+    """
+    feedbacks = feedbacks.as_matrix()
+    sentence_to_feedback = {}
+    sentences_list = []
+    for i, text in enumerate(feedbacks):
+        sentences = split_text(text)
+        if len(sentences) > length:
+            for j in range(len(sentences) - (length-1)):
+                sentences_list.append(sentences[j:j+length])
+                sentence_to_feedback[len(sentences_list) - 1] = i
+        else:
+            sentences_list.append(sentences)
+            sentence_to_feedback[len(sentences_list) - 1] = i
+    #sentences_list = [sentence for sentences in sentences_list for sentence in sentences]  # Flattern the list
+    return sentences_list, sentence_to_feedback
