@@ -20,6 +20,9 @@ import time
 import re
 import nltk
 from nltk.tag import PerceptronTagger
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 global cate_file_path 
 cate_file_path = 'Data/Categorization.csv'
@@ -601,3 +604,29 @@ def extract_phrases(texts,target_phrase_type):
         phrases = str(phrases).replace('[','').replace(']','').replace('\'','')
         phrases_list.append(phrases)
     return phrases_list
+
+def measure_sim_tfidf(texts, viz = False):
+    """
+    Function to measure the similarity between texts with TF-IDF
+    :param texts: list of texts in arrays
+    :param viz: control the visualization
+    :return: similarity matrix
+    """
+    vect = TfidfVectorizer(min_df=1)
+    tfidf = vect.fit_transform(feedbacks)
+    similarity_matrix = (tfidf * tfidf.T).A
+    if viz:
+        plot_heatmap(similarity_matrix, title = 'Heatmap of the Similarity Matrix')
+    return similarity_matrix
+
+def plot_heatmap(data,title = ''):
+    """
+    This function plots a heatmap with the input data matrix
+    """
+    plt.figure(figsize=(10,5))
+    cmap = sns.diverging_palette(220, 10, as_cmap=True)
+    plt.imshow(data, cmap=cmap, interpolation='nearest') # Create a heatmap
+    plt.colorbar() # Add a Color Bar by the side
+    if len(title) > 0:
+        plt.title(title)
+    plt.show()
