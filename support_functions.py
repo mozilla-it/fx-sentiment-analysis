@@ -24,8 +24,6 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-global cate_file_path 
-cate_file_path = 'Data/Categorization.csv'
 
 def read_exist_output(file_path):
     xl = pd.ExcelFile(file_path)
@@ -44,8 +42,8 @@ def remove_duplicate(items,print = False):
     return uniqs
 
 def read_words_in_file(file_path):
-    with codecs.open(file_path,encoding='utf-8', errors='ignore') as myfile:
-        words = re.findall(r'\w+', myfile.read())
+    myfile = open(file_path, 'r', encoding = 'utf8')
+    words = re.findall(r'\w+', myfile.read())
     return words
 
 def write_to_file(words, file_path):
@@ -53,32 +51,6 @@ def write_to_file(words, file_path):
     for stop_word in stop_words:
         myfile.write("%s\n" % stop_word)
     myfile.close()
-
-def data_processing(col_names, target_folder_path,date_threshold = '', version_threshold = '',save_csv = True):
-    df = read_all_data(col_names,target_folder_path)
-    
-    if len(date_threshold) > 0:
-        df = filter_by_date(df, date_threshold) # Remove rows whose date is before the given date thershold
-    if version_threshold > 0:
-        df = filter_by_version(df, version_threshold) # Remove rows whose version is before the given date thershold
-    df = translate_reviews(df) # Translate non-English reviews
-    df = measure_sentiments(df) # Sentiment Analysis
-    df = identify_keywords(df)
-    df = categorize(df)
-    df_comp_counts = freq_count(df,'Components')
-    df_features_counts = freq_count(df,'Features')
-    # Save into an output file in the target folder
-    
-    if save_csv:
-        output_path = target_folder_path + 'output_py.xlsx'
-        writer = pd.ExcelWriter(output_path, engine='xlsxwriter')
-        # df.to_csv(output_path,encoding='utf-8')
-        df.to_excel(writer,sheet_name='Main',index= False)
-        df_comp_counts.to_excel(writer,sheet_name='Component Count',index= False)
-        df_features_counts.to_excel(writer,sheet_name='Feature Count',index= False)
-        writer.save()
-        print('Output has been saved to: ' + target_folder_path)
-    return df
 
 def read_all_data(col_names,target_folder_path):
     """
@@ -259,6 +231,17 @@ def word_process(word):
     word_processed = word_processed.lower()
     return word_processed
 
+def phrase_process(phrase):
+    """
+    Process words in a phrase individually
+    :param phrase: a phrase with multiple words
+    :return: a phrase of processed words
+    """
+    processed_phrase = ''
+    for word in re.findall(r'\w+', phrase):
+        processed_phrase += ' ' + word_process(word)
+    return processed_phrase
+
 def get_stop_words(file_path):
     stop_words = [word_process(word) for word in read_words_in_file(file_path)]
     stop_words = remove_duplicate(stop_words)
@@ -286,17 +269,22 @@ def plot_bar_plots(X, Y,label_x='', label_y='',title=''):
     plt.ylabel(label_y)
     plt.title(title)
     plt.show()
-    
-def compute_keywords_freq(reviews, stop_words_file_path = 'Data/stop_words/stop_words.txt',viz = False,n_top_words = 15):
-    counter = Counter()
-    for review in reviews:
-        counter.update([word_process(word) for word in re.findall(r'\w+', review)])
-    counter = counter.most_common()
+
+def compute_keywords_freq(texts, stop_words_file_path = 'Data/stop_words/stop_words.txt', k=50, viz = False):
+    """
+    Function to compute the term frequency of high frequent terms
+    """
     stop_words = get_stop_words(stop_words_file_path)
-    words, freq = clean_words(counter, stop_words)
-    if viz:
-        plot_bar_plots(words[:n_top_words], freq[:n_top_words],'High Frequent Keywords','Frequency','Words with the Top Frequency')
-    return words, freq
+    counter = Counter()
+    for text in texts:
+        counter.update([word_process(word)
+                        for word in re.findall(r'\w+', text)
+                        if word.lower() not in stop_words and len(word) > 2])
+    topk = counter.most_common(k)
+    words = []
+    for i in range(len(topk)):
+        words.append(topk[i][0])
+    return words
 
 def interpret_sentiment(annotations):
     score = annotations.document_sentiment.score 
@@ -374,6 +362,11 @@ def identify_keywords(df,n_top_words=30):
     return df
 
 def process_words_list(words_list):
+    """
+    Function to process a list of words and keep record of their original form
+    :param words_list: a list of words
+    :return: a list of the processed words and a dictionary for recovery
+    """
     words_processed_list = []
     words_processed_dict = {}
     for words in words_list:
@@ -480,42 +473,6 @@ def preprocess_cate(cate_file_path):
     cate_file.to_csv(cate_file_path, index=False)
     return cate_file
 
-def categorize(df):
-    cate_file = pd.read_csv(cate_file_path)
-    components = list(cate_file['Components'].unique())
-    features = list(cate_file['Feature'].unique())
-    print('Start to categorize: ' + str(len(df)) + ' reviews: ')
-    #Identify the target phrases
-    df['Verb Phrases'] = extract_phrases(df['Translated Reviews'],'VP')
-    df['Noun Phrases'] = extract_phrases(df['Translated Reviews'],'NP')
-    texts = df['Verb Phrases']
-    # Find the pre-defined components and features in the texts
-    components_found = find_words(texts,components)
-    features_found = find_words(texts,features)
-
-    # If there is a text that has no component but has features, add "Firefox" as the component
-    for i in range(len(texts)):
-        if len(components_found[i]) == 0:
-            if len(features_found[i]) >0: # General Browser Issue
-                components_found[i] = 'Firefox/Browser/App'
-            else:
-                components_found[i] = 'Others'
-
-    # Identify keywords (excluding stop words and components) in the given texts
-    keywords,freq = compute_keywords_freq(texts)
-    for component in components:
-        for word in re.findall(r'\w+', component) :
-            word_processed = word_process(word)
-            if word_processed in keywords:
-                keywords.remove(word_processed)
-    top_keywords = keywords[:30]
-    keywords_found = find_words(texts,top_keywords)
-    df['Components'] = components_found
-    df['Features'] = features_found
-    df['Keywords'] = keywords_found
-    df = df.replace(np.nan, '', regex=True)
-    return df
-
 def freq_count(df,target):
     """
     Count the # different items in the input df and return a new df with the freq counts
@@ -536,7 +493,7 @@ pos_tag = tagger.tag
 grammar = r"""
     NP: {<DT>? <JJ>* <NN|NNP|NNS|NNPS>} # NP
     P: {<IN>}           # Preposition
-    V: {<V.*>}          # Verb
+    V: {<VB|V.*>}          # Verb
     PP: {<P> <NP>}      # PP -> P NP
     VP: {<JJ>* <V> <NP|PP>+}  # VP -> V (NP|PP)*
     RP: {<RB|RBR|RBS>}
@@ -551,7 +508,7 @@ def leaves(tree, label_type = 'VP'):
 
 def get_terms(tree,label_type):
     for leaf in leaves(tree,label_type):
-        term = [word_process(w) for w,t in leaf]
+        term = [w for w,t in leaf]
         yield term
             
 def flatten(npTokenList):

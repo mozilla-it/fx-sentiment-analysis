@@ -1,87 +1,29 @@
-Components,Feature
-Reading View,Open
-Reading View,Exit
-Reading View,Edit View
-Reading List,Add
-Reading List,Delete
-Reading List,View
-Desktop View,Open
-Desktop View,Exit
-Tabs,Open
-Tabs,Close
-Tabs,View
-Bookmark,Bookmark a page
-Bookmark,Remove a page
-Bookmark,View bookmarks
-QR code,Open
-QR code,Scan
-QR code,Flashlight
-QR code,Auto search
-Night Mode,Enable
-Night Mode,Disable
-Top Sites,View
-Top Sites,Add
-Top Sites,Pin
-Page,Find in page
-Page,Request desktop site
-Page,Reload
-Page,Share
-Private Mode,Enable
-Private Mode,Disable
-Dark Mode,Enable
-Accounts,Sign in
-Accounts,Log in
-Accounts,Sign out
-Accounts,Create an account
-Accounts,Change/reset password
-Accounts,Sync
-Accounts,Delete
-Default search engine,Change
-Default search engine,Search suggestion
-Default search engine,Add
-Home page,Set
-Homepage,Change
-Homepage,Clear
-Mail ,Set default mail
-Mail ,Change
-Block Pop-up windows,Enable
-Block Pop-up windows,Disable
-Save Logins,Enable
-Save Logins,Disable
-Logins,Save
-Logins,Edit
-Logins,Search
-Touch ID & Passcode & Password,Enable
-Touch ID & Passcode & Password,Disable
-Touch ID & Passcode & Password,Change
-Tracking Protection/Privacy,Enable
-Tracking Protection,Disable
-History/cookies/cache,Sync
-History/cookies/cache,Delete
-Text,Copy
-Text,Look Up
-Text,Share
-Text,Find in page
-Image,Open in new tab
-Image,Copy link
-Image,Share link
-Image,Save image
-Image,Copy Image
-Video,Load
-Files,Load
-Files,Open in other apps
-Link/URL,Open
-Link/URL,Share
-Link/URL,Copy
-Firefox/Browser/App,Like
-Firefox/Browser/App,Update
-Firefox/Browser/App,Touch
-Firefox/Browser/App,Use
-Firefox/Browser/App,Download
-Firefox/Browser/App,Release
-Firefox/Browser/App,Thank
-Firefox/Browser/App,Ad
-Firefox/Browser/App,Crash
-Firefox/Browser/App,icon
-Firefox/Browser/App,Quantum
-Password,Save
+Tier,Feature,Component,Keywords
+1,Bookmark,Bookmark,"Book mark, bookmark, mark, favourite, favorite"
+,General,Firefox Browser,"Firefox, Browser, Like, Update, Touch, mobile, gesture, Use, Open, Download, Release, Thank, Crash, icon, Menu, button, fast, app, support, extension, addon, integration, look, iphone, interface, logo, Quantum, design, fast, menu, version, ui, safari, chrome, ie, navigation"
+,History,History/cookies/cache,"History, Cookie, Cache, cook"
+1,New Tab,Top Sites,"Top site, topsite, trending, suggestion"
+1,New Tab,Highlights,"highlight, recommend"
+1,New Tab,Pocket,pocket
+1,Privacy/Security,Private Mode,"private mode, private, privacy, security"
+1,Privacy/Security,Logins,"log in, logins"
+1,Privacy/Security,Touch ID & Passcode,"Touch ID, Passcode, Password, ID"
+1,Privacy/Security,Tracking Protection,"ad, ads, adblocker, track, protect, tracking protection, data"
+,Reading List,Reading List,Reading List
+,Settings,Night Mode,"Night, night mode, dark mode"
+,Settings,Default search engine,"yahoo, google, search engine, engine, search, baidu"
+,Settings,Home page,"home page, homepage"
+,Settings,Mail ,"mail, e-mail, email"
+,Settings,Block Pop-up windows,"block pop-up, popup, pop-up, block"
+,Settings,Save Logins,"save login, save log in"
+1,Sync and Accounts,Accounts,"account, sign-in, sign in"
+1,Tabs,Tabs,Tab
+,Utilities,Reading View,Reading View
+,Utilities,Desktop View,"Desktop Site, Desktop View"
+,Utilities,QR code,"Qrcode, QR Code, QR"
+,Utilities,Page,"page, webpage, web page"
+,Utilities,Text,"text, font"
+,Utilities,Image,"image, picture"
+,Utilities,Video,"video, movie, audio"
+,Utilities,Files,file
+,Utilities,Link/URL,"link, URL"
