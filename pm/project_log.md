@@ -30,10 +30,20 @@ extract the original phrases in the sentence
     - Menu
     
 ## To-Do
+- Build up a feedback database
+- Develop a function to extract high frequent verb and noun associate with a given
+component
+    - Input: a keyword (component)
+    - Output: 
+        - A list of top frequent verb with corresponding percentage
+        - A list of top frequent noun with corresponding percentage
+- Pull out the top 100 frequent keywords in the feedback database
+- Build up a parameterized classifier
 - Cannot extract the Verb Phrase `sort my favorites`
     - `my` is `PRP$`
     - `sort the favorites` is extractable
     - For now, we can still extract the keyword `favorites` and use that as a 
     clue
+
 
     
