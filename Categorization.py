@@ -49,17 +49,17 @@ def categorize(df):
                 else:
                     action_found = extract_phrases_with_keywords(str(row['Translated Reviews']), keyword)
                 actions_found.append(action_found)
-            components_found = str(components_found).replace('[', '').replace(']', '')
             components_found = list(set(components_found))
+            components_found = str(components_found).replace('[', '').replace(']', '')
+            features_found = list(set(features_found))
             features_found = str(features_found).replace('[', '').replace(']', '')
-            components_found = list(set(features_found))
             keywords_found = str(keywords_found).replace('[', '').replace(']', '')
             actions_found = str(actions_found).replace('[', '').replace(']', '')
         keywords_found_list.append(keywords_found)
         features_found_list.append(features_found)
         components_found_list.append(components_found)
+        print(len(components_found_list))
         actions_found_list.append(actions_found)
-
     df['Features'] = features_found_list
     df['Components'] = components_found_list
     df['Actions'] = actions_found_list
