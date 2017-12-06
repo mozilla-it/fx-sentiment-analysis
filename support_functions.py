@@ -311,7 +311,7 @@ def sentiment_analysize(texts,client):
     sent_magnitudes_list = []
     count = 0
     for i, review in enumerate(texts):
-        if i == 500:
+        if (i % 500 == 0 and i > 0):
             print('500 reviews have been processed, and the programme need to be paused for 60 seconds!')
             time.sleep(60)
         scores[i], magnitudes[i], sent_scores, sent_magnitudes = get_sentiment(client,review)
