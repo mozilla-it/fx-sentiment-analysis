@@ -184,7 +184,6 @@ def translate_reviews(df):
                 else: # Otherwise, call Google Cloud API for translation
                     df.iloc[i,translated_review_col_id] = translate_client.translate(orginal_review, target_language='en')['translatedText']   
             except:
-                print(orginal_review)
                 df.iloc[i,translated_review_col_id] = 'Error: no language detected!'
         if i % 100 == 0: 
             print(str(i+1) +' reviews have been processed!')
