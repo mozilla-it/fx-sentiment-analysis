@@ -1,5 +1,3 @@
-import numpy as np
-import pandas as pd
 from support_functions import *
 
 data_path = 'Data/2017_11_30/output_py.xlsx'

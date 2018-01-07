@@ -347,7 +347,7 @@ def measure_sentiments(df):
     return df
 
 def identify_keywords(df,n_top_words=30):
-    allWords, allWordsFreq = compute_keywords_freq(df['Translated Reviews'],viz = False)
+    allWords, allWordsFreq = compute_keywords_freq(df['Translated Reviews'], viz=False)
     topWords = allWords[:n_top_words]
     keywords_list = []
     for review in df['Translated Reviews']:

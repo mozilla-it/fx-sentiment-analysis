@@ -1,6 +1,6 @@
 # Project Log
 ## Nov 30, 2017
-### Redesign Categorization Workflow
+#### Redesign Categorization Workflow
 
 - Update the Categorization.csv file by adding tier, themes, and keywords
     - I removed the *execution behavior* as I think the Verb Phrase detection can 
@@ -24,7 +24,21 @@ extract the original phrases in the sentence
     - Otherwise, identify the location of the keyword in the original feedback
     text, tract back by up to 2 words, and use that phrase for the action phrase.
     
-    
+<br>
+
+## Jan 7
+Identify problem related to the dataframe length in data processing
+- When iterating through the dataframe in categorization part, the index will go beyond the length of the dataset.
+- Solution: save the dataframe into a csv file into a local path and reload it, the problem will get solved without 
+the need of any other changes
+- Try to cut the dataframe length by `df = df[:len(df)]`, cannot solve the problem
+
+Add a summarize function to summarize the issue
+- Now just an easy trick: use the first action identified or if there is no action identified, simply give the sentiment
+as "General Positive Feedback", etc.
+
+<br>
+
 ## Questions
 - Shall we set up categories for: 
     - Menu
@@ -44,6 +58,8 @@ component
     - `sort the favorites` is extractable
     - For now, we can still extract the keyword `favorites` and use that as a 
     clue
+
+<br>
 
 
     
