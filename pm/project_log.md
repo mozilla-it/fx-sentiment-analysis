@@ -39,6 +39,9 @@ as "General Positive Feedback", etc.
 
 <br>
 
+## Jan 18
+Reformat the outputs to remove the quotation marks around the outputs in components, actions, etc.
+
 ## Questions
 - Shall we set up categories for: 
     - Menu

@@ -3,6 +3,20 @@ from support_functions import *
 global cate_file_path
 cate_file_path = 'Data/Categorization.csv'
 
+
+def list_to_string(input_list):
+    if isinstance(input_list, list):
+        output_string = ''
+        input_list = list(set(input_list))  # Remove duplicates
+        for i, item in enumerate(input_list):
+            if i > 0:
+                output_string += ', '
+            output_string += item
+    else:
+        output_string = input_list
+    return output_string
+
+
 def categorize(df):
     cateDict = read_categorization_file(cate_file_path) # Read the content from the categorization file
     print('Start to categorize: ' + str(len(df)) + ' reviews: ')
@@ -25,6 +39,7 @@ def categorize(df):
     components_found_list = []
     keywords_found_list = []
     actions_found_list = []
+    print('Start to categorize: ' + str(len(df)) + ' reviews: ')
     for i, row in df.iterrows():
         if len(keywords_found_text_list[i]) == 0: # No keywords can be identified in the entire text
             components_found = 'Others'
@@ -48,17 +63,14 @@ def categorize(df):
                     action_found = [VP for VP in str(row['Verb Phrases']).split(', ') if word_process(keyword) in phrase_process(VP)]
                 else:
                     action_found = extract_phrases_with_keywords(str(row['Translated Reviews']), keyword)
-                actions_found.append(action_found)
-            components_found = list(set(components_found))
-            components_found = str(components_found).replace('[', '').replace(']', '')
-            features_found = list(set(features_found))
-            features_found = str(features_found).replace('[', '').replace(']', '')
-            keywords_found = str(keywords_found).replace('[', '').replace(']', '')
-            actions_found = str(actions_found).replace('[', '').replace(']', '')
+                actions_found.append(list_to_string(action_found))
+            components_found = list_to_string(components_found)
+            features_found = list_to_string(features_found)
+            keywords_found = list_to_string(keywords_found)
+            actions_found = list_to_string(actions_found)
         keywords_found_list.append(keywords_found)
         features_found_list.append(features_found)
         components_found_list.append(components_found)
-        print(len(components_found_list))
         actions_found_list.append(actions_found)
     df['Features'] = features_found_list
     df['Components'] = components_found_list
