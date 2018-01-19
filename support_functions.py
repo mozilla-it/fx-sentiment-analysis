@@ -562,6 +562,13 @@ def extract_phrases(texts,target_phrase_type):
         phrases_list.append(phrases)
     return phrases_list
 
+
+def vectorize_tfidf(texts):
+    vect = TfidfVectorizer(min_df=1)
+    tfidf_encoded = vect.fit_transform(texts)
+    return tfidf_encoded
+
+
 def measure_sim_tfidf(texts, viz = False):
     """
     Function to measure the similarity between texts with TF-IDF
@@ -569,8 +576,7 @@ def measure_sim_tfidf(texts, viz = False):
     :param viz: control the visualization
     :return: similarity matrix
     """
-    vect = TfidfVectorizer(min_df=1)
-    tfidf = vect.fit_transform(texts)
+    tfidf = vectorize_tfidf(texts)
     similarity_matrix = (tfidf * tfidf.T).A
     if viz:
         plot_heatmap(similarity_matrix, title = 'Heatmap of the Similarity Matrix')

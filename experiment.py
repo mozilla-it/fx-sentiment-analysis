@@ -1,19 +1,28 @@
 from support_functions import *
 
-data_path = 'Data/2017_11_30/output_py.xlsx'
+df = pd.read_csv('temp.csv')
 
-read_over = True
+def unique_entry_map(column):
+    map = {}
+    unique_items = []
+    column_list = list(column)
+    for i, row in enumerate(column_list):
+        items = row.split(', ')
+        for item in items:
+            if item not in unique_items:
+                unique_items.append(item)
+                map[item] = [i]
+            else:
+                map[item].append(i)
+    return map
 
-if read_over:
-    df = read_exist_output(data_path)
-    df = categorize(df)
-    df.to_csv('temp.csv')
-else:
-    df = pd.read_csv('temp.csv')
-    df = df.replace(np.nan, '', regex=True)
 
-feedbacks = df['Translated Reviews'].as_matrix()
-similarity_matrix = measure_sim_tfidf(feedbacks, viz = False)
+unique_components_map = unique_entry_map(df['Components'])
+print(unique_components_map)
+
+target_component = 'Tracking Protection'
+feedbacks = df.iloc[unique_components_map[target_component]]['Translated Reviews'].as_matrix()
+similarity_matrix = measure_sim_tfidf(feedbacks, viz=False)
 
 thresh = 0.3
 indice_list = []
@@ -39,6 +48,7 @@ print(max([len(list) for list in indice_list]))
 print(list_length)
 print(len(df))
 print(len(indice_list))
+
 
 for i in range(len(indice_list)):
     print('Group' + str(i))
