@@ -42,6 +42,15 @@ as "General Positive Feedback", etc.
 ## Jan 18
 Reformat the outputs to remove the quotation marks around the outputs in components, actions, etc.
 
+<br>
+
+## Jan 22
+[x] Revise the output format of Categorization
+[x] Clustering
+[x] Issue summarization for same cluster of feedbacks
+
+<br>
+
 ## Questions
 - Shall we set up categories for: 
     - Menu

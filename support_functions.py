@@ -164,31 +164,37 @@ def filter_by_version(df, version_threshold):
 
     return df_filtered
 
+
 def translate_reviews(df):
     """
     This function scans through each review and translate the non-English reviews
     """
     translate_client = translate.Client()
     # Get column index: for the convenience of extraction
-    original_review_col_id = df.columns.get_loc('Original Reviews') # Get the index of the target column 
-    translated_review_col_id = df.columns.get_loc('Translated Reviews') # Get the index of the target column 
-    
+    original_review_col_id = df.columns.get_loc('Original Reviews')  # Get the index of the target column
+    translated_review_col_id = df.columns.get_loc('Translated Reviews')  # Get the index of the target column
+
     # Start Translation
     print('Start to translate: ' + str(len(df)) + ' reviews: ')
     for i in range(len(df)):
-        if len(df.iloc[i,translated_review_col_id]) < min(4,len(df.iloc[i,original_review_col_id])): # Detect if the translated review is empty
-            orginal_review = df.iloc[i,original_review_col_id] # Extract the original review
-            try: # Some reviews may contain non-language contents
-                if detect(orginal_review) == 'en': # If the original review is in English
-                    df.iloc[i,translated_review_col_id] = orginal_review # Copy the original review - do not waste API usage
-                else: # Otherwise, call Google Cloud API for translation
-                    df.iloc[i,translated_review_col_id] = translate_client.translate(orginal_review, target_language='en')['translatedText']   
+        if len(df.iloc[i, translated_review_col_id]) < min(4, len(
+                df.iloc[i, original_review_col_id])):  # Detect if the translated review is empty
+            orginal_review = df.iloc[i, original_review_col_id]  # Extract the original review
+            try:  # Some reviews may contain non-language contents
+                if detect(orginal_review) == 'en':  # If the original review is in English
+                    df.iloc[
+                        i, translated_review_col_id] = orginal_review  # Copy the original review - do not waste API usage
+                else:  # Otherwise, call Google Cloud API for translation
+                    df.iloc[i, translated_review_col_id] = \
+                    translate_client.translate(orginal_review, target_language='en')['translatedText']
             except:
-                df.iloc[i,translated_review_col_id] = 'Error: no language detected!'
-        if i % 100 == 0: 
-            print(str(i+1) +' reviews have been processed!')
+                df.iloc[i, translated_review_col_id] = 'Error: no language detected!'
+        if i % 100 == 0:
+            print(str(i + 1) + ' reviews have been processed!')
     print('All reviews have been processed!')
-    return df    
+
+    return df
+
 
 def get_counter_contents(counter,sorted = False):
     """
@@ -615,3 +621,23 @@ def cut_feedbacks(feedbacks, length = 2):
             sentence_to_feedback[len(sentences_list) - 1] = i
     #sentences_list = [sentence for sentences in sentences_list for sentence in sentences]  # Flattern the list
     return sentences_list, sentence_to_feedback
+
+
+def index_df(df):
+    indices = np.arange(len(df))
+    df['ID'] = indices
+    return df
+
+
+def spam_filter(df, colname = 'Translated Reviews'):
+    spams = np.zeros(len(df))
+    for i, row in df.iterrows():
+        feedback = row[colname]
+        too_long = (len(feedback) > 1000) & (len(re.findall(r'[Ff]irefox|browser', feedback)) < 2)
+        emails_match = len(re.findall(r'[\w\.-]+@[\w\.-]+', feedback))
+        too_many_digits = len(re.findall(r'\d+', feedback)) > 30
+        if (too_long + emails_match + too_many_digits > 0):
+            spams[i] =1
+    df['Spam'] = spams
+    df_filtered = df[df['Spam'] == 0]
+    return df_filtered

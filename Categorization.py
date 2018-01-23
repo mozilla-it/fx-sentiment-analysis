@@ -5,15 +5,13 @@ cate_file_path = 'Data/Categorization.csv'
 
 
 def list_to_string(input_list):
-    if isinstance(input_list, list):
-        output_string = ''
-        input_list = list(set(input_list))  # Remove duplicates
-        for i, item in enumerate(input_list):
-            if i > 0:
-                output_string += ', '
-            output_string += item
-    else:
-        output_string = input_list
+    inputs = np.hstack(input_list)
+    # inputs = list(set(inputs))
+    output_string = ''
+    for i, item in enumerate(inputs):
+        if i > 0:
+            output_string += ' || '
+        output_string += item
     return output_string
 
 
@@ -35,17 +33,20 @@ def categorize(df):
     # keywordsFreq_found_list = find_words(df['Noun Phrases'], keywordsFreq)
 
     # Map keywords with the corresponding categories
+    row_id_list = []
     features_found_list = []
     components_found_list = []
-    keywords_found_list = []
     actions_found_list = []
-    print('Start to categorize: ' + str(len(df)) + ' reviews: ')
     for i, row in df.iterrows():
-        if len(keywords_found_text_list[i]) == 0: # No keywords can be identified in the entire text
-            components_found = 'Others'
-            features_found = 'Others'
-            keywords_found = ''
-            actions_found = ''
+        components_found = []
+        components_dict = {}
+        if len(keywords_found_text_list[i]) == 0:  # No keywords can be identified in the entire text
+            component_found = 'Others'
+            components_found = [component_found]
+            components_dict[component_found] = {
+                'Feature': 'Other',
+                'Action': ['']
+            }
         else:
             if len(keywords_found_VP_list[i])  > 0:
                 keywords_found = keywords_found_VP_list[i]
@@ -54,31 +55,42 @@ def categorize(df):
             else:
                 keywords_found = keywords_found_text_list[i]
 
-            components_found = [cateDict.keywords2components[keyword] for keyword in keywords_found.split(', ')]
-            features_found = [cateDict.components2features[cateDict.keywords2components[keyword]] for keyword in keywords_found.split(', ')]
-
-            actions_found = []
             for keyword in keywords_found.split(', '):
                 if len(keywords_found_VP_list[i]) > 0:
-                    action_found = [VP for VP in str(row['Verb Phrases']).split(', ') if word_process(keyword) in phrase_process(VP)]
+                    actions_found = [VP for VP in str(row['Verb Phrases']).split(', ') if
+                                    word_process(keyword) in phrase_process(VP)]
                 else:
-                    action_found = extract_phrases_with_keywords(str(row['Translated Reviews']), keyword)
-                actions_found.append(list_to_string(action_found))
-            components_found = list_to_string(components_found)
-            features_found = list_to_string(features_found)
-            keywords_found = list_to_string(keywords_found)
-            actions_found = list_to_string(actions_found)
-        keywords_found_list.append(keywords_found)
-        features_found_list.append(features_found)
-        components_found_list.append(components_found)
-        actions_found_list.append(actions_found)
-    df['Features'] = features_found_list
-    df['Components'] = components_found_list
-    df['Actions'] = actions_found_list
-    df['Keywords'] = keywords_found_list
-    # df['Keywords_Freq'] = keywordsFreq_found_list
-    df = df.replace(np.nan, '', regex=True)
-    return df
+                    actions_found = extract_phrases_with_keywords(str(row['Translated Reviews']), keyword)
+
+                component_found = cateDict.keywords2components[keyword]
+                if component_found in components_found:
+                    for action in actions_found:
+                        if action not in components_dict[component_found]['Action']:
+                            components_dict[component_found]['Action'].append(action)
+                else:
+                    components_found.append(component_found)
+                    components_dict[component_found] = {
+                        'Feature': cateDict.components2features[component_found],
+                        'Action': actions_found
+                    }
+
+        for component in components_found:
+            row_id_list.append(row['ID'])
+            components_found_list.append(component)
+            features_found_list.append(components_dict[component]['Feature'])
+            actions_found_list.append(components_dict[component]['Action'])
+
+
+    df_categorization = pd.DataFrame(
+        {
+            'ID': row_id_list,
+            'Feature': features_found_list,
+            'Component': components_found_list,
+            'Action': actions_found_list
+        }
+    )
+    df_categorization = df_categorization.replace(np.nan, '', regex=True)
+    return df_categorization
 
 
 class CategorizationDict:
