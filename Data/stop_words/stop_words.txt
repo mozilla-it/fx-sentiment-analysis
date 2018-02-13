@@ -669,3 +669,7 @@ love
 safari
 thank
 user
+yes
+does
+very
+why

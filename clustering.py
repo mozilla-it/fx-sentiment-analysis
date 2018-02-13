@@ -72,9 +72,28 @@ def extract_keywords(texts, top_k=5):
                                              additional_stop_words=pre_defined_keywords_list,
                                              get_counts=True)
     if len(keywords) > 0:
-        return select_keywords(keywords.tolist(), counts.tolist(), texts)
+        keywords_selected = select_keywords(keywords.tolist(), counts.tolist(), texts)
+        keywords_recovered = recover_keywords(keywords_selected, texts)
+        return keywords_recovered
     else:
         return []
+
+
+def recover_keywords(keywords, texts):
+    keywords_recovered = []
+    for keyword in keywords:
+        matched_word = match_words(keyword, texts)
+        if not matched_word == '':
+            keywords_recovered.append(matched_word)
+    return keywords_recovered
+
+
+def match_words(keyword, texts):
+    for text in texts:
+        for word in re.findall(r'\w+', text):
+            if keyword == word_process(word):
+                return word
+    return ''
 
 
 def select_keywords(keywords, counts, texts):
