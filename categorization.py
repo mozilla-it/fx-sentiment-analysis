@@ -16,12 +16,12 @@ def list_to_string(input_list):
 
 
 def categorize(df):
-    cateDict = read_categorization_file(cate_file_path) # Read the content from the categorization file
+    cateDict = read_categorization() # Read the content from the categorization file
     print('Start to categorize: ' + str(len(df)) + ' reviews: ')
 
     #Identify the target phrases
-    df['Verb Phrases'] = extract_phrases(df['Translated Reviews'],'VP')
-    df['Noun Phrases'] = extract_phrases(df['Translated Reviews'],'NP')
+    df['Verb Phrases'] = extract_phrases(df['Translated Reviews'], 'VP')
+    df['Noun Phrases'] = extract_phrases(df['Translated Reviews'], 'NP')
 
     # Identify high frequent keywords in the given text to supplement the specified categories
     # keywordsFreq = compute_keywords_freq(df['Noun Phrases'], k =80)
@@ -102,17 +102,23 @@ class CategorizationDict:
         self.components2features = components2features # Dictionary that maps components to their features
         self.keywords2components = keywords2components # Dictionary that maps keywords to components
 
-def read_categorization_file(cate_file_path):
+
+def read_categorization_file():
+    df_categorizaton = pd.read_csv(cate_file_path)
+
+    # Ensure there are no duplicate in components
+    assert sum(df_categorizaton['Component'].duplicated()) == 0, \
+        "There are duplicated entry in the column Components in the file: %r" % cate_file_path
+    return df_categorizaton
+
+
+def read_categorization():
     """
     Function to read content from the categorization file
     :param cate_file_path: path to the categorization file
     :return: cate: an instance of categorization that stores all the pre-defined content
     """
-    df = pd.read_csv(cate_file_path)
-
-    # Ensure there are no duplicate in components
-    assert sum(df['Component'].duplicated()) == 0, \
-        "There are duplicated entry in the column Components in the file: %r" % cate_file_path
+    df = read_categorization_file()
 
     components = df['Component'].unique()  # Read components
     features = df['Feature'].unique()
@@ -131,6 +137,7 @@ def read_categorization_file(cate_file_path):
             keywords2components[keyword] = component
     cateDict = CategorizationDict(features, components, keywords, components2tiers, components2features, keywords2components)
     return cateDict
+
 
 def extract_phrases_with_keywords(text, keyword):
     """

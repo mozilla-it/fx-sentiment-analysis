@@ -1,5 +1,5 @@
-from Categorization import *
-from Cluster_Summarize import *
+from categorization import *
+from clustering import *
 from support_functions import *
 
 
@@ -26,7 +26,11 @@ def data_processing(col_names, target_folder_path, date_threshold='', version_th
     df.to_csv('temp.csv', index=False)
     """
     df = pd.read_csv('temp.csv')
+    """
     df_categorization = categorize(df)
+    df_categorization.to_csv('temp2.csv')
+    """
+    df_categorization = pd.read_csv('temp2.csv')
     df_categorization = cluster_and_summarize(df, df_categorization)
 
     output_path = target_folder_path + 'output/'
@@ -43,5 +47,7 @@ date_threshold = '2017-11-13'
 version_threshold = 10
 col_names = ['Store','Source','Date','Version','Rating','Original Reviews','Translated Reviews','Sentiment']
 df, df_categorization = data_processing(col_names,target_folder_path,date_threshold,version_threshold)
-
+keywords = df_categorization['Keywords'].tolist()
+for keyword in keywords:
+    print(keyword)
 

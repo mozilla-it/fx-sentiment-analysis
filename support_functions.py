@@ -24,6 +24,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.feature_extraction.text import TfidfVectorizer
 
+stop_words_file_path = 'Data/stop_words/stop_words.txt'
 
 def read_exist_output(file_path):
     xl = pd.ExcelFile(file_path)
@@ -40,6 +41,7 @@ def remove_duplicate(items,print = False):
     if print:
         print(str(len(items) - len(uniqs)) + ' duplicate items have been removed.')
     return uniqs
+
 
 def read_words_in_file(file_path):
     myfile = open(file_path, 'r', encoding = 'utf8')
@@ -247,10 +249,14 @@ def phrase_process(phrase):
         processed_phrase += ' ' + word_process(word)
     return processed_phrase
 
-def get_stop_words(file_path):
+def get_stop_words(file_path, additional_stop_words=[]):
     stop_words = [word_process(word) for word in read_words_in_file(file_path)]
+    if len(additional_stop_words)>0:
+        additional_stop_words_processed = [word_process(word) for word in additional_stop_words]
+    stop_words += additional_stop_words_processed
     stop_words = remove_duplicate(stop_words)
     return stop_words
+
 
 def clean_words(counter, stop_words):
     words = []
@@ -275,21 +281,30 @@ def plot_bar_plots(X, Y,label_x='', label_y='',title=''):
     plt.title(title)
     plt.show()
 
-def compute_keywords_freq(texts, stop_words_file_path = 'Data/stop_words/stop_words.txt', k=50, viz = False):
+
+def compute_keywords_freq(texts, k=50, additional_stop_words=[], get_counts=False):
     """
     Function to compute the term frequency of high frequent terms
     """
-    stop_words = get_stop_words(stop_words_file_path)
+    stop_words = get_stop_words(stop_words_file_path, additional_stop_words)
     counter = Counter()
     for text in texts:
         counter.update([word_process(word)
                         for word in re.findall(r'\w+', text)
                         if word.lower() not in stop_words and len(word) > 2])
-    topk = counter.most_common(k)
-    words = []
-    for i in range(len(topk)):
-        words.append(topk[i][0])
-    return words
+    if get_counts > 0:
+        if len(counter) > 0:
+            words, counts = get_counter_contents(counter, sorted=True)
+            return words[:k], counts[:k]
+        else:
+            return [], []
+    else:
+        topk = counter.most_common(k)
+        words = []
+        for i in range(len(topk)):
+            words.append(topk[i][0])
+        return words
+
 
 def interpret_sentiment(annotations):
     score = annotations.document_sentiment.score 
