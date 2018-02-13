@@ -111,8 +111,7 @@ def select_keywords(keywords, counts, texts):
 
 
 def update_df(df, ID, component, keywords):
-    # existing_keywords = df.query('ID == %s' +  + ' & Component == ' + component)['Keywords'].tolist()
-    existing_keywords = df.loc[(df['ID'] == ID) & (df['Component'] == component)]['Keywords'].tolist()
+    existing_keywords = df.loc[(df['ID'] == ID) & (df['Component'] == component)]['Tags'].tolist()
     if not existing_keywords == ['']:
         keywords += existing_keywords
     if len(keywords) > 1:
@@ -122,19 +121,36 @@ def update_df(df, ID, component, keywords):
             keywords_array += ', ' + keywords[i]
     else:
         keywords_array = keywords[0]
-    df.at[(df['ID'] == ID) & (df['Component'] == component), 'Keywords'] = keywords_array
+    df.at[(df['ID'] == ID) & (df['Component'] == component), 'Tags'] = keywords_array
+
+
+def prepare_text(df, cluster):
+    VP = [df['Verb Phrases'].iloc[i] for i in cluster]
+    NP = [df['Noun Phrases'].iloc[i] for i in cluster]
+    Actions = [df['Actions'].iloc[i] for i in cluster]
+    texts = []
+    for i in range(len(cluster)):
+        text = ''
+        text = text + VP[i] + ', ' if isinstance(VP[i], str) else text
+        text = text + NP[i] + ', ' if isinstance(NP[i], str) else text
+        text = text + Actions[i] + ', ' if isinstance(Actions[i], str) else text
+        if len(text) > 0:
+            texts.append(text)
+    # if len(texts) == 0:
+        # texts = [df['Translated Reviews'].iloc[i] for i in cluster]
+    return texts
 
 
 def cluster_and_summarize(df_feedbacks, df_categorization):
     df_join = df_feedbacks.merge(df_categorization, on='ID')
-    df_categorization['Keywords'] = ""
+    df_categorization['Tags'] = ""
     components = df_join.Component.unique()
     for component in components:
         df_selected = df_join[df_join['Component'] == component]
         clusters = create_cluster(df_selected)
         for cluster in clusters:
             cluster = [cluster] if not (isinstance(cluster, list)) else cluster
-            texts = [df_selected['Translated Reviews'].iloc[i] for i in cluster]
+            texts = prepare_text(df_selected, cluster)
             keywords = extract_keywords(texts)
             if len(keywords) > 0:
                 for i in cluster:

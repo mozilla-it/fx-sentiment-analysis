@@ -47,7 +47,4 @@ date_threshold = '2017-11-13'
 version_threshold = 10
 col_names = ['Store','Source','Date','Version','Rating','Original Reviews','Translated Reviews','Sentiment']
 df, df_categorization = data_processing(col_names,target_folder_path,date_threshold,version_threshold)
-keywords = df_categorization['Keywords'].tolist()
-for keyword in keywords:
-    print(keyword)
 

@@ -51,6 +51,12 @@ Reformat the outputs to remove the quotation marks around the outputs in compone
 
 <br>
 
+## Feb 12
+[x] Extract keywords for each clusters
+- Select keywords from VP, NP, and Actions
+- Skip stop words and keywords
+- Recover from stemmed words
+
 ## Questions
 - Shall we set up categories for: 
     - Menu
