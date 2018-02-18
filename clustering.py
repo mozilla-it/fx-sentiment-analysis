@@ -61,9 +61,7 @@ def extract_keywords(texts, top_k=5):
 
     if len(texts) < 5:
         top_k = 1
-    keywords, counts = compute_keywords_freq(texts, k=top_k,
-                                             additional_stop_words=pre_defined_keywords_list,
-                                             get_counts=True)
+    keywords, counts = compute_keywords_freq(texts, additional_stop_words=pre_defined_keywords_list)
     if len(keywords) > 0:
         keywords_selected = select_keywords(keywords.tolist(), counts.tolist(), texts)
         keywords_recovered = recover_keywords(keywords_selected, texts)
