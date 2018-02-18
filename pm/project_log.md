@@ -57,6 +57,21 @@ Reformat the outputs to remove the quotation marks around the outputs in compone
 - Skip stop words and keywords
 - Recover from stemmed words
 
+<br>
+
+## Feb 18
+[x] Generate synonyms and keywords for Components: 
+- Goal: the user only need to give in a list of Components, and the system can automatically generate the relevant keywords
+- Approach: 
+    - Use WorkNet to find synonyms: accurate but does not help in finding non-synonyms but relevant words
+        - Example: find `spotlight` for `highlight`, `TV` for `video`, `universal resource locator` for `URL`
+        - Filter out the synonyms whose similiarity score is below 0.9
+    - Find all the high frequent words from the original translated feedbacks, and match them with the component based on semantic similarity
+        - Does not help, thus abandoned 
+    - Cut terminality: cut `History/cookies/cache` into `history`, `cookies`, and `cache` and find synonyms individually
+    
+<br>
+
 ## Questions
 - Shall we set up categories for: 
     - Menu

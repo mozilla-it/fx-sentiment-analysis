@@ -1,5 +1,5 @@
 from support_functions import *
-from categorization import read_categorization_file
+from read_categorization_input import get_categorization_input
 
 def merge_overlapped_lists(l):
     out = []
@@ -55,17 +55,10 @@ def create_cluster(df, thresh = 0.3):
     return joint_clusters
 
 
-def read_pre_defined_keywords_list():
-    df_categorization_file = read_categorization_file()
-    pre_defined_keywords_list = []
-    for i, row in df_categorization_file.iterrows():
-        for keyword in row['Keywords'].split(', '):
-            pre_defined_keywords_list.append(keyword)
-    return pre_defined_keywords_list
-
-
 def extract_keywords(texts, top_k=5):
-    pre_defined_keywords_list = read_pre_defined_keywords_list()
+    categorization_Dict = get_categorization_input()
+    pre_defined_keywords_list = categorization_Dict.keywords
+
     if len(texts) < 5:
         top_k = 1
     keywords, counts = compute_keywords_freq(texts, k=top_k,
@@ -157,7 +150,3 @@ def cluster_and_summarize(df_feedbacks, df_categorization):
                     ID = df_selected['ID'].iloc[i]
                     update_df(df_categorization, ID, component, keywords)
     return df_categorization
-
-
-
-

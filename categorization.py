@@ -1,7 +1,5 @@
 from support_functions import *
-
-global cate_file_path
-cate_file_path = 'Data/Categorization.csv'
+from read_categorization_input import get_categorization_input
 
 
 def list_to_string(input_list):
@@ -16,15 +14,12 @@ def list_to_string(input_list):
 
 
 def categorize(df):
-    cateDict = read_categorization() # Read the content from the categorization file
+    cateDict = get_categorization_input() # Read the content from the categorization file
     print('Start to categorize: ' + str(len(df)) + ' reviews: ')
 
     #Identify the target phrases
     df['Verb Phrases'] = extract_phrases(df['Translated Reviews'], 'VP')
     df['Noun Phrases'] = extract_phrases(df['Translated Reviews'], 'NP')
-
-    # Identify high frequent keywords in the given text to supplement the specified categories
-    # keywordsFreq = compute_keywords_freq(df['Noun Phrases'], k =80)
 
     # Find the pre-defined keywords and high frequency keywords in the texts
     keywords_found_VP_list = find_words(df['Verb Phrases'], cateDict.keywords)
@@ -91,52 +86,6 @@ def categorize(df):
     )
     df_categorization = df_categorization.replace(np.nan, '', regex=True)
     return df_categorization
-
-
-class CategorizationDict:
-    def __init__(self, features, components, keywords, components2tiers, components2features, keywords2components):
-        self.features = features  # Dictionary that maps components to their features
-        self.components = components
-        self.keywords = keywords  # List of Keywords
-        self.components2tiers = components2tiers  # Dictionary that maps components to their tiers
-        self.components2features = components2features # Dictionary that maps components to their features
-        self.keywords2components = keywords2components # Dictionary that maps keywords to components
-
-
-def read_categorization_file():
-    df_categorizaton = pd.read_csv(cate_file_path)
-
-    # Ensure there are no duplicate in components
-    assert sum(df_categorizaton['Component'].duplicated()) == 0, \
-        "There are duplicated entry in the column Components in the file: %r" % cate_file_path
-    return df_categorizaton
-
-
-def read_categorization():
-    """
-    Function to read content from the categorization file
-    :param cate_file_path: path to the categorization file
-    :return: cate: an instance of categorization that stores all the pre-defined content
-    """
-    df = read_categorization_file()
-
-    components = df['Component'].unique()  # Read components
-    features = df['Feature'].unique()
-
-    keywords = []
-    components2tiers = {}
-    components2features = {}
-    keywords2components = {}
-
-    for i, row in df.iterrows():
-        component = row['Component']
-        components2tiers[component] = row['Tier']
-        components2features[component] = row['Feature']
-        for keyword in row['Keywords'].split(', '):
-            keywords.append(keyword)
-            keywords2components[keyword] = component
-    cateDict = CategorizationDict(features, components, keywords, components2tiers, components2features, keywords2components)
-    return cateDict
 
 
 def extract_phrases_with_keywords(text, keyword):

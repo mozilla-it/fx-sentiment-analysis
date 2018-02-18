@@ -22,16 +22,19 @@ import nltk
 from nltk.tag import PerceptronTagger
 import seaborn as sns
 import matplotlib.pyplot as plt
+import scipy.stats as ss
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 stop_words_file_path = 'Data/stop_words/stop_words.txt'
+
 
 def read_exist_output(file_path):
     xl = pd.ExcelFile(file_path)
     df = xl.parse(xl.sheet_names[0]).fillna('')
     return df
 
-def remove_duplicate(items,print = False):
+
+def remove_duplicate(items, print=False):
     dups = set()
     uniqs = []
     for item in items:
@@ -44,17 +47,19 @@ def remove_duplicate(items,print = False):
 
 
 def read_words_in_file(file_path):
-    myfile = open(file_path, 'r', encoding = 'utf8')
+    myfile = open(file_path, 'r', encoding='utf8')
     words = re.findall(r'\w+', myfile.read())
     return words
 
+
 def write_to_file(words, file_path):
-    myfile = open(stop_word_file, "w")
-    for stop_word in stop_words:
+    myfile = open(file_path, "w")
+    for stop_word in words:
         myfile.write("%s\n" % stop_word)
     myfile.close()
 
-def read_all_data(col_names,target_folder_path):
+
+def read_all_data(col_names, target_folder_path):
     """
     Function to read through all the datasets in the target folder
     todo: add support to the senario where there are multiple Appbot/SurveyGizmo files in the folder
@@ -64,24 +69,26 @@ def read_all_data(col_names,target_folder_path):
     file_paths = glob.glob(target_folder_path + '*')
     for file_path in file_paths:
         # We need to ignore the previously generated output file, which contains 'py' in the end of filename
-        if file_path.split('.')[-2][-2:] == 'py': # All of the code-generated file contains 'py' in the end of filename
-            os.remove(file_path) # Remove it - we will create a new one
+        if file_path.split('.')[-2][-2:] == 'py':  # All of the code-generated file contains 'py' in the end of filename
+            os.remove(file_path)  # Remove it - we will create a new one
         else:
             file_format = file_path.split('.')[-1]
             if file_format == 'xlsx':
                 xl = pd.ExcelFile(file_path)
                 SurveyGizmo_df = xl.parse(xl.sheet_names[0]).fillna('')
-                SurveyGizmo_Processed = process_surveygizmo_df(SurveyGizmo_df,col_names)
-                df = pd.concat([df,SurveyGizmo_Processed]) # Merged the dataframes
+                SurveyGizmo_Processed = process_surveygizmo_df(SurveyGizmo_df, col_names)
+                df = pd.concat([df, SurveyGizmo_Processed])  # Merged the dataframes
             else:
                 Appbot_df = pd.read_csv(file_path).fillna('')
-                Appbot_Processed = process_appbot_df(Appbot_df,col_names)
-                df = pd.concat([df,Appbot_Processed]) # Merged the dataframes
+                Appbot_Processed = process_appbot_df(Appbot_df, col_names)
+                df = pd.concat([df, Appbot_Processed])  # Merged the dataframes
     return df
 
-def create_empty_df(n,col_names):
+
+def create_empty_df(n, col_names):
     df = pd.DataFrame('', index=range(n), columns=col_names)
     return df
+
 
 def extract_version_SG(SG_Col):
     """
@@ -91,76 +98,85 @@ def extract_version_SG(SG_Col):
     """
     version_list = []
     for i in range(len(SG_Col)):
-        string = SG_Col[i] # Extract the string in the current row
-        locator = string.find("FxiOS/") # Locate the target term in each string
-        if locator > 0: # Find the keyword
-            version_code = string.split("FxiOS/",1)[1].split(' ')[0]  # Example: 10.0b6373
-            version = re.findall("^\d+\.\d+\.\d+|^\d+\.\d+", version_code)[0] # Extract the float number in the string with multiple dot
+        string = SG_Col[i]  # Extract the string in the current row
+        locator = string.find("FxiOS/")  # Locate the target term in each string
+        if locator > 0:  # Find the keyword
+            version_code = string.split("FxiOS/", 1)[1].split(' ')[0]  # Example: 10.0b6373
+            version = re.findall("^\d+\.\d+\.\d+|^\d+\.\d+", version_code)[
+                0]  # Extract the float number in the string with multiple dot
             digits = version.split('.')
-            if len(digits)>=2: # 10.1 or 10.0.1
-                version = float(digits[0] + '.' + digits[1]) # Temporary use - just capture the first two digits so that we can return as a number
-            else: 
+            if len(digits) >= 2:  # 10.1 or 10.0.1
+                version = float(digits[0] + '.' + digits[
+                    1])  # Temporary use - just capture the first two digits so that we can return as a number
+            else:
                 version = int(version)
         else:
             version = 0
         version_list.append(version)
-        #print('Origin: ' + string + ', Version: ' + str(version))
+        # print('Origin: ' + string + ', Version: ' + str(version))
     return version_list
 
-def process_appbot_df(Appbot,col_names):
+
+def process_appbot_df(Appbot, col_names):
     """
     Function to Process the Appbot Dataframe
     """
-    Appbot_Processed = create_empty_df(len(Appbot),col_names) # Initialize a new dataframe
-    
-    Appbot_Processed['Store'] =  Appbot['Store']
-    Appbot_Processed['Source'] =  'Appbot'
-    Appbot_Processed['Date'] =  pd.to_datetime(Appbot['Date']).dt.date
-    Appbot_Processed['Version'] =  Appbot['Version']
-    Appbot_Processed['Rating'] =  Appbot['Rating']
-    #Appbot_Processed['Emotion'] =  Appbot['Emotion']
-    Appbot_Processed['Original Reviews'] = Appbot[['Subject','Body']].apply(lambda x : '{}. {}'.format(x[0],x[1]), axis=1)
-    Appbot_Processed['Translated Reviews'] = Appbot[['Translated Subject','Translated Body']].apply(lambda x : '{}. {}'.format(x[0],x[1]), axis=1)
+    Appbot_Processed = create_empty_df(len(Appbot), col_names)  # Initialize a new dataframe
+
+    Appbot_Processed['Store'] = Appbot['Store']
+    Appbot_Processed['Source'] = 'Appbot'
+    Appbot_Processed['Date'] = pd.to_datetime(Appbot['Date']).dt.date
+    Appbot_Processed['Version'] = Appbot['Version']
+    Appbot_Processed['Rating'] = Appbot['Rating']
+    # Appbot_Processed['Emotion'] =  Appbot['Emotion']
+    Appbot_Processed['Original Reviews'] = Appbot[['Subject', 'Body']].apply(lambda x: '{}. {}'.format(x[0], x[1]),
+                                                                             axis=1)
+    Appbot_Processed['Translated Reviews'] = Appbot[['Translated Subject', 'Translated Body']].apply(
+        lambda x: '{}. {}'.format(x[0], x[1]), axis=1)
     print('Finish processing the Appbot Data!\n')
     return Appbot_Processed
 
-def process_surveygizmo_df(SurveyGizmo,col_names):
+
+def process_surveygizmo_df(SurveyGizmo, col_names):
     """
     Function to Process the SurveyGizmo Dataframe
     """
-    SurveyGizmo_Processed = create_empty_df(len(SurveyGizmo),col_names) # Initialize a new dataframe
+    SurveyGizmo_Processed = create_empty_df(len(SurveyGizmo), col_names)  # Initialize a new dataframe
     SurveyGizmo_Processed['Store'] = 'iOS'
     SurveyGizmo_Processed['Source'] = 'SurveyGizmo'
     SurveyGizmo_Processed['Date'] = pd.to_datetime(SurveyGizmo[SurveyGizmo.columns[0]]).dt.date
     SurveyGizmo_Processed['Version'] = extract_version_SG(SurveyGizmo['Extended User Agent'])
-    #SurveyGizmo_Processed['Emotion'] = SurveyGizmo[SurveyGizmo.columns[5]]
-    SurveyGizmo_Processed['Original Reviews'] = SurveyGizmo[[SurveyGizmo.columns[5],SurveyGizmo.columns[6]]].apply(lambda x : '{}{}'.format(x[0],x[1]), axis=1)
+    # SurveyGizmo_Processed['Emotion'] = SurveyGizmo[SurveyGizmo.columns[5]]
+    SurveyGizmo_Processed['Original Reviews'] = SurveyGizmo[[SurveyGizmo.columns[5], SurveyGizmo.columns[6]]].apply(
+        lambda x: '{}{}'.format(x[0], x[1]), axis=1)
     SurveyGizmo_Processed['Translated Reviews'] = ''
 
     print('Finish processing the SurveyGizmo Data!\n')
     return SurveyGizmo_Processed
 
+
 def filter_by_date(df, date_threshold):
     """
     The function remove rows whose date is before the given date threshold
     """
-    date = datetime.strptime(date_threshold,'%Y-%m-%d').date() # Convert the given threshold (in string) to date
-    filtered_id = df['Date'] >= date # Index of the row to drop 
-    print(str(len(df) - sum(filtered_id)) + ' records are before the specified date (' + 
+    date = datetime.strptime(date_threshold, '%Y-%m-%d').date()  # Convert the given threshold (in string) to date
+    filtered_id = df['Date'] >= date  # Index of the row to drop
+    print(str(len(df) - sum(filtered_id)) + ' records are before the specified date (' +
           date.strftime("%B") + ' ' + str(date.day) + ', ' + str(date.year) + '). They will be dropped!\n')
 
     df_filtered = df[filtered_id]
 
     return df_filtered
 
+
 def filter_by_version(df, version_threshold):
     """
     The function remove rows whose date is before the given date threshold
     """
 
-    filtered_id = df['Version'] >= version_threshold # Index of the row to drop 
-    print(str(len(df) - sum(filtered_id)) + ' records are before the specified version (' + 
-          str(version_threshold) +'). They will be dropped!\n')
+    filtered_id = df['Version'] >= version_threshold  # Index of the row to drop
+    print(str(len(df) - sum(filtered_id)) + ' records are before the specified version (' +
+          str(version_threshold) + '). They will be dropped!\n')
 
     df_filtered = df[filtered_id]
 
@@ -188,7 +204,7 @@ def translate_reviews(df):
                         i, translated_review_col_id] = orginal_review  # Copy the original review - do not waste API usage
                 else:  # Otherwise, call Google Cloud API for translation
                     df.iloc[i, translated_review_col_id] = \
-                    translate_client.translate(orginal_review, target_language='en')['translatedText']
+                        translate_client.translate(orginal_review, target_language='en')['translatedText']
             except:
                 df.iloc[i, translated_review_col_id] = 'Error: no language detected!'
         if i % 100 == 0:
@@ -198,7 +214,7 @@ def translate_reviews(df):
     return df
 
 
-def get_counter_contents(counter,sorted = False):
+def get_counter_contents(counter, sorted=False):
     """
     Get the labels and counts in the counters
     """
@@ -209,13 +225,14 @@ def get_counter_contents(counter,sorted = False):
         values = np.array(values)[ind_sorted]
     return labels, values
 
+
 def plot_hists(values):
     """
     Plot the histogram with the given value. Since the histogram is skewed to the right, I also plot a hist at
     the range [0,9] at a detailed look
     """
     plt.figure()
-    fig, axes = plt.subplots(1, 2,figsize=(15,8)) # Create two subplots side by side
+    fig, axes = plt.subplots(1, 2, figsize=(15, 8))  # Create two subplots side by side
 
     # A histogram of the entire frequency dataset
     axes[0].hist(values, bins=50)
@@ -225,18 +242,20 @@ def plot_hists(values):
     axes[0].set_ylabel('# Unique Words')
 
     # A histogram with a narrow range to get a detailed look at the left-most bin
-    axes[1].hist(values, range=(0,10))
+    axes[1].hist(values, range=(0, 10))
     axes[1].set_title('Histogram of the frequency of words with range [0,9]')
     # Set common labels
     axes[1].set_xlabel('Word Frequency')
     axes[1].set_ylabel('# Unique Words')
     plt.show()
 
+
 def word_process(word):
     sbStem = SnowballStemmer("english")
     word_processed = sbStem.stem(word)
     word_processed = word_processed.lower()
     return word_processed
+
 
 def phrase_process(phrase):
     """
@@ -249,11 +268,16 @@ def phrase_process(phrase):
         processed_phrase += ' ' + word_process(word)
     return processed_phrase
 
-def get_stop_words(file_path, additional_stop_words=[]):
-    stop_words = [word_process(word) for word in read_words_in_file(file_path)]
-    if len(additional_stop_words)>0:
+
+def get_stop_words(file_path, process_word=True, additional_stop_words=[]):
+    stop_words = read_words_in_file(stop_words_file_path)
+
+    if len(additional_stop_words) > 0:
         additional_stop_words_processed = [word_process(word) for word in additional_stop_words]
-    stop_words += additional_stop_words_processed
+        stop_words += additional_stop_words_processed
+
+    if process_word:
+        stop_words = [word_process(word) for word in stop_words]
     stop_words = remove_duplicate(stop_words)
     return stop_words
 
@@ -261,28 +285,46 @@ def get_stop_words(file_path, additional_stop_words=[]):
 def clean_words(counter, stop_words):
     words = []
     values = []
-    for i in range(len(counter)-1,-1,-1):
+    for i in range(len(counter) - 1, -1, -1):
         word = counter[i][0]
         if word in stop_words or len(word) == 1 or word.isdigit() == True:
             del counter[i]
         else:
-            words.insert(0,word)
-            values.insert(0,counter[i][1])
+            words.insert(0, word)
+            values.insert(0, counter[i][1])
     return words, values
 
-def plot_bar_plots(X, Y,label_x='', label_y='',title=''):
+
+def plot_bar_plots(X, Y, label_x='', label_y='', title=''):
     fig = plt.figure(figsize=(10, 6))
     width = .35
     indices = np.arange(len(X))
-    plt.bar(indices, Y, width = width)
-    plt.xticks(indices+width/2, X)
+    plt.bar(indices, Y, width=width)
+    plt.xticks(indices + width / 2, X)
     plt.xlabel(label_x)
     plt.ylabel(label_y)
     plt.title(title)
     plt.show()
 
 
-def compute_keywords_freq(texts, k=50, additional_stop_words=[], get_counts=False):
+def select_from_list_a_based_on_list_b(list_a, list_b, min_thresh, k):
+    """
+    A function to select from the list A based on the value from the list B
+    :param list_a: a list of items, like strings
+    :param list_b: a list of int/float
+    :param thresh: minimum threshold
+    :param k: select top k if none of the values meets the threshold
+    :return: a list of items from the list A
+    """
+    list_a_selected = [a for a, b in zip(list_a, list_b) if b >= min_thresh]
+    if len(list_a_selected) >= 0:  # Select based on the threshold
+        return list_a_selected
+    else:  # select the top k
+        ranks = ss.rankdata(list_b)
+        return list_a[ranks <= k]
+
+
+def compute_keywords_freq(texts, additional_stop_words=[], process_word=True):
     """
     Function to compute the term frequency of high frequent terms
     """
@@ -292,23 +334,25 @@ def compute_keywords_freq(texts, k=50, additional_stop_words=[], get_counts=Fals
         counter.update([word_process(word)
                         for word in re.findall(r'\w+', text)
                         if word.lower() not in stop_words and len(word) > 2])
-    if get_counts > 0:
-        if len(counter) > 0:
-            words, counts = get_counter_contents(counter, sorted=True)
-            return words[:k], counts[:k]
-        else:
-            return [], []
+    if len(counter) > 0:
+        words, counts = get_counter_contents(counter, sorted=True)
+        return words, counts
     else:
-        topk = counter.most_common(k)
-        words = []
-        for i in range(len(topk)):
-            words.append(topk[i][0])
-        return words
+        return [], []
+
+
+def select_keywords_on_freq(texts, k=50, min_thresh=0, process_word=True, additional_stop_words=[], get_counts=False):
+    """
+    Function to compute the term frequency of high frequent terms
+    """
+    words, counts = compute_keywords_freq(texts, additional_stop_words=additional_stop_words, process_word=process_word)
+    words_selected = select_from_list_a_based_on_list_b(words, counts, min_thresh=min_thresh, k=50)
+    return words_selected
 
 
 def interpret_sentiment(annotations):
-    score = annotations.document_sentiment.score 
-    magnitude = annotations.document_sentiment.magnitude/max(1,len(annotations.sentences)) # Take the average
+    score = annotations.document_sentiment.score
+    magnitude = annotations.document_sentiment.magnitude / max(1, len(annotations.sentences))  # Take the average
     sent_scores = []
     sent_magnitudes = []
     for index, sentence in enumerate(annotations.sentences):
@@ -316,7 +360,8 @@ def interpret_sentiment(annotations):
         sent_magnitudes.append(sentence.sentiment.magnitude)
     return score, magnitude, sent_scores, sent_magnitudes
 
-def get_sentiment(client,content):
+
+def get_sentiment(client, content):
     document = types.Document(
         content=content,
         type=enums.Document.Type.PLAIN_TEXT)
@@ -324,7 +369,8 @@ def get_sentiment(client,content):
     score, magnitude, sent_socres, sent_magnitudes = interpret_sentiment(annotations)
     return score, magnitude, sent_socres, sent_magnitudes
 
-def sentiment_analysize(texts,client):
+
+def sentiment_analysize(texts, client):
     print('Start Sentiment Analysis: ' + str(len(texts)) + ' reviews: ')
     scores = np.zeros(len(texts))
     magnitudes = np.zeros(len(texts))
@@ -335,16 +381,17 @@ def sentiment_analysize(texts,client):
         if (i % 500 == 0 and i > 0):
             print('500 reviews have been processed, and the programme need to be paused for 60 seconds!')
             time.sleep(60)
-        scores[i], magnitudes[i], sent_scores, sent_magnitudes = get_sentiment(client,review)
+        scores[i], magnitudes[i], sent_scores, sent_magnitudes = get_sentiment(client, review)
         sent_scores_list.append(sent_scores)
         sent_magnitudes_list.append(sent_magnitudes)
-        if i%100 == 0:
-            print(str(i+1) + ' reviews have been processed!')
+        if i % 100 == 0:
+            print(str(i + 1) + ' reviews have been processed!')
     print('All reviews have been processed!')
     return scores, magnitudes, sent_scores_list, sent_magnitudes_list
 
+
 def discretize_sentiment(score, magnitudes):
-    if np.abs(magnitudes) <= 0.25 or np.abs(score)  <= 0.15 :
+    if np.abs(magnitudes) <= 0.25 or np.abs(score) <= 0.15:
         sentiment = 'Neutral'
     elif score > 0:
         sentiment = 'Positive'
@@ -352,14 +399,15 @@ def discretize_sentiment(score, magnitudes):
         sentiment = 'Negative'
     return sentiment
 
+
 def measure_sentiments(df):
     client = language.LanguageServiceClient()
-    scores, magnitudes, sent_scores_list, sent_magnitudes_list = sentiment_analysize(df['Translated Reviews'],client)
-    #df['sentiment_score'] = scores
-    #df['sentiment_magnitude'] = magnitudes
-    #df['score_by_sentence'] = sent_scores_list
-    #df['magnitude_by_sentence'] = sent_magnitudes_list
-    
+    scores, magnitudes, sent_scores_list, sent_magnitudes_list = sentiment_analysize(df['Translated Reviews'], client)
+    # df['sentiment_score'] = scores
+    # df['sentiment_magnitude'] = magnitudes
+    # df['score_by_sentence'] = sent_scores_list
+    # df['magnitude_by_sentence'] = sent_magnitudes_list
+
     sentiments = []
     for i in range(len(df)):
         sentiment = discretize_sentiment(scores[i], magnitudes[i])
@@ -367,12 +415,14 @@ def measure_sentiments(df):
     df['Sentiment'] = sentiments
     return df
 
-def identify_keywords(df,n_top_words=30):
-    allWords, allWordsFreq = compute_keywords_freq(df['Translated Reviews'], viz=False)
+
+def identify_keywords(df, n_top_words=30):
+    allWords, allWordsFreq = select_keywords_on_freq(df['Translated Reviews'])
     topWords = allWords[:n_top_words]
     keywords_list = []
     for review in df['Translated Reviews']:
-        counter = Counter([word_process(word) for word in re.findall(r'\w+', review)]) # count all the words and their frequency in the file
+        counter = Counter([word_process(word) for word in
+                           re.findall(r'\w+', review)])  # count all the words and their frequency in the file
         words = []
         for word in topWords:
             if counter[word] > 0:
@@ -380,6 +430,7 @@ def identify_keywords(df,n_top_words=30):
         keywords_list.append(words)
     df['Keywords'] = keywords_list
     return df
+
 
 def process_words_list(words_list):
     """
@@ -390,25 +441,26 @@ def process_words_list(words_list):
     words_processed_list = []
     words_processed_dict = {}
     for words in words_list:
-        if len(words.split(' '))>1: # Phrases
+        if len(words.split(' ')) > 1:  # Phrases
             word_processed = []
             word_list = re.findall(r'\w+', words)
             for word in word_list:
                 word_processed.append(word_process(word))
             words_processed_list.append(word_processed)
             words_processed_dict[repr(word_processed)] = words
-        else: # Single word
+        else:  # Single word
             words_processed = word_process(words)
             words_processed_list.append(words_processed)
             words_processed_dict[words_processed] = words
-        if '/' in words or '&' in words: # There is a OR condition, record keywords separately
-            word_list = re.split('/| & ',words)
+        if '/' in words or '&' in words:  # There is a OR condition, record keywords separately
+            word_list = re.split('/| & ', words)
             for word in word_list:
                 word_processed = word_process(word)
                 words_processed_list.append(word_processed)
                 words_processed_dict[word_processed] = words
-        
+
     return words_processed_list, words_processed_dict
+
 
 def process_texts(texts):
     """
@@ -424,7 +476,8 @@ def process_texts(texts):
         texts_processed.append(text_processed)
     return texts_processed
 
-def find_word_pair_in_text(text, word1,word2,distance = 5):
+
+def find_word_pair_in_text(text, word1, word2, distance=5):
     """
     The function check if two words are present in the given text within the given distance
     outputs:
@@ -433,27 +486,29 @@ def find_word_pair_in_text(text, word1,word2,distance = 5):
     """
     found = False
     for i in range(len(text)):
-        if text[i] == word1: # Find the first word
-            for j in range(max(i-distance,0),min(i+distance,len(text))): 
-                if text[j] == word2: # Find the second word in the neighbours
+        if text[i] == word1:  # Find the first word
+            for j in range(max(i - distance, 0), min(i + distance, len(text))):
+                if text[j] == word2:  # Find the second word in the neighbours
                     found = True
                     return found
     return found
 
-def find_phrase_in_text(text,phrase):
+
+def find_phrase_in_text(text, phrase):
     """
     Phrase is given in a list of words
     """
     found = False
-    for i in range(len(phrase)-1):
-        for j in range(i+1,len(phrase)):
-            result = find_word_pair_in_text(text, phrase[i],phrase[j])
+    for i in range(len(phrase) - 1):
+        for j in range(i + 1, len(phrase)):
+            result = find_word_pair_in_text(text, phrase[i], phrase[j])
             if result:
                 found = True
                 return found
     return found
 
-def find_words(texts,target_words):
+
+def find_words(texts, target_words):
     """
     Function to find a list of target words in a list of texts
     """
@@ -464,47 +519,50 @@ def find_words(texts,target_words):
     for text in texts_processed:
         words_in_text = []
         for words in words_processed:
-            if isinstance(words, list): # Is a Phrase
-                found = find_phrase_in_text(text,words)
+            if isinstance(words, list):  # Is a Phrase
+                found = find_phrase_in_text(text, words)
                 if found:
                     words_in_text.append(words_processed_dict[repr(words)])
-            else: # Is a single word
+            else:  # Is a single word
                 if words in text:
                     words_output = words_processed_dict[words]
                     if words_output not in words_in_text:
                         words_in_text.append(words_output)
-        words_in_text = str(words_in_text).replace('[','').replace(']','').replace('\'','')
-        words_in_texts.append(words_in_text)  
+        words_in_text = str(words_in_text).replace('[', '').replace(']', '').replace('\'', '')
+        words_in_texts.append(words_in_text)
     return words_in_texts
+
 
 def preprocess_cate(cate_file_path):
     """
     Function to pre-process the categorization data
     """
     cate_file = pd.read_csv(cate_file_path)
-    cate_file = cate_file.iloc[:,0:2] # Only look at the first two columns
-    cate_file = cate_file.dropna(axis=0, how='all') # Drop rows with both columns
-    component_prior = 'Unknown' # Initialize
+    cate_file = cate_file.iloc[:, 0:2]  # Only look at the first two columns
+    cate_file = cate_file.dropna(axis=0, how='all')  # Drop rows with both columns
+    component_prior = 'Unknown'  # Initialize
     for i in range(len(cate_file)):
-        if pd.isnull(cate_file.iloc[i,0]):
-            cate_file.iloc[i,0] = component_prior
+        if pd.isnull(cate_file.iloc[i, 0]):
+            cate_file.iloc[i, 0] = component_prior
         else:
-            component_prior = cate_file.iloc[i,0]
+            component_prior = cate_file.iloc[i, 0]
     cate_file.to_csv(cate_file_path, index=False)
     return cate_file
 
-def freq_count(df,target):
+
+def freq_count(df, target):
     """
     Count the # different items in the input df and return a new df with the freq counts
     """
     counter = Counter()
     for content in df[target]:
         counter.update([word for word in content.split(', ')])
-    labels, values = get_counter_contents(counter,sorted = True)
-    df_output=create_empty_df(len(labels),[target,'# Reviews'])
+    labels, values = get_counter_contents(counter, sorted=True)
+    df_output = create_empty_df(len(labels), [target, '# Reviews'])
     df_output[target] = labels
     df_output['# Reviews'] = values
     return df_output
+
 
 # Noun Phrase Extraction Support Functions
 tagger = PerceptronTagger()
@@ -519,23 +577,26 @@ grammar = r"""
     RP: {<RB|RBR|RBS>}
     VR: {<V> <RP>}
 """
-chunker = nltk.RegexpParser(grammar) # Create phrase tree
+chunker = nltk.RegexpParser(grammar)  # Create phrase tree
 
-def leaves(tree, label_type = 'VP'):
+
+def leaves(tree, label_type='VP'):
     """Finds leaf nodes of target phrases in a chunk tree."""
-    for subtree in tree.subtrees(filter = lambda t: t.label()==label_type):
+    for subtree in tree.subtrees(filter=lambda t: t.label() == label_type):
         yield subtree.leaves()
 
-def get_terms(tree,label_type):
-    for leaf in leaves(tree,label_type):
-        term = [w for w,t in leaf]
+
+def get_terms(tree, label_type):
+    for leaf in leaves(tree, label_type):
+        term = [w for w, t in leaf]
         yield term
-            
+
+
 def flatten(npTokenList):
     """
     Flatten phrase lists to get tokens for analysis
     """
-    finalList =[]
+    finalList = []
     for phrase in npTokenList:
         token = ''
         for word in phrase:
@@ -543,18 +604,20 @@ def flatten(npTokenList):
         finalList.append(token.rstrip())
     return finalList
 
-def get_phrases(review,label_type='VP'):
+
+def get_phrases(review, label_type='VP'):
     """
     This function get the pre-defined phrases from the given reviews
     """
     sentences = split_text(review)
     phrases_lists = []
     for sentence in sentences:
-        words = re.findall(r'\w+', sentence)  
-        if len(words) > 0: # Some sentence may be made up of only '????.' 
-            phrases_lists.append(flatten([word for word in get_terms(chunker.parse(pos_tag(words)),label_type)]))
-    phrases = [phrase for phrase_list in phrases_lists for phrase in phrase_list] # Flattern the list
+        words = re.findall(r'\w+', sentence)
+        if len(words) > 0:  # Some sentence may be made up of only '????.'
+            phrases_lists.append(flatten([word for word in get_terms(chunker.parse(pos_tag(words)), label_type)]))
+    phrases = [phrase for phrase_list in phrases_lists for phrase in phrase_list]  # Flattern the list
     return phrases
+
 
 def split_text(text):
     """
@@ -563,12 +626,14 @@ def split_text(text):
     sentences = re.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', text)
     return sentences
 
+
 def parse_and_analyze(sentence):
     """for experiment use only"""
-    words = re.findall(r'\w+',sentence)
+    words = re.findall(r'\w+', sentence)
     return pos_tag(words)
 
-def extract_phrases(texts,target_phrase_type):
+
+def extract_phrases(texts, target_phrase_type):
     """
     Function to extract phrases of the target type
     :param texts: Group of texts in dataframe
@@ -578,8 +643,8 @@ def extract_phrases(texts,target_phrase_type):
     texts = texts.as_matrix()
     phrases_list = []
     for text in texts:
-        phrases = get_phrases(text,target_phrase_type)
-        phrases = str(phrases).replace('[','').replace(']','').replace('\'','')
+        phrases = get_phrases(text, target_phrase_type)
+        phrases = str(phrases).replace('[', '').replace(']', '').replace('\'', '')
         phrases_list.append(phrases)
     return phrases_list
 
@@ -590,7 +655,7 @@ def vectorize_tfidf(texts):
     return tfidf_encoded
 
 
-def measure_sim_tfidf(texts, viz = False):
+def measure_sim_tfidf(texts, viz=False):
     """
     Function to measure the similarity between texts with TF-IDF
     :param texts: list of texts in arrays
@@ -600,22 +665,24 @@ def measure_sim_tfidf(texts, viz = False):
     tfidf = vectorize_tfidf(texts)
     similarity_matrix = (tfidf * tfidf.T).A
     if viz:
-        plot_heatmap(similarity_matrix, title = 'Heatmap of the Similarity Matrix')
+        plot_heatmap(similarity_matrix, title='Heatmap of the Similarity Matrix')
     return similarity_matrix
 
-def plot_heatmap(data,title = ''):
+
+def plot_heatmap(data, title=''):
     """
     This function plots a heatmap with the input data matrix
     """
-    plt.figure(figsize=(10,5))
+    plt.figure(figsize=(10, 5))
     cmap = sns.diverging_palette(220, 10, as_cmap=True)
-    plt.imshow(data, cmap=cmap, interpolation='nearest') # Create a heatmap
-    plt.colorbar() # Add a Color Bar by the side
+    plt.imshow(data, cmap=cmap, interpolation='nearest')  # Create a heatmap
+    plt.colorbar()  # Add a Color Bar by the side
     if len(title) > 0:
         plt.title(title)
     plt.show()
 
-def cut_feedbacks(feedbacks, length = 2):
+
+def cut_feedbacks(feedbacks, length=2):
     """
     Function to cut long feedbacks into sentences with specified length
     :param feedbacks: feedbacks in dataframe
@@ -628,13 +695,13 @@ def cut_feedbacks(feedbacks, length = 2):
     for i, text in enumerate(feedbacks):
         sentences = split_text(text)
         if len(sentences) > length:
-            for j in range(len(sentences) - (length-1)):
-                sentences_list.append(sentences[j:j+length])
+            for j in range(len(sentences) - (length - 1)):
+                sentences_list.append(sentences[j:j + length])
                 sentence_to_feedback[len(sentences_list) - 1] = i
         else:
             sentences_list.append(sentences)
             sentence_to_feedback[len(sentences_list) - 1] = i
-    #sentences_list = [sentence for sentences in sentences_list for sentence in sentences]  # Flattern the list
+    # sentences_list = [sentence for sentences in sentences_list for sentence in sentences]  # Flattern the list
     return sentences_list, sentence_to_feedback
 
 
@@ -644,7 +711,7 @@ def index_df(df):
     return df
 
 
-def spam_filter(df, colname = 'Translated Reviews'):
+def spam_filter(df, colname='Translated Reviews'):
     spams = np.zeros(len(df))
     for i, row in df.iterrows():
         feedback = row[colname]
@@ -652,7 +719,8 @@ def spam_filter(df, colname = 'Translated Reviews'):
         emails_match = len(re.findall(r'[\w\.-]+@[\w\.-]+', feedback))
         too_many_digits = len(re.findall(r'\d+', feedback)) > 30
         if (too_long + emails_match + too_many_digits > 0):
-            spams[i] =1
+            spams[i] = 1
     df['Spam'] = spams
     df_filtered = df[df['Spam'] == 0]
+
     return df_filtered
