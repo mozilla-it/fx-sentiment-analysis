@@ -1,6 +1,8 @@
 import sqlite3
 from sqlite3 import Error
 import pandas as pd
+import datetime
+
 
 
 def create_connection(db_file):
@@ -18,17 +20,67 @@ def create_connection(db_file):
     return None
 
 
-def create_table(conn, create_table_sql):
-    """ create a table from the create_table_sql statement
-    :param conn: Connection object
-    :param create_table_sql: a CREATE TABLE statement
+def check_tables(conn):
+    """
+    Check if all the tables exist
+    :param conn:
     :return:
     """
-    try:
-        c = conn.cursor()
-        c.execute(create_table_sql)
-    except Error as e:
-        print(e)
+
+    def get_sql_create_reviews_table():
+        sql_create_reviews_table = """ CREATE TABLE IF NOT EXISTS reviews (
+                                                    ID integer PRIMARY KEY,
+                                                    Store text NOT NULL,
+                                                    Source text NOT NULL,
+                                                    Country text,
+                                                    'Review Date' text NOT NULL,
+                                                    Version FLOAT NOT NULL,
+                                                    Rating integer,
+                                                    'Original Reviews' text NOT NULL,
+                                                    'Translated Reviews' text NOT NULL,
+                                                    Sentiment text NOT NULL,
+                                                    Spam integer,
+                                                    'Verb Phrases' text,
+                                                    'Noun Phrases' text,
+                                                    'Clear Filters'
+                                                ); """
+        return sql_create_reviews_table
+
+    def get_sql_create_categorization_table():
+        sql_create_categorization_table = """ CREATE TABLE IF NOT EXISTS categorization (
+                                                    ID integer NOT NULL,
+                                                    Feature text NOT NULL,
+                                                    Component text NOT NULL,
+                                                    theAction text NOT NULL
+                                                ); """
+        return sql_create_categorization_table
+
+    def get_sql_create_tag_table():
+        sql_create_categorization_table = """ CREATE TABLE IF NOT EXISTS tag (
+                                                    ID integer NOT NULL,
+                                                    Component text NOT NULL,
+                                                    Tag NOT NULL
+                                                ); """
+        return sql_create_categorization_table
+
+    def create_table(conn, create_table_sql):
+        """ create a table from the create_table_sql statement
+        :param conn: Connection object
+        :param create_table_sql: a CREATE TABLE statement
+        :return:
+        """
+        try:
+            c = conn.cursor()
+            c.execute(create_table_sql)
+        except Error as e:
+            print(e)
+
+    sql_create_reviews_table = get_sql_create_reviews_table()
+    sql_create_categorization_table = get_sql_create_categorization_table()
+    sql_create_tag_table = get_sql_create_tag_table()
+    create_table(conn, sql_create_reviews_table)
+    create_table(conn, sql_create_categorization_table)
+    create_table(conn, sql_create_tag_table)
 
 
 def insert_review(conn, review):
@@ -41,7 +93,7 @@ def insert_review(conn, review):
 
 
 def insert_categorization(conn, cate):
-    sql = ''' INSERT INTO categorization(ID, theAction, Component, Feature)
+    sql = ''' INSERT INTO categorization(ID, Feature, Component, theAction)
               VALUES(?,?,?,?) '''
     cur = conn.cursor()
     cur.execute(sql, cate)
@@ -56,12 +108,12 @@ def insert_tag(conn, tag):
     return cur.lastrowid
 
 
-def insert_review_list(conn):
-    df_reviews_path = 'Data/test_2/output/feedbacks.csv'
+def insert_review_list(conn, initial_id, file_path):
+    df_reviews_path = file_path + 'feedbacks.csv'
     df_reviews = pd.read_csv(df_reviews_path)
     countries = ['USA', 'Canada', 'China', 'Singapore', 'Mexico']
     for i, row in df_reviews.iterrows():
-        id_value = row['ID']
+        id_value = row['ID'] + initial_id
         store_value = row['Store']
         source_value = row['Source']
         country_value = countries[i % len(countries)]
@@ -81,24 +133,24 @@ def insert_review_list(conn):
         insert_review(conn, review)
 
 
-def insert_categorization_list(conn):
-    df_cate_path = 'Data/test_2/output/categorization.csv'
+def insert_categorization_list(conn, initial_id, file_path):
+    df_cate_path = file_path + 'categorization.csv'
     df_cate = pd.read_csv(df_cate_path)
     for i, row in df_cate.iterrows():
-        action_value = row['Action']
-        component_value = row['Component']
+        id_value = row['ID'] + initial_id
         feature_value = row['Feature']
-        id_value = row['ID']
-        new_cate = (id_value, action_value, component_value, feature_value)
+        component_value = row['Component']
+        action_value = row['Action']
+        new_cate = (id_value, feature_value, component_value, action_value)
         insert_categorization(conn, new_cate)
 
 
-def insert_tag_list(conn):
-    df_tag_path = 'Data/test_2/output/tag.csv'
+def insert_tag_list(conn, initial_id, file_path):
+    df_tag_path = file_path + 'tag.csv'
     df_tag = pd.read_csv(df_tag_path)
     for i, row in df_tag.iterrows():
+        id_value = row['ID'] + initial_id
         component_value = row['Component']
-        id_value = row['ID']
         tag_value = row['Tag']
         new_tag = (id_value, component_value, tag_value)
         insert_tag(conn, new_tag)
@@ -119,45 +171,6 @@ def select_all_from_table(conn, table):
         print(row)
 
 
-def get_sql_create_reviews_table():
-    sql_create_reviews_table = """ CREATE TABLE IF NOT EXISTS reviews (
-                                                ID integer PRIMARY KEY,
-                                                Store text NOT NULL,
-                                                Source text NOT NULL,
-                                                Country text,
-                                                'Review Date' text NOT NULL,
-                                                Version FLOAT NOT NULL,
-                                                Rating integer,
-                                                'Original Reviews' text NOT NULL,
-                                                'Translated Reviews' text NOT NULL,
-                                                Sentiment text NOT NULL,
-                                                Spam integer,
-                                                'Verb Phrases' text,
-                                                'Noun Phrases' text,
-                                                'Clear Filters'
-                                            ); """
-    return sql_create_reviews_table
-
-
-def get_sql_create_categorization_table():
-    sql_create_categorization_table = """ CREATE TABLE IF NOT EXISTS categorization (
-                                                ID integer NOT NULL,
-                                                Feature text NOT NULL,
-                                                Component text NOT NULL,
-                                                theAction text NOT NULL
-                                            ); """
-    return sql_create_categorization_table
-
-
-def get_sql_create_tag_table():
-    sql_create_categorization_table = """ CREATE TABLE IF NOT EXISTS tag (
-                                                ID integer NOT NULL,
-                                                Component text NOT NULL,
-                                                Tag NOT NULL
-                                            ); """
-    return sql_create_categorization_table
-
-
 def delete_all_from_table(conn, table):
     """
     Delete all rows in the tasks table
@@ -168,34 +181,91 @@ def delete_all_from_table(conn, table):
     cur = conn.cursor()
     cur.execute(sql)
 
-def main():
-    db = "reviews.sqlite"
+
+def initiate_id(conn):
+    def get_id_date_part():
+        """
+        :return: an 8-digit number to represent the current date in integer type
+        """
+        now = datetime.datetime.now()
+        year_str = str(now.year)
+        month_str = str(now.month) if len(str(now.month)) > 1 else '0' + str(now.month)
+        day_str = str(now.day) if len(str(now.day)) > 1 else '0' + str(now.day)
+        date = int(year_str + month_str + day_str)
+        return date
+
+    def select_max_id_from_tables(conn):
+        """
+        Select the MAX ID from the existing table
+        :param conn:
+        :return:
+        """
+        max_id = 0
+        sql = ''' SELECT max(ID) from reviews'''
+        cur = conn.cursor()
+        cur.execute(sql)
+        extraction = cur.fetchone()
+        max_result = extraction[0] if extraction else 0
+        max_id = max(max_id, max_result)
+
+        sql = ''' SELECT max(ID) from categorization'''
+        cur = conn.cursor()
+        cur.execute(sql)
+        extraction = cur.fetchone()
+        max_result = extraction[0] if extraction else 0
+        max_id = max(max_id, max_result)
+
+        sql = ''' SELECT max(ID) from tag'''
+        cur = conn.cursor()
+        cur.execute(sql)
+        extraction = cur.fetchone()
+        max_result = extraction[0] if extraction else 0
+        max_id = max(max_id, max_result)
+        return max_id
+
+    current_date = get_id_date_part()  # 8-digit date in integer type
+    initial_id = int(str(current_date) + '000000')  # Default value
+
+    # Check if a set of data has already been imported today
+    max_id = select_max_id_from_tables(conn)  # Get the max of the existing ID
+    if max_id > 0:
+        if int(str(max_id)[:8]) == current_date:
+            initial_id = max_id+1
+
+    return initial_id
+
+
+
+
+
+def update_db(conn, data_file_path):
+    check_tables(conn)
+    initial_id = initiate_id(conn)
+
+    insert_review_list(conn, initial_id, data_file_path)
+    insert_categorization_list(conn, initial_id, data_file_path)
+    insert_tag_list(conn, initial_id, data_file_path)
+
+
+def remove_db(db):
     import os
     os.remove(db)
 
+
+def main(db, files_to_be_read):
     # create a database connection
     conn = create_connection(db)
-    sql_create_reviews_table = get_sql_create_reviews_table()
-    sql_create_categorization_table = get_sql_create_categorization_table()
-    sql_create_tag_table = get_sql_create_tag_table()
 
     if conn is not None:
-        create_table(conn, sql_create_reviews_table)
-        create_table(conn, sql_create_categorization_table)
-        create_table(conn, sql_create_tag_table)
-        delete_all_from_table(conn, 'reviews')
-        delete_all_from_table(conn, 'categorization')
-        delete_all_from_table(conn, 'tag')
-        insert_review_list(conn)
-        insert_categorization_list(conn)
-        insert_tag_list(conn)
+        for file_path in files_to_be_read:
+            update_db(conn, file_path)
     else:
         print('Error! Cannot create the database connection!')
     conn.commit()
     conn.close()
 
 
-def read_data():
+def read_db():
     db = "reviews.sqlite"
 
     # create a database connection
@@ -211,5 +281,9 @@ def read_data():
 
 
 if __name__ == '__main__':
-    # main()
-    read_data()
+    db = "reviews.sqlite"
+    files_to_be_read = ['Data/2017_12_28/output/']
+    remove_db(db)
+    main(db, files_to_be_read)
+    read_db()
+
