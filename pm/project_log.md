@@ -81,6 +81,7 @@ the algorithm cannot deal with synonyms (words that are semantically closed but 
     - Identify and cluster synonyms: find out the words that are semantically similar to each other
     - For each cluster, find out the word with the highest frequency, and add it to the sentences that the other words appear in
         - I did insertion instead of replacement, in order retain the original information
+    - Process the sentences before passing to the clustering model: stem words, lower case, remove stop words 
 
 <br>
 

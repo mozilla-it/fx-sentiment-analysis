@@ -479,21 +479,14 @@ def process_words_list(words_list):
     return words_processed_list, words_processed_dict
 
 
-def process_texts(texts, return_string=False):
+def process_texts(texts):
     """
     Function to process review texts
-    Output is a list of processed reviews
+    Output is a list of processed reviews in strings
     """
     texts_processed = []
     for text in texts:
-        if return_string:
-            text_processed = phrase_process(text)
-        else:
-            text_processed = []
-            words = re.findall(r'\w+', text)
-            for word in words:
-                text_processed.append(word_process(word))
-
+        text_processed = phrase_process(text)
         texts_processed.append(text_processed)
     return texts_processed
 

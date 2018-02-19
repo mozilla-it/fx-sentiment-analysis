@@ -111,15 +111,16 @@ def add_head_word_to_texts(head_word, words, processed_text_list):
     Function to add the head_word to all the texts that contain a word in the given words
     :param head_word: a head word to be inserted into texts (processed)
     :param words: a list of words, including the head word (processed)
-    :param processed_text_list: a list of processed texts (each text is a list)
+    :param processed_text_list: a list of processed texts (each text is a string)
     :return: processed_text_list after insertion
     """
     words.remove(head_word)
     n_texts = len(processed_text_list)
     for word in words:
         for i in range(n_texts):
-            if word in processed_text_list[i]:
-                processed_text_list[i].append(head_word)
+            text_in_list = re.findall(r'\w+', processed_text_list[i])
+            if word in text_in_list:
+                processed_text_list[i] += ' ' + head_word
     return processed_text_list
 
 
@@ -128,19 +129,19 @@ def process_texts_for_clustering(texts):
     Process texts with stemmer, remove stop words, and most importantly,
     find semantically similar words and manipulate their occurrence
     :param texts: a list of texts
-    :return: a list of processed texts
+    :return: a list of processed texts in strings
     """
+    # Process texts
+    texts_processed = process_texts(texts)
+
     # Find cluster of semantically similar words
-    keywords, keywords_counts = select_keywords_on_freq(process_texts(texts, return_string=True),
+    keywords, keywords_counts = select_keywords_on_freq(texts_processed,
                                                         min_thresh=4,
                                                         k=9999,
                                                         get_counts=True)
     keywords_recoverd = recover_words_from_texts(keywords, texts)
     similarity_matrix = compute_similarity_words(keywords_recoverd)
     clusters = cluster_based_on_similarity(similarity_matrix, thresh=0.6)
-
-    # Process texts
-    texts_processed = process_texts(texts)
 
     for cluster in clusters:
         if len(cluster) > 1:
