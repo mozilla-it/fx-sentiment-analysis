@@ -95,6 +95,8 @@ the algorithm cannot deal with synonyms (words that are semantically closed but 
 - Set an upper limit on tags for a cluster to be 5
 
 [x] Create a new dataframe for tag
+- Modify Pandas DataFrame
+- Modify the SQL code
 
 
 

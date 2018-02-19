@@ -41,10 +41,18 @@ def insert_review(conn, review):
 
 
 def insert_categorization(conn, cate):
-    sql = ''' INSERT INTO categorization(ID, theAction, Component, Feature, 'Issue Summary')
-              VALUES(?,?,?,?,?) '''
+    sql = ''' INSERT INTO categorization(ID, theAction, Component, Feature)
+              VALUES(?,?,?,?) '''
     cur = conn.cursor()
     cur.execute(sql, cate)
+    return cur.lastrowid
+
+
+def insert_tag(conn, tag):
+    sql = ''' INSERT INTO tag(ID, Component, Tag)
+              VALUES(?,?,?) '''
+    cur = conn.cursor()
+    cur.execute(sql, tag)
     return cur.lastrowid
 
 
@@ -81,10 +89,19 @@ def insert_categorization_list(conn):
         component_value = row['Component']
         feature_value = row['Feature']
         id_value = row['ID']
-        issue_summary_value = row['Issue Summary']
-        cate = (id_value, action_value, component_value, feature_value, issue_summary_value)
-        insert_categorization(conn, cate)
+        new_cate = (id_value, action_value, component_value, feature_value)
+        insert_categorization(conn, new_cate)
 
+
+def insert_tag_list(conn):
+    df_tag_path = 'Data/test_2/output/tag.csv'
+    df_tag = pd.read_csv(df_tag_path)
+    for i, row in df_tag.iterrows():
+        component_value = row['Component']
+        id_value = row['ID']
+        tag_value = row['Tag']
+        new_tag = (id_value, component_value, tag_value)
+        insert_tag(conn, new_tag)
 
 
 def select_all_from_table(conn, table):
@@ -122,6 +139,25 @@ def get_sql_create_reviews_table():
     return sql_create_reviews_table
 
 
+def get_sql_create_categorization_table():
+    sql_create_categorization_table = """ CREATE TABLE IF NOT EXISTS categorization (
+                                                ID integer NOT NULL,
+                                                Feature text NOT NULL,
+                                                Component text NOT NULL,
+                                                theAction text NOT NULL
+                                            ); """
+    return sql_create_categorization_table
+
+
+def get_sql_create_tag_table():
+    sql_create_categorization_table = """ CREATE TABLE IF NOT EXISTS tag (
+                                                ID integer NOT NULL,
+                                                Component text NOT NULL,
+                                                Tag NOT NULL
+                                            ); """
+    return sql_create_categorization_table
+
+
 def delete_all_from_table(conn, table):
     """
     Delete all rows in the tasks table
@@ -132,18 +168,6 @@ def delete_all_from_table(conn, table):
     cur = conn.cursor()
     cur.execute(sql)
 
-
-def get_sql_create_categorization_table():
-    sql_create_categorization_table = """ CREATE TABLE IF NOT EXISTS categorization (
-                                                ID integer NOT NULL,
-                                                theAction text NOT NULL,
-                                                Component text NOT NULL,
-                                                Feature text NOT NULL,
-                                                'Issue Summary' text NOT NULL
-                                            ); """
-    return sql_create_categorization_table
-
-
 def main():
     db = "reviews.sqlite"
     import os
@@ -153,16 +177,18 @@ def main():
     conn = create_connection(db)
     sql_create_reviews_table = get_sql_create_reviews_table()
     sql_create_categorization_table = get_sql_create_categorization_table()
+    sql_create_tag_table = get_sql_create_tag_table()
 
     if conn is not None:
         create_table(conn, sql_create_reviews_table)
         create_table(conn, sql_create_categorization_table)
+        create_table(conn, sql_create_tag_table)
         delete_all_from_table(conn, 'reviews')
         delete_all_from_table(conn, 'categorization')
+        delete_all_from_table(conn, 'tag')
         insert_review_list(conn)
         insert_categorization_list(conn)
-        select_all_from_table(conn, 'reviews')
-        select_all_from_table(conn, 'categorization')
+        insert_tag_list(conn)
     else:
         print('Error! Cannot create the database connection!')
     conn.commit()
@@ -172,13 +198,13 @@ def main():
 def read_data():
     db = "reviews.sqlite"
 
-
     # create a database connection
     conn = create_connection(db)
 
     if conn is not None:
         select_all_from_table(conn, 'reviews')
         select_all_from_table(conn, 'categorization')
+        select_all_from_table(conn, 'tag')
     else:
         print('Error! Cannot create the database connection!')
     conn.close()
