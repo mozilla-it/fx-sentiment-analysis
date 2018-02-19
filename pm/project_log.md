@@ -68,7 +68,7 @@ Reformat the outputs to remove the quotation marks around the outputs in compone
         - Filter out the synonyms whose similiarity score is below 0.9
     - Find all the high frequent words from the original translated feedbacks, and match them with the component based on semantic similarity
         - Does not help, thus abandoned 
-    - Cut terminality: cut `History/cookies/cache` into `history`, `cookies`, and `cache` and find synonyms individually
+    - Cut terminology: cut `History/cookies/cache` into `history`, `cookies`, and `cache` and find synonyms individually
     
 ## Feb 19
 [x] Improve clustering
@@ -83,29 +83,6 @@ the algorithm cannot deal with synonyms (words that are semantically closed but 
         - I did insertion instead of replacement, in order retain the original information
     - Process the sentences before passing to the clustering model: stem words, lower case, remove stop words 
 
-<br>
-
-## Questions
-- Shall we set up categories for: 
-    - Menu
-    
-## To-Do
-- Build up a feedback database
-- Develop a function to extract high frequent verb and noun associate with a given
-component
-    - Input: a keyword (component)
-    - Output: 
-        - A list of top frequent verb with corresponding percentage
-        - A list of top frequent noun with corresponding percentage
-- Pull out the top 100 frequent keywords in the feedback database
-- Build up a parameterized classifier
-- Cannot extract the Verb Phrase `sort my favorites`
-    - `my` is `PRP$`
-    - `sort the favorites` is extractable
-    - For now, we can still extract the keyword `favorites` and use that as a 
-    clue
-
-<br>
 
 
     
