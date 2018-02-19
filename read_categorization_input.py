@@ -19,6 +19,12 @@ def read_categorization_file(cate_file_path):
     return pd.read_csv(cate_file_path)
 
 
+def update_keyword_to_component(keyword, component, keywords, keywords2components):
+    if len(keyword) > 0:  # prevent empty keyword
+        keywords.append(keyword)
+        keywords2components[keyword] = component
+    return keywords, keywords2components
+
 def get_categorization_input():
     """
     Function to read content from the categorization file
@@ -44,13 +50,17 @@ def get_categorization_input():
         components2features[component] = row['Feature']
         # User-defined keywords
         for keyword in row['Keywords'].split(', '):
-            keywords.append(keyword)
-            keywords2components[keyword] = component
+            keywords, keywords2components = update_keyword_to_component(keyword,
+                                                                        component,
+                                                                        keywords,
+                                                                        keywords2components)
 
         # System-generated keywords: based on synonyms from WordNet
         for keyword in auto_generated_keywords_dict[component]:
-            keywords.append(keyword)
-            keywords2components[keyword] = component
+            keywords, keywords2components = update_keyword_to_component(keyword,
+                                                                        component,
+                                                                        keywords,
+                                                                        keywords2components)
 
         keywords = list(set(keywords))
     cateDict = CategorizationDict(features, components, keywords, components2tiers, components2features, keywords2components)

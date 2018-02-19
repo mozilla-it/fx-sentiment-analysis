@@ -83,6 +83,19 @@ the algorithm cannot deal with synonyms (words that are semantically closed but 
         - I did insertion instead of replacement, in order retain the original information
     - Process the sentences before passing to the clustering model: stem words, lower case, remove stop words 
 
+[x] Modify the decision making on components
+- Use both the Verb Phrases and Noun Phrases for deciding components, as long as one of them is available
+    - Motivation: this can help when there is no indicative verb in the sentence, but some key terms are mentioned
+    - Example: "Runs smoothly and is a lot faster than the safari. Keep it up" 
+        - Clearly this is a feedback that should be categorize for "General Browser", but if we only rely on `Verb Phrase`, 
+        we only get "run smoonthly" and "is a lot". These are not indicative. In this case, the addition of "Noun Phrase" will 
+        help. 
+
+[x] Limit the number of tags:
+- Set an upper limit on tags for a cluster to be 5
+
+[x] Create a new dataframe for tag
+
 
 
     

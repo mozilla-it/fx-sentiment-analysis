@@ -326,7 +326,7 @@ def select_from_list_a_based_on_list_b(list_a, list_b, min_thresh, k):
         top_k_ranks = np.argsort(np.array(list_b))[-k:]
         list_a_selected = [list_a[i] for i in top_k_ranks]
         list_b_selected = [list_b[i] for i in top_k_ranks]
-    return [list_a_selected, list_b_selected]
+    return list_a_selected, list_b_selected
 
 
 def compute_keywords_freq(texts, additional_stop_words=[], process_word=True):
@@ -531,6 +531,7 @@ def find_words(texts, target_words):
 
     words_in_texts = []
     for text in texts_processed:
+        text = [word for word in re.findall(r'\w+', text)]  # convert text in string to a list of words
         words_in_text = []
         for words in words_processed:
             if isinstance(words, list):  # Is a Phrase
@@ -736,7 +737,6 @@ def spam_filter(df, colname='Translated Reviews'):
             spams[i] = 1
     df['Spam'] = spams
     df_filtered = df[df['Spam'] == 0]
-
     return df_filtered
 
 

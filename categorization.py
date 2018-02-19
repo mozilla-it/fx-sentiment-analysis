@@ -43,12 +43,15 @@ def categorize(df):
                 'Action': ['']
             }
         else:
-            if len(keywords_found_VP_list[i])  > 0:
-                keywords_found = keywords_found_VP_list[i]
-            elif len(keywords_found_NP_list[i])  > 0:
-                keywords_found = keywords_found_NP_list[i]
+            keywords_found = ''
+            if (len(keywords_found_VP_list[i]) > 0 or len(keywords_found_NP_list[i]) > 0):
+                keywords_found += keywords_found_VP_list[i]
+                if len(keywords_found_NP_list[i]) > 0 :
+                    if len(keywords_found) > 0:
+                        keywords_found += ', '
+                    keywords_found += keywords_found_NP_list[i]
             else:
-                keywords_found = keywords_found_text_list[i]
+                keywords_found += keywords_found_text_list[i]
 
             for keyword in keywords_found.split(', '):
                 if len(keywords_found_VP_list[i]) > 0:
@@ -103,7 +106,7 @@ def extract_phrases_with_keywords(text, keyword):
     for sentence in sentences:
         words = re.findall(r'\w+', sentence)
         for i, word in enumerate(words):
-            if word_process(word) == word_process(keyword): # Both word and keyword have been processed, so we can compare them directly
+            if word_process(word) == word_process(keyword):  # Both word and keyword have been processed, so we can compare them directly
                 start = sentence.index(words[max(0,i-2)])
                 end = sentence.index(word) + len(word)
                 phrases.append(sentence[start:end])

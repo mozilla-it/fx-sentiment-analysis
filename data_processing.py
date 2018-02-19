@@ -26,18 +26,17 @@ def data_processing(col_names, target_folder_path, date_threshold='', version_th
     df.to_csv('temp.csv', index=False)
     """
     df = pd.read_csv('temp.csv')
-    """
     df_categorization = categorize(df)
-    df_categorization.to_csv('temp2.csv')
-    """
-    df_categorization = pd.read_csv('temp2.csv')
-    df_categorization = cluster_and_summarize(df, df_categorization)
+    # df_categorization.to_csv('temp2.csv')
+    # df_categorization = pd.read_csv('temp2.csv')
+    df_categorization, df_tag = cluster_and_summarize(df, df_categorization)
 
     output_path = target_folder_path + 'output/'
     if not os.path.exists(output_path):
         os.makedirs(output_path)
     df.to_csv(output_path + 'feedbacks.csv', index=False)
     df_categorization.to_csv(output_path + 'categorization.csv', index=False)
+    df_tag.to_csv(output_path + 'tag.csv', index=False)
     print('Output has been saved to: ' + output_path)
     return df, df_categorization
 

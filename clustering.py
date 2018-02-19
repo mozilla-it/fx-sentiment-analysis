@@ -24,7 +24,7 @@ def create_cluster(df, thresh=0.3):
     return cluster_based_on_similarity(similarity_matrix, thresh)
 
 
-def extract_keywords(texts, top_k=5):
+def extract_keywords(texts, top_k=4):
     categorization_Dict = get_categorization_input()
     pre_defined_keywords_list = categorization_Dict.keywords
 
@@ -32,14 +32,14 @@ def extract_keywords(texts, top_k=5):
         top_k = 1
     keywords, counts = compute_keywords_freq(texts, additional_stop_words=pre_defined_keywords_list)
     if len(keywords) > 0:
-        keywords_selected = select_keywords(keywords.tolist(), counts.tolist(), texts)
+        keywords_selected = select_keywords(keywords.tolist(), counts.tolist(), top_k)
         keywords_recovered = recover_words_from_texts(keywords_selected, texts)
         return keywords_recovered
     else:
         return []
 
 
-def select_keywords(keywords, counts, texts):
+def select_keywords(keywords, counts, top_k):
     """
     The function manage the selection of the top keywords from texts
     :param keywords: a list of keywords extracted from texts
@@ -47,24 +47,16 @@ def select_keywords(keywords, counts, texts):
     :param texts: original texts
     :return: selected keywords
     """
-    lower_threshold = len(texts) * 0.8
-    n = np.sum(np.array(counts) > lower_threshold)
-    selection = max(1, n)
-    return keywords[:selection]
+    k = min(len(keywords), top_k)
+    top_k_ranks = np.argsort(np.array(counts))[-k:]
+    keywords_selected = [keywords[i] for i in top_k_ranks]
+    return keywords_selected
 
 
-def update_df(df, ID, component, keywords):
-    existing_keywords = df.loc[(df['ID'] == ID) & (df['Component'] == component)]['Tags'].tolist()
-    if not existing_keywords == ['']:
-        keywords += existing_keywords
-    if len(keywords) > 1:
-        keywords = list(set(keywords))
-        keywords_array = keywords[0]
-        for i in range(1, len(keywords)):
-            keywords_array += ', ' + keywords[i]
-    else:
-        keywords_array = keywords[0]
-    df.at[(df['ID'] == ID) & (df['Component'] == component), 'Tags'] = keywords_array
+def update_df_tag(df, ID, component, tags):
+    for tag in tags:
+        df.loc[len(df)] = [ID, component, tag]
+    return df
 
 
 def prepare_text(df, cluster):
@@ -154,7 +146,7 @@ def process_texts_for_clustering(texts):
 
 def cluster_and_summarize(df_feedbacks, df_categorization):
     df_join = df_feedbacks.merge(df_categorization, on='ID')
-    df_categorization['Tags'] = ""
+    df_tag = pd.DataFrame(columns=['ID', 'Component', 'Tag'])
     components = df_join.Component.unique()
     for component in components:
         df_selected = df_join[df_join['Component'] == component]
@@ -165,5 +157,5 @@ def cluster_and_summarize(df_feedbacks, df_categorization):
             if len(keywords) > 0:
                 for i in cluster:
                     ID = df_selected['ID'].iloc[i]
-                    update_df(df_categorization, ID, component, keywords)
-    return df_categorization
+                    update_df_tag(df_tag, ID, component, keywords)
+    return df_categorization, df_tag
