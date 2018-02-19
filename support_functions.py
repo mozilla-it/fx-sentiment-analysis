@@ -19,6 +19,7 @@ import codecs
 import time
 import re
 import nltk
+from nltk.corpus import wordnet
 from nltk.tag import PerceptronTagger
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -261,20 +262,22 @@ def phrase_process(phrase):
     """
     Process words in a phrase individually
     :param phrase: a phrase with multiple words
-    :return: a phrase of processed words
+    :return: a phrase of processed words (string format)
     """
     processed_phrase = ''
+    stop_words = get_stop_words()
     for word in re.findall(r'\w+', phrase):
-        processed_phrase += ' ' + word_process(word)
+        word_processed = word_process(word)
+        if word_processed not in stop_words:
+            processed_phrase += ' ' + word_process(word)
     return processed_phrase
 
 
-def get_stop_words(file_path, process_word=True, additional_stop_words=[]):
+def get_stop_words(process_word=True, additional_stop_words=[]):
     stop_words = read_words_in_file(stop_words_file_path)
 
     if len(additional_stop_words) > 0:
-        additional_stop_words_processed = [word_process(word) for word in additional_stop_words]
-        stop_words += additional_stop_words_processed
+        stop_words += additional_stop_words
 
     if process_word:
         stop_words = [word_process(word) for word in stop_words]
@@ -317,23 +320,30 @@ def select_from_list_a_based_on_list_b(list_a, list_b, min_thresh, k):
     :return: a list of items from the list A
     """
     list_a_selected = [a for a, b in zip(list_a, list_b) if b >= min_thresh]
-    if len(list_a_selected) >= 0:  # Select based on the threshold
-        return list_a_selected
-    else:  # select the top k
-        ranks = ss.rankdata(list_b)
-        return list_a[ranks <= k]
+    if len(list_a_selected) <= k:
+        list_b_selected = [b for b in list_b if b >= min_thresh]
+    else:
+        top_k_ranks = np.argsort(np.array(list_b))[-k:]
+        list_a_selected = [list_a[i] for i in top_k_ranks]
+        list_b_selected = [list_b[i] for i in top_k_ranks]
+    return [list_a_selected, list_b_selected]
 
 
 def compute_keywords_freq(texts, additional_stop_words=[], process_word=True):
     """
     Function to compute the term frequency of high frequent terms
     """
-    stop_words = get_stop_words(stop_words_file_path, additional_stop_words)
+    stop_words = get_stop_words(process_word=process_word,
+                                additional_stop_words=additional_stop_words)
     counter = Counter()
     for text in texts:
-        counter.update([word_process(word)
-                        for word in re.findall(r'\w+', text)
-                        if word.lower() not in stop_words and len(word) > 2])
+        if process_word:
+            counter.update([word_process(word)
+                            for word in re.findall(r'\w+', text)
+                            if word.lower() not in stop_words and len(word) > 2])
+        else:
+            counter.update([word for word in re.findall(r'\w+', text)
+                            if word.lower() not in stop_words and len(word) > 2])
     if len(counter) > 0:
         words, counts = get_counter_contents(counter, sorted=True)
         return words, counts
@@ -345,9 +355,16 @@ def select_keywords_on_freq(texts, k=50, min_thresh=0, process_word=True, additi
     """
     Function to compute the term frequency of high frequent terms
     """
-    words, counts = compute_keywords_freq(texts, additional_stop_words=additional_stop_words, process_word=process_word)
-    words_selected = select_from_list_a_based_on_list_b(words, counts, min_thresh=min_thresh, k=50)
-    return words_selected
+    words, counts = compute_keywords_freq(texts,
+                                          additional_stop_words=additional_stop_words,
+                                          process_word=process_word)
+    words_selected, counts_selected = select_from_list_a_based_on_list_b(words, counts,
+                                                                         min_thresh=min_thresh,
+                                                                         k=k)
+    if get_counts:
+        return words_selected, counts_selected
+    else:
+        return words_selected
 
 
 def interpret_sentiment(annotations):
@@ -417,7 +434,7 @@ def measure_sentiments(df):
 
 
 def identify_keywords(df, n_top_words=30):
-    allWords, allWordsFreq = select_keywords_on_freq(df['Translated Reviews'])
+    allWords, allWordsFreq = compute_keywords_freq(df['Translated Reviews'])
     topWords = allWords[:n_top_words]
     keywords_list = []
     for review in df['Translated Reviews']:
@@ -457,22 +474,26 @@ def process_words_list(words_list):
             for word in word_list:
                 word_processed = word_process(word)
                 words_processed_list.append(word_processed)
-                words_processed_dict[word_processed] = words
+                words_processed_dict[word_processed] = word
 
     return words_processed_list, words_processed_dict
 
 
-def process_texts(texts):
+def process_texts(texts, return_string=False):
     """
     Function to process review texts
     Output is a list of processed reviews
     """
     texts_processed = []
     for text in texts:
-        text_processed = []
-        words = re.findall(r'\w+', text)
-        for word in words:
-            text_processed.append(word_process(word))
+        if return_string:
+            text_processed = phrase_process(text)
+        else:
+            text_processed = []
+            words = re.findall(r'\w+', text)
+            for word in words:
+                text_processed.append(word_process(word))
+
         texts_processed.append(text_processed)
     return texts_processed
 
@@ -724,3 +745,84 @@ def spam_filter(df, colname='Translated Reviews'):
     df_filtered = df[df['Spam'] == 0]
 
     return df_filtered
+
+
+def cluster_based_on_similarity(similarity_matrix, thresh):
+    """
+    Cluster items based on the mutual similarity
+    :param similarity_matrix: nxn similarity matrix
+    :param thresh: minimum threshold of similarity
+    :return: a list of clusters - each cluster will be in a list, even if there is only one item in the cluster
+    """
+    indice_list = []
+    n = similarity_matrix.shape[0]
+    for index, x in np.ndenumerate(np.triu(similarity_matrix, k=1)):
+        if x >= thresh:
+            indice_list.append(list(index))
+    clusters = merge_overlapped_lists(indice_list)
+    if len(clusters) > 0:
+        remaining = list(set(np.arange(n)) - set(np.hstack(clusters)))
+        joint_clusters = clusters + remaining
+    else:  # No cluster is found
+        joint_clusters = np.arange(n)
+    clusters_final = [[cluster] if not (isinstance(cluster, list)) else cluster for cluster in joint_clusters]
+    return clusters_final
+
+
+def merge_overlapped_lists(l):
+    out = []
+    while len(l) > 0:
+        first, *rest = l
+        first = set(first)
+
+        lf = -1
+        while len(first) > lf:
+            lf = len(first)
+
+            rest2 = []
+            for r in rest:
+                if len(first.intersection(set(r))) > 0:
+                    first |= set(r)
+                else:
+                    rest2.append(r)
+            rest = rest2
+
+        out.append(list(first))
+        l = rest
+    return out
+
+
+def compute_similarity_between_words(word1, word2):
+    """
+    Compute the semantic similarity between a word pair based on WordNet
+    By default, the similarity bewteen 2 words are 0
+    """
+    wordFromList1 = wordnet.synsets(word1)
+    wordFromList2 = wordnet.synsets(word2)
+    if wordFromList1 and wordFromList2:
+        sim = wordFromList1[0].path_similarity(wordFromList2[0])
+        if sim:
+            return sim
+        else:
+            return 0
+    else:
+        return 0
+
+
+def compute_similarity_words(words):
+    """
+    Compute the semantic similarity between word pairs in words
+    :param words: a list of words
+    :return: a nxn squared matrix for similarity
+    """
+    n = len(words)
+    similarity_matrix = np.zeros((n, n))
+    for i in range(n):
+        for j in range(i, n):
+            if i==j:
+                sim = 1
+            else:
+                sim = compute_similarity_between_words(words[i], words[j])
+            similarity_matrix[i, j] = sim
+            similarity_matrix[j, i] = sim
+    return similarity_matrix

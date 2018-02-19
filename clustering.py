@@ -1,28 +1,6 @@
 from support_functions import *
 from read_categorization_input import get_categorization_input
 
-def merge_overlapped_lists(l):
-    out = []
-    while len(l) > 0:
-        first, *rest = l
-        first = set(first)
-
-        lf = -1
-        while len(first) > lf:
-            lf = len(first)
-
-            rest2 = []
-            for r in rest:
-                if len(first.intersection(set(r))) > 0:
-                    first |= set(r)
-                else:
-                    rest2.append(r)
-            rest = rest2
-
-        out.append(list(first))
-        l = rest
-    return out
-
 
 def summarize(text_list):
     if len(text_list) > 0:  #
@@ -39,20 +17,11 @@ def summarize(text_list):
     return summary
 
 
-def create_cluster(df, thresh = 0.3):
+def create_cluster(df, thresh=0.3):
     texts = df['Translated Reviews']
-    similarity_matrix = measure_sim_tfidf(texts, viz=False)
-    indice_list = []
-    for index, x in np.ndenumerate(np.triu(similarity_matrix, k=1)):
-        if x >= thresh:
-            indice_list.append(list(index))
-    clusters = merge_overlapped_lists(indice_list)
-    if len(clusters) > 0:
-        remaining = list(set(np.arange(len(df))) - set(np.hstack(clusters)))
-        joint_clusters = clusters + remaining
-    else:  # No cluster is found
-        joint_clusters = np.arange(len(df))
-    return joint_clusters
+    texts_processed = process_texts_for_clustering(texts)
+    similarity_matrix = measure_sim_tfidf(texts_processed, viz=False)
+    return cluster_based_on_similarity(similarity_matrix, thresh)
 
 
 def extract_keywords(texts, top_k=5):
@@ -64,27 +33,10 @@ def extract_keywords(texts, top_k=5):
     keywords, counts = compute_keywords_freq(texts, additional_stop_words=pre_defined_keywords_list)
     if len(keywords) > 0:
         keywords_selected = select_keywords(keywords.tolist(), counts.tolist(), texts)
-        keywords_recovered = recover_keywords(keywords_selected, texts)
+        keywords_recovered = recover_words_from_texts(keywords_selected, texts)
         return keywords_recovered
     else:
         return []
-
-
-def recover_keywords(keywords, texts):
-    keywords_recovered = []
-    for keyword in keywords:
-        matched_word = match_words(keyword, texts)
-        if not matched_word == '':
-            keywords_recovered.append(matched_word)
-    return keywords_recovered
-
-
-def match_words(keyword, texts):
-    for text in texts:
-        for word in re.findall(r'\w+', text):
-            if keyword == word_process(word):
-                return word
-    return ''
 
 
 def select_keywords(keywords, counts, texts):
@@ -132,6 +84,73 @@ def prepare_text(df, cluster):
     return texts
 
 
+def recover_words_from_texts(keywords, texts):
+    keywords_recoverd = []
+    for keyword in keywords:
+        keywords_recoverd.append(recover_word_from_texts(keyword, texts))
+    return keywords_recoverd
+
+
+def recover_word_from_texts(keyword, texts):
+    word_recovered = keyword
+    words_candidates = []
+    for text in texts:
+        for word in re.findall(r'\w+', text):
+            if keyword == word_process(word):
+                words_candidates.append(word)
+    counter = Counter(words_candidates)
+    if len(counter) > 0:
+        words, counts = get_counter_contents(counter, sorted=True)
+        top_rank = np.argsort(np.array(counts))[-1:][0]
+        word_recovered = words[top_rank]
+    return word_recovered
+
+
+def add_head_word_to_texts(head_word, words, processed_text_list):
+    """
+    Function to add the head_word to all the texts that contain a word in the given words
+    :param head_word: a head word to be inserted into texts (processed)
+    :param words: a list of words, including the head word (processed)
+    :param processed_text_list: a list of processed texts (each text is a list)
+    :return: processed_text_list after insertion
+    """
+    words.remove(head_word)
+    n_texts = len(processed_text_list)
+    for word in words:
+        for i in range(n_texts):
+            if word in processed_text_list[i]:
+                processed_text_list[i].append(head_word)
+    return processed_text_list
+
+
+def process_texts_for_clustering(texts):
+    """
+    Process texts with stemmer, remove stop words, and most importantly,
+    find semantically similar words and manipulate their occurrence
+    :param texts: a list of texts
+    :return: a list of processed texts
+    """
+    # Find cluster of semantically similar words
+    keywords, keywords_counts = select_keywords_on_freq(process_texts(texts, return_string=True),
+                                                        min_thresh=4,
+                                                        k=9999,
+                                                        get_counts=True)
+    keywords_recoverd = recover_words_from_texts(keywords, texts)
+    similarity_matrix = compute_similarity_words(keywords_recoverd)
+    clusters = cluster_based_on_similarity(similarity_matrix, thresh=0.6)
+
+    # Process texts
+    texts_processed = process_texts(texts)
+
+    for cluster in clusters:
+        if len(cluster) > 1:
+            words = [keywords[i] for i in cluster]
+            words_counts = [keywords_counts[i] for i in cluster]
+            head_word = words[np.argmax(words_counts)]  # Word with the most counts
+            texts_processed = add_head_word_to_texts(head_word, words, texts_processed)
+    return texts_processed
+
+
 def cluster_and_summarize(df_feedbacks, df_categorization):
     df_join = df_feedbacks.merge(df_categorization, on='ID')
     df_categorization['Tags'] = ""
@@ -140,7 +159,6 @@ def cluster_and_summarize(df_feedbacks, df_categorization):
         df_selected = df_join[df_join['Component'] == component]
         clusters = create_cluster(df_selected)
         for cluster in clusters:
-            cluster = [cluster] if not (isinstance(cluster, list)) else cluster
             texts = prepare_text(df_selected, cluster)
             keywords = extract_keywords(texts)
             if len(keywords) > 0:

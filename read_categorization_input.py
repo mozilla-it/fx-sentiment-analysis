@@ -1,6 +1,5 @@
 # First, you're going to need to import wordnet:
 from support_functions import *
-from nltk.corpus import wordnet
 
 
 # global cate_file_path
@@ -70,26 +69,22 @@ def get_synonyms(word):
     return synonyms
 
 
-def select_most_similar_words(keyword, synonyms, thresh=0.9, n=1):
+def select_most_similar_words(keyword, synonyms, thresh=0.75, n=3):
     if len(synonyms) <= n:
         return synonyms
+
+    if keyword in synonyms:
+        synonyms.remove(keyword)
 
     similarity_list = []
     for i, word in enumerate(synonyms):
-        wordFromList1 = wordnet.synsets(keyword)
-        wordFromList2 = wordnet.synsets(word)
-        if wordFromList1 and wordFromList2:
-            sim = wordFromList1[0].wup_similarity(wordFromList2[0])
-            if sim:  # avoid null value
-                similarity_list.append(sim)
-            else:
-                synonyms.remove(word)
-        else:
-            synonyms.remove(word)
+        sim = compute_similarity_between_words(keyword, word)
+        similarity_list.append(sim)
     if len(synonyms) <= n:
         return synonyms
-
-    return select_from_list_a_based_on_list_b(synonyms, similarity_list, min_thresh=thresh, k=n)
+    synonyms_selected, sim_selected = select_from_list_a_based_on_list_b(synonyms, similarity_list,
+                                                                         min_thresh=thresh, k=n)
+    return synonyms_selected
 
 
 def get_keywords_for_component(component):
@@ -119,3 +114,8 @@ def get_keywords_for_components(components):
     for i, component in enumerate(components):
         keywords_dict[component] = keywords_list[i]
     return keywords_dict
+
+
+df = read_categorization_file(cate_file_path)
+components = df['Component'].unique()  # Read components
+auto_generated_keywords_dict = get_keywords_for_components(components)

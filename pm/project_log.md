@@ -63,13 +63,25 @@ Reformat the outputs to remove the quotation marks around the outputs in compone
 [x] Generate synonyms and keywords for Components: 
 - Goal: the user only need to give in a list of Components, and the system can automatically generate the relevant keywords
 - Approach: 
-    - Use WorkNet to find synonyms: accurate but does not help in finding non-synonyms but relevant words
+    - Use WordNet to find synonyms: accurate but does not help in finding non-synonyms but relevant words
         - Example: find `spotlight` for `highlight`, `TV` for `video`, `universal resource locator` for `URL`
         - Filter out the synonyms whose similiarity score is below 0.9
     - Find all the high frequent words from the original translated feedbacks, and match them with the component based on semantic similarity
         - Does not help, thus abandoned 
     - Cut terminality: cut `History/cookies/cache` into `history`, `cookies`, and `cache` and find synonyms individually
     
+## Feb 19
+[x] Improve clustering
+- Problem: currently the clustering method can effectively cluster the sentences with the same set of words. However, 
+the algorithm cannot deal with synonyms (words that are semantically closed but in different forms). 
+- Approach:
+    - Word selection: Find all the high-frequent words among all the feedback texts. 
+    (Words from the same origin but presented in the different tenses/plural forms are considered as a same word)
+        - For example: `difficult` and `hard`
+    - Identify and cluster synonyms: find out the words that are semantically similar to each other
+    - For each cluster, find out the word with the highest frequency, and add it to the sentences that the other words appear in
+        - I did insertion instead of replacement, in order retain the original information
+
 <br>
 
 ## Questions
