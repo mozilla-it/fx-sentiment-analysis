@@ -83,6 +83,7 @@ def read_all_data(col_names, target_folder_path):
                 Appbot_df = pd.read_csv(file_path).fillna('')
                 Appbot_Processed = process_appbot_df(Appbot_df, col_names)
                 df = pd.concat([df, Appbot_Processed])  # Merged the dataframes
+
     return df
 
 
@@ -118,6 +119,15 @@ def extract_version_SG(SG_Col):
     return version_list
 
 
+def process_country(Countries):
+    """
+    Process the country column in the two datasets
+    :param Countries: a column of country value
+    :return: cleaned country values
+    """
+    Countries.replace(to_replace=dict(USA='United States'), inplace=True)
+    return Countries
+
 def process_appbot_df(Appbot, col_names):
     """
     Function to Process the Appbot Dataframe
@@ -134,6 +144,7 @@ def process_appbot_df(Appbot, col_names):
                                                                              axis=1)
     Appbot_Processed['Translated Reviews'] = Appbot[['Translated Subject', 'Translated Body']].apply(
         lambda x: '{}. {}'.format(x[0], x[1]), axis=1)
+    Appbot_Processed['Country'] = process_country(Appbot['Country'])
     print('Finish processing the Appbot Data!\n')
     return Appbot_Processed
 
@@ -148,10 +159,10 @@ def process_surveygizmo_df(SurveyGizmo, col_names):
     SurveyGizmo_Processed['Date'] = pd.to_datetime(SurveyGizmo[SurveyGizmo.columns[0]]).dt.date
     SurveyGizmo_Processed['Version'] = extract_version_SG(SurveyGizmo['Extended User Agent'])
     # SurveyGizmo_Processed['Emotion'] = SurveyGizmo[SurveyGizmo.columns[5]]
-    SurveyGizmo_Processed['Original Reviews'] = SurveyGizmo[[SurveyGizmo.columns[5], SurveyGizmo.columns[6]]].apply(
+    SurveyGizmo_Processed['Original Reviews'] = SurveyGizmo[[SurveyGizmo.columns[6], SurveyGizmo.columns[7]]].apply(
         lambda x: '{}{}'.format(x[0], x[1]), axis=1)
     SurveyGizmo_Processed['Translated Reviews'] = ''
-
+    SurveyGizmo_Processed['Country'] = process_country(SurveyGizmo['Country'])
     print('Finish processing the SurveyGizmo Data!\n')
     return SurveyGizmo_Processed
 

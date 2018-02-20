@@ -111,12 +111,11 @@ def insert_tag(conn, tag):
 def insert_review_list(conn, initial_id, file_path):
     df_reviews_path = file_path + 'feedbacks.csv'
     df_reviews = pd.read_csv(df_reviews_path)
-    countries = ['USA', 'Canada', 'China', 'Singapore', 'Mexico']
     for i, row in df_reviews.iterrows():
         id_value = row['ID'] + initial_id
         store_value = row['Store']
         source_value = row['Source']
-        country_value = countries[i % len(countries)]
+        country_value = row['Country']
         date_value = row['Date']
         version_value = row['Version']
         rating_value = row['Rating']
@@ -140,7 +139,7 @@ def insert_categorization_list(conn, initial_id, file_path):
         id_value = row['ID'] + initial_id
         feature_value = row['Feature']
         component_value = row['Component']
-        action_value = row['Action']
+        action_value = row['Actions']
         new_cate = (id_value, feature_value, component_value, action_value)
         insert_categorization(conn, new_cate)
 
@@ -204,22 +203,22 @@ def initiate_id(conn):
         sql = ''' SELECT max(ID) from reviews'''
         cur = conn.cursor()
         cur.execute(sql)
-        extraction = cur.fetchone()
-        max_result = extraction[0] if extraction else 0
+        extraction = cur.fetchone()[0]
+        max_result = extraction if extraction else 0
         max_id = max(max_id, max_result)
 
         sql = ''' SELECT max(ID) from categorization'''
         cur = conn.cursor()
         cur.execute(sql)
-        extraction = cur.fetchone()
-        max_result = extraction[0] if extraction else 0
+        extraction = cur.fetchone()[0]
+        max_result = extraction if extraction else 0
         max_id = max(max_id, max_result)
 
         sql = ''' SELECT max(ID) from tag'''
         cur = conn.cursor()
         cur.execute(sql)
-        extraction = cur.fetchone()
-        max_result = extraction[0] if extraction else 0
+        extraction = cur.fetchone()[0]
+        max_result = extraction if extraction else 0
         max_id = max(max_id, max_result)
         return max_id
 
@@ -282,8 +281,8 @@ def read_db():
 
 if __name__ == '__main__':
     db = "reviews.sqlite"
-    files_to_be_read = ['Data/2017_12_28/output/']
-    remove_db(db)
+    files_to_be_read = ['Data/2018_02_15/output/']
+    # remove_db(db)
     main(db, files_to_be_read)
     read_db()
 
