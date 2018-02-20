@@ -13,8 +13,8 @@ def data_processing(col_names, target_folder_path, date_threshold='', version_th
     :param save_output: trigger to save the output; True by default
     :return:
     """
-    """
     df = read_all_data(col_names, target_folder_path)
+    df.to_csv('temp.csv', index=False)
     if len(date_threshold) > 0:
         df = filter_by_date(df, date_threshold)  # Remove rows whose date is before the given date thershold
     if version_threshold > 0:
@@ -22,12 +22,11 @@ def data_processing(col_names, target_folder_path, date_threshold='', version_th
     df = spam_filter(df)
     df = translate_reviews(df)  # Translate non-English reviews
     df = measure_sentiments(df)  # Sentiment Analysis
-    df['ID'] = np.arange(len(df))
+    df['ID'] = np.arange(len(df))  # Add ID Column
     df.to_csv('temp.csv', index=False)
-    """
     df = pd.read_csv('temp.csv')
     df_categorization = categorize(df)
-    # df_categorization.to_csv('temp2.csv')
+    df_categorization.to_csv('temp2.csv')
     # df_categorization = pd.read_csv('temp2.csv')
     df_categorization, df_tag = cluster_and_summarize(df, df_categorization)
 
@@ -41,8 +40,8 @@ def data_processing(col_names, target_folder_path, date_threshold='', version_th
     return df, df_categorization
 
 
-target_folder_path = 'Data/2017_12_28/'
-date_threshold = '2017-11-13'
+target_folder_path = 'Data/2018_02_15/'
+date_threshold = '2018-01-01'
 version_threshold = 10
 col_names = ['Store','Source','Date','Version','Rating','Original Reviews','Translated Reviews','Sentiment']
 df, df_categorization = data_processing(col_names,target_folder_path,date_threshold,version_threshold)

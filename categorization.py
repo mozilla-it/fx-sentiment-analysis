@@ -84,7 +84,7 @@ def categorize(df):
             'ID': row_id_list,
             'Feature': features_found_list,
             'Component': components_found_list,
-            'Action': actions_found_list
+            'Actions': actions_found_list
         }
     )
     df_categorization = df_categorization.replace(np.nan, '', regex=True)

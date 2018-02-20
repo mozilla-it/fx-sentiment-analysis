@@ -92,12 +92,18 @@ the algorithm cannot deal with synonyms (words that are semantically closed but 
         help. 
 
 [x] Limit the number of tags:
-- Set an upper limit on tags for a cluster to be 5
+- Set an upper limit on tags for a cluster based on the cluster size
 
 [x] Create a new dataframe for tag
 - Modify Pandas DataFrame
 - Modify the SQL code
+- Now we have 3 tables: "reviews" joins with "categorization" on `ID`, and joins with "tag" on `ID` and `Component`
 
-
-
+[x] Aggregation in the sqlite db
+- Users can upload multiple datasets in one day
+- ID will be determined by the date of uploading and existing data in the DB
+    - 14 digits: 8 digit for date and 6 digit for feedback counts
     
+[x] Add Country Column
+- All countries except US are fine. The value in SurveyGizmo for US is `United States`, while the value in Appbot is `USA`, so I changed
+Appbot data to `United States` for consistency
