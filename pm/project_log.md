@@ -89,7 +89,9 @@ the algorithm cannot deal with synonyms (words that are semantically closed but 
     - Example: "Runs smoothly and is a lot faster than the safari. Keep it up" 
         - Clearly this is a feedback that should be categorize for "General Browser", but if we only rely on `Verb Phrase`, 
         we only get "run smoonthly" and "is a lot". These are not indicative. In this case, the addition of "Noun Phrase" will 
-        help. 
+        help.
+- Do not categorize into "Firefox Browswer" unless no other components are identified
+- Use automatic keywords generation to replace most of the pre-defined keywords
 
 [x] Limit the number of tags:
 - Set an upper limit on tags for a cluster based on the cluster size

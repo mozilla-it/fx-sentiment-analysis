@@ -49,11 +49,12 @@ def get_categorization_input():
         components2tiers[component] = row['Tier']
         components2features[component] = row['Feature']
         # User-defined keywords
-        for keyword in row['Keywords'].split(', '):
-            keywords, keywords2components = update_keyword_to_component(keyword,
-                                                                        component,
-                                                                        keywords,
-                                                                        keywords2components)
+        if not(isNaN(row['Keywords'])):
+            for keyword in row['Keywords'].split(', '):
+                keywords, keywords2components = update_keyword_to_component(keyword,
+                                                                            component,
+                                                                            keywords,
+                                                                            keywords2components)
 
         # System-generated keywords: based on synonyms from WordNet
         for keyword in auto_generated_keywords_dict[component]:
@@ -99,15 +100,48 @@ def select_most_similar_words(keyword, synonyms, thresh=0.75, n=3):
 
 def get_keywords_for_component(component):
     keywords = [component]  # initialize with the input word itself
-    component_word_list_split_1 = component.split('/')
-    for component_word in component_word_list_split_1:
+    component_word_list_split_slash = component.split('/')
+    for component_word in component_word_list_split_slash:
         keywords.append(component_word)
-        component_word_list_split_2 = component_word.split(' ')
-        for word in component_word_list_split_2:
+        component_word_list_split_space = component_word.split(' ')
+        for word in extract_words_from_word_list_split_by_space(component_word_list_split_space):
             keywords.append(word)
             keywords += get_synonyms(word)
     keywords = list(set(keywords))
     return keywords
+
+
+def extract_words_from_word_list_split_by_space(word_list):
+    """
+    For the given phrases, we cannot use each individual word as the keyword; thus, we need to define rules of breaking
+    phrases
+    """
+    words = generate_pairs_of_words(word_list)
+    return words
+
+
+def generate_pairs_of_words(word_list):
+    """
+    Given a list of words, generate all potential combination of words in pairs
+    :param word_list:
+    :return: a list of words in pairs
+    """
+    def pair_words(word_list, i, j, connector):
+        return word_list[i] + connector + word_list[j]
+    pairs = []
+    n = len(word_list)
+    for i in range(n-1):
+        for j in range(i+1, n):
+            pairs.append(pair_words(word_list, i, j, ' '))
+            pairs.append(pair_words(word_list, j, i, ' '))
+            pairs.append(pair_words(word_list, i, j, '-'))
+            pairs.append(pair_words(word_list, j, i, '-'))
+            pairs.append(pair_words(word_list, i, j, '_'))
+            pairs.append(pair_words(word_list, j, i, '_'))
+            pairs.append(pair_words(word_list, i, j, ''))
+            pairs.append(pair_words(word_list, j, i, ''))
+    outputs = list(set(pairs))  # remove duplicates
+    return outputs
 
 
 def get_keywords_for_components(components):

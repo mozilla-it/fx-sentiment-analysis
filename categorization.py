@@ -13,6 +13,17 @@ def list_to_string(input_list):
     return output_string
 
 
+def clean_components(components):
+    """
+    This function defines all the cleaning procedures to components identified
+    :param components: a list of components found in a piece of feedback
+    :return: a list of components after cleaning
+    """
+    if len(components) > 1 and 'Firefox Browser' in components:
+        components.remove('Firefox Browser')
+    return components
+
+
 def categorize(df):
     cateDict = get_categorization_input() # Read the content from the categorization file
     print('Start to categorize: ' + str(len(df)) + ' reviews: ')
@@ -71,7 +82,7 @@ def categorize(df):
                         'Feature': cateDict.components2features[component_found],
                         'Action': actions_found
                     }
-
+        components_found = clean_components(components_found)
         for component in components_found:
             row_id_list.append(row['ID'])
             components_found_list.append(component)

@@ -1,10 +1,6 @@
 from support_functions import *
 
 
-def isNaN(num):
-    return num != num
-
-
 def list_to_array(l):
     output = ''
 

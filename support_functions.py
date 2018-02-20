@@ -25,6 +25,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import scipy.stats as ss
 from sklearn.feature_extraction.text import TfidfVectorizer
+import itertools
 
 stop_words_file_path = 'Data/stop_words/stop_words.txt'
 
@@ -830,3 +831,7 @@ def compute_similarity_words(words):
             similarity_matrix[i, j] = sim
             similarity_matrix[j, i] = sim
     return similarity_matrix
+
+
+def isNaN(num):
+    return num != num
