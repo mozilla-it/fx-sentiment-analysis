@@ -109,3 +109,9 @@ the algorithm cannot deal with synonyms (words that are semantically closed but 
 [x] Add Country Column
 - All countries except US are fine. The value in SurveyGizmo for US is `United States`, while the value in Appbot is `USA`, so I changed
 Appbot data to `United States` for consistency
+
+<br>
+
+## Feb 25
+[x] Modify the keyword extraction for components
+- Find synonyms from user-defined keywords as well

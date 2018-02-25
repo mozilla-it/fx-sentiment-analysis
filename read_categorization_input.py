@@ -37,7 +37,6 @@ def get_categorization_input():
         "There are duplicated entry in the column Components in the file: %r" % cate_file_path
 
     components = df['Component'].unique()  # Read components
-    auto_generated_keywords_dict = get_keywords_for_components(components)
     features = df['Feature'].unique()
 
     keywords = []
@@ -48,16 +47,9 @@ def get_categorization_input():
         component = row['Component']
         components2tiers[component] = row['Tier']
         components2features[component] = row['Feature']
-        # User-defined keywords
-        if not(isNaN(row['Keywords'])):
-            for keyword in row['Keywords'].split(', '):
-                keywords, keywords2components = update_keyword_to_component(keyword,
-                                                                            component,
-                                                                            keywords,
-                                                                            keywords2components)
-
-        # System-generated keywords: based on synonyms from WordNet
-        for keyword in auto_generated_keywords_dict[component]:
+        keywords_of_component = row['Keywords'].split(', ') if not(isNaN(row['Keywords'])) else []
+        keyword_list_from_component = get_keywords_for_component(component, keywords_of_component)
+        for keyword in keyword_list_from_component:
             keywords, keywords2components = update_keyword_to_component(keyword,
                                                                         component,
                                                                         keywords,
@@ -98,17 +90,18 @@ def select_most_similar_words(keyword, synonyms, thresh=0.75, n=3):
     return synonyms_selected
 
 
-def get_keywords_for_component(component):
-    keywords = [component]  # initialize with the input word itself
-    component_word_list_split_slash = component.split('/')
-    for component_word in component_word_list_split_slash:
-        keywords.append(component_word)
-        component_word_list_split_space = component_word.split(' ')
-        for word in extract_words_from_word_list_split_by_space(component_word_list_split_space):
-            keywords.append(word)
-            keywords += get_synonyms(word)
-    keywords = list(set(keywords))
-    return keywords
+def get_keywords_for_component(component, user_defined_keywords):
+    output_keywords = []
+    input_keywords = user_defined_keywords  # initialize with the user defined keywords
+    input_keywords += component.split('/')  # split the component if there are multiple terms involved
+    for input_keyword in input_keywords:
+        output_keywords.append(input_keyword)
+        word_list_split_by_space = input_keyword.split(' ')
+        for word in extract_words_from_word_list_split_by_space(word_list_split_by_space):
+            output_keywords.append(word)
+            output_keywords += get_synonyms(word)
+    output_keywords = list(set(output_keywords))
+    return output_keywords
 
 
 def extract_words_from_word_list_split_by_space(word_list):
@@ -143,23 +136,16 @@ def generate_pairs_of_words(word_list):
     outputs = list(set(pairs))  # remove duplicates
     return outputs
 
-
-def get_keywords_for_components(components):
-    keywords_list = []
-    for component in components:
-        keywords = get_keywords_for_component(component)
-        for keyword in keywords:
-            for i in range(len(keywords_list)):
-                if keyword in keywords_list[i]:
-                    keywords.remove(keyword)
-                    keywords_list[i].remove(keyword)
-        keywords_list.append(keywords)
-    keywords_dict = {}
-    for i, component in enumerate(components):
-        keywords_dict[component] = keywords_list[i]
-    return keywords_dict
-
-
-df = read_categorization_file(cate_file_path)
-components = df['Component'].unique()  # Read components
-auto_generated_keywords_dict = get_keywords_for_components(components)
+cateDict = get_categorization_input()
+keywords_list = []
+for component in cateDict.components:
+    keywords = []
+    for keyword in cateDict.keywords:
+        if cateDict.keywords2components[keyword] == component:
+            keywords.append(keyword)
+    keywords_list.append(keywords)
+df = pd.DataFrame({
+    'Components': cateDict.components,
+    'Keywords': keywords_list
+})
+df.to_csv('Auto_Generated_keywords.csv')
