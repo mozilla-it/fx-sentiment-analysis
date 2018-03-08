@@ -17,7 +17,7 @@
     <SUITE FILE_PATH="coverage/Mozilla_UofT_Capstone_User_Feedback$experiment2.coverage" NAME="experiment2 Coverage Results" MODIFIED="1512094683928" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Mozilla_UofT_Capstone_User_Feedback$experiment__1_.coverage" NAME="experiment (1) Coverage Results" MODIFIED="1520385025484" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Mozilla_UofT_Capstone_User_Feedback$test.coverage" NAME="test Coverage Results" MODIFIED="1516690130898" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/Mozilla_UofT_Capstone_User_Feedback$data_processing.coverage" NAME="data_processing Coverage Results" MODIFIED="1520488450377" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Mozilla_UofT_Capstone_User_Feedback$data_processing.coverage" NAME="data_processing Coverage Results" MODIFIED="1520513256402" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="FileEditorManager">
     <splitter split-orientation="horizontal" split-proportion="0.8472527">
@@ -26,8 +26,8 @@
           <file leaf-file-name="data_processing.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/data_processing.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="630">
-                  <caret line="42" column="53" lean-forward="false" selection-start-line="42" selection-start-column="53" selection-end-line="42" selection-end-column="53" />
+                <state relative-caret-position="321">
+                  <caret line="43" column="4" lean-forward="false" selection-start-line="43" selection-start-column="4" selection-end-line="43" selection-end-column="4" />
                   <folding>
                     <element signature="e#0#28#0" expanded="true" />
                   </folding>
@@ -35,10 +35,10 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="sqlite.py" pinned="false" current-in-tab="false">
+          <file leaf-file-name="sqlite.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/sqlite.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-2193">
+                <state relative-caret-position="-2469">
                   <caret line="102" column="23" lean-forward="false" selection-start-line="102" selection-start-column="23" selection-end-line="102" selection-end-column="23" />
                   <folding>
                     <marker date="1520488536632" expanded="true" signature="638:1766" ph="CREATE TABLE... IF" />
@@ -55,10 +55,10 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="visualize_results.py" pinned="false" current-in-tab="true">
+          <file leaf-file-name="visualize_results.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/visualize_results.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="334">
+                <state relative-caret-position="630">
                   <caret line="42" column="77" lean-forward="false" selection-start-line="42" selection-start-column="77" selection-end-line="42" selection-end-column="77" />
                   <folding />
                 </state>
@@ -68,8 +68,8 @@
           <file leaf-file-name="clustering.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/clustering.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="151">
-                  <caret line="172" column="25" lean-forward="false" selection-start-line="172" selection-start-column="25" selection-end-line="172" selection-end-column="25" />
+                <state relative-caret-position="322">
+                  <caret line="186" column="15" lean-forward="false" selection-start-line="186" selection-start-column="15" selection-end-line="186" selection-end-column="15" />
                   <folding>
                     <element signature="e#0#31#0" expanded="true" />
                   </folding>
@@ -80,7 +80,7 @@
           <file leaf-file-name="read_key_issues_input.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/read_key_issues_input.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="141">
+                <state relative-caret-position="600">
                   <caret line="40" column="32" lean-forward="false" selection-start-line="40" selection-start-column="32" selection-end-line="40" selection-end-column="32" />
                   <folding />
                 </state>
@@ -91,7 +91,7 @@
             <entry file="file://$PROJECT_DIR$/pm/project_log.md">
               <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
                 <state split_layout="FIRST">
-                  <first_editor relative-caret-position="371">
+                  <first_editor relative-caret-position="1770">
                     <caret line="118" column="4" lean-forward="false" selection-start-line="118" selection-start-column="4" selection-end-line="118" selection-end-column="4" />
                     <folding />
                   </first_editor>
@@ -113,7 +113,7 @@
           <file leaf-file-name="support_functions.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/support_functions.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="15">
+                <state relative-caret-position="12345">
                   <caret line="823" column="0" lean-forward="false" selection-start-line="823" selection-start-column="0" selection-end-line="823" selection-end-column="0" />
                   <folding>
                     <element signature="e#0#18#0" expanded="true" />
@@ -135,7 +135,7 @@
           <file leaf-file-name="stop_words.txt" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/Data/stop_words/stop_words.txt">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="170">
+                <state relative-caret-position="855">
                   <caret line="57" column="2" lean-forward="false" selection-start-line="57" selection-start-column="2" selection-end-line="57" selection-end-column="2" />
                   <folding />
                 </state>
@@ -145,7 +145,7 @@
         </leaf>
       </split-first>
       <split-second>
-        <leaf>
+        <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file leaf-file-name="categorization.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/categorization.py">
               <provider selected="true" editor-type-id="text-editor">
@@ -228,10 +228,10 @@
         <option value="$PROJECT_DIR$/read_key_issues_input.py" />
         <option value="$PROJECT_DIR$/spec/key_issues_keywords.csv" />
         <option value="$PROJECT_DIR$/support_functions.py" />
-        <option value="$PROJECT_DIR$/clustering.py" />
-        <option value="$PROJECT_DIR$/data_processing.py" />
         <option value="$PROJECT_DIR$/sqlite.py" />
         <option value="$PROJECT_DIR$/visualize_results.py" />
+        <option value="$PROJECT_DIR$/data_processing.py" />
+        <option value="$PROJECT_DIR$/clustering.py" />
       </list>
     </option>
   </component>
@@ -241,7 +241,7 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6" fullScreen="true">
+  <component name="ProjectFrameBounds" fullScreen="true">
     <option name="x" value="-190" />
     <option name="y" value="23" />
     <option name="width" value="2188" />
@@ -265,6 +265,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scratches" />
       <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
@@ -304,7 +305,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -625,11 +625,11 @@
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32969216" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3553398" sideWeight="0.5046875" order="7" side_tool="true" content_ui="tabs" x="0" y="334" width="2560" height="411" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.452" sideWeight="0.4945055" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.452" sideWeight="0.4945055" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32958034" sideWeight="0.49841145" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.37" sideWeight="0.4953125" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.328" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1297619" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1297619" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Docker" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="SciView" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.15773809" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -848,14 +848,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/temp.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/temp.py" />
     <entry file="file://$PROJECT_DIR$/read_categorization_input.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="263">
@@ -874,7 +867,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Data/stop_words/stop_words.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
+        <state relative-caret-position="855">
           <caret line="57" column="2" lean-forward="false" selection-start-line="57" selection-start-column="2" selection-end-line="57" selection-end-column="2" />
           <folding />
         </state>
@@ -891,7 +884,7 @@
     <entry file="file://$PROJECT_DIR$/pm/project_log.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="FIRST">
-          <first_editor relative-caret-position="371">
+          <first_editor relative-caret-position="1770">
             <caret line="118" column="4" lean-forward="false" selection-start-line="118" selection-start-column="4" selection-end-line="118" selection-end-column="4" />
             <folding />
           </first_editor>
@@ -909,7 +902,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/read_key_issues_input.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="141">
+        <state relative-caret-position="600">
           <caret line="40" column="32" lean-forward="false" selection-start-line="40" selection-start-column="32" selection-end-line="40" selection-end-column="32" />
           <folding />
         </state>
@@ -917,7 +910,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/support_functions.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
+        <state relative-caret-position="12345">
           <caret line="823" column="0" lean-forward="false" selection-start-line="823" selection-start-column="0" selection-end-line="823" selection-end-column="0" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
@@ -925,10 +918,18 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/data_processing.py">
+    <entry file="file://$PROJECT_DIR$/visualize_results.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="630">
-          <caret line="42" column="53" lean-forward="false" selection-start-line="42" selection-start-column="53" selection-end-line="42" selection-end-column="53" />
+          <caret line="42" column="77" lean-forward="false" selection-start-line="42" selection-start-column="77" selection-end-line="42" selection-end-column="77" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data_processing.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="321">
+          <caret line="43" column="4" lean-forward="false" selection-start-line="43" selection-start-column="4" selection-end-line="43" selection-end-column="4" />
           <folding>
             <element signature="e#0#28#0" expanded="true" />
           </folding>
@@ -937,8 +938,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/clustering.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="151">
-          <caret line="172" column="25" lean-forward="false" selection-start-line="172" selection-start-column="25" selection-end-line="172" selection-end-column="25" />
+        <state relative-caret-position="322">
+          <caret line="186" column="15" lean-forward="false" selection-start-line="186" selection-start-column="15" selection-end-line="186" selection-end-column="15" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
           </folding>
@@ -947,7 +948,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/sqlite.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2193">
+        <state relative-caret-position="-2469">
           <caret line="102" column="23" lean-forward="false" selection-start-line="102" selection-start-column="23" selection-end-line="102" selection-end-column="23" />
           <folding>
             <marker date="1520488536632" expanded="true" signature="638:1766" ph="CREATE TABLE... IF" />
@@ -960,14 +961,6 @@
             <marker date="1520488536632" expanded="true" signature="7828:7875" ph="SELECT MAX(C... categorization" />
             <marker date="1520488536632" expanded="true" signature="8084:8126" ph="SELECT MAX(C... key_issue" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/visualize_results.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="334">
-          <caret line="42" column="77" lean-forward="false" selection-start-line="42" selection-start-column="77" selection-end-line="42" selection-end-column="77" />
-          <folding />
         </state>
       </provider>
     </entry>

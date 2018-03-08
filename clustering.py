@@ -170,6 +170,8 @@ def extract_user_defined_issue(df):
     id_list = []
     issues_list = []
     for i, row in df.iterrows():
+        print(i)
+        print(row['Translated Reviews'])
         issues_found = []
         if len(keywords_found_text_list[i]) > 0:
             keywords = split_input_words(keywords_found_text_list[i])
@@ -179,6 +181,10 @@ def extract_user_defined_issue(df):
         for issue in issues_found:
             id_list.append(row['ID'])
             issues_list.append(issue)
+        if len(issues_found) > 0:
+            print('Issue Found:')
+            print(issues_found)
+        print()
     return pd.DataFrame(
         {
             'ID': id_list,
@@ -188,8 +194,8 @@ def extract_user_defined_issue(df):
 
 
 def cluster_and_summarize(df_feedbacks, df_categorization):
-    df_join = df_feedbacks.merge(df_categorization, on='ID')
-    df_key_issue = extract_user_defined_issue(df_join)
+    #  df_join = df_feedbacks.merge(df_categorization, on='ID')
+    df_key_issue = extract_user_defined_issue(df_feedbacks)
     """
     components = df_join.Component.unique()
     for component in components:
