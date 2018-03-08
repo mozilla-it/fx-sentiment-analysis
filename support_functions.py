@@ -69,6 +69,8 @@ def read_all_data(col_names, target_folder_path):
     df = pd.DataFrame()
     # Read in all the dataset
     file_paths = glob.glob(target_folder_path + '*')
+    dates_processed_surveygizmo = []
+    dates_processed_appbot = []
     for file_path in file_paths:
         # We need to ignore the previously generated output file, which contains 'py' in the end of filename
         if file_path.split('.')[-2][-2:] == 'py':  # All of the code-generated file contains 'py' in the end of filename
@@ -78,13 +80,14 @@ def read_all_data(col_names, target_folder_path):
             if file_format == 'xlsx':
                 xl = pd.ExcelFile(file_path)
                 SurveyGizmo_df = xl.parse(xl.sheet_names[0]).fillna('')
-                SurveyGizmo_Processed = process_surveygizmo_df(SurveyGizmo_df, col_names)
+                SurveyGizmo_Processed, dates_processed_surveygizmo = process_surveygizmo_df(SurveyGizmo_df, col_names,
+                                                                                            dates_processed_surveygizmo)
                 df = pd.concat([df, SurveyGizmo_Processed])  # Merged the dataframes
             else:
                 Appbot_df = pd.read_csv(file_path).fillna('')
-                Appbot_Processed = process_appbot_df(Appbot_df, col_names)
+                Appbot_Processed, dates_processed_appbot = process_appbot_df(Appbot_df, col_names,
+                                                                             dates_processed_appbot)
                 df = pd.concat([df, Appbot_Processed])  # Merged the dataframes
-
     return df
 
 
@@ -129,7 +132,7 @@ def process_country(Countries):
     Countries.replace(to_replace=dict(USA='United States'), inplace=True)
     return Countries
 
-def process_appbot_df(Appbot, col_names):
+def process_appbot_df(Appbot, col_names, dates_processed_appbot):
     """
     Function to Process the Appbot Dataframe
     """
@@ -146,11 +149,22 @@ def process_appbot_df(Appbot, col_names):
     Appbot_Processed['Translated Reviews'] = Appbot[['Translated Subject', 'Translated Body']].apply(
         lambda x: '{}. {}'.format(x[0], x[1]), axis=1)
     Appbot_Processed['Country'] = process_country(Appbot['Country'])
+    Appbot_Processed, dates_processed_appbot = update_dates_processed(Appbot_Processed,
+                                                                      dates_processed_appbot)
     print('Finish processing the Appbot Data!\n')
-    return Appbot_Processed
+    return Appbot_Processed, dates_processed_appbot
 
 
-def process_surveygizmo_df(SurveyGizmo, col_names):
+def update_dates_processed(df, dates_processed, colname = 'Date'):
+    dates_in_process = df[colname].unique()
+    for date in dates_in_process:
+        if date in dates_in_process:
+            df[df[colname] != date]
+        dates_processed.append(date)
+    return df, dates_processed
+
+
+def process_surveygizmo_df(SurveyGizmo, col_names, dates_processed_surveygizmo):
     """
     Function to Process the SurveyGizmo Dataframe
     """
@@ -164,8 +178,10 @@ def process_surveygizmo_df(SurveyGizmo, col_names):
         lambda x: '{}{}'.format(x[0], x[1]), axis=1)
     SurveyGizmo_Processed['Translated Reviews'] = ''
     SurveyGizmo_Processed['Country'] = process_country(SurveyGizmo['Country'])
+    SurveyGizmo_Processed, dates_processed_surveygizmo = update_dates_processed(SurveyGizmo_Processed,
+                                                                                dates_processed_surveygizmo)
     print('Finish processing the SurveyGizmo Data!\n')
-    return SurveyGizmo_Processed
+    return SurveyGizmo_Processed, dates_processed_surveygizmo
 
 
 def filter_by_date(df, date_threshold):
@@ -210,14 +226,16 @@ def translate_reviews(df):
     for i in range(len(df)):
         if len(df.iloc[i, translated_review_col_id]) < min(4, len(
                 df.iloc[i, original_review_col_id])):  # Detect if the translated review is empty
-            orginal_review = df.iloc[i, original_review_col_id]  # Extract the original review
+            original_review = df.iloc[i, original_review_col_id]  # Extract the original review
             try:  # Some reviews may contain non-language contents
-                if detect(orginal_review) == 'en':  # If the original review is in English
+                """
+                if detect(original_review) == 'en':  # If the original review is in English
                     df.iloc[
-                        i, translated_review_col_id] = orginal_review  # Copy the original review - do not waste API usage
+                        i, translated_review_col_id] = original_review  # Copy the original review - do not waste API usage
                 else:  # Otherwise, call Google Cloud API for translation
-                    df.iloc[i, translated_review_col_id] = \
-                        translate_client.translate(orginal_review, target_language='en')['translatedText']
+                """
+                df.iloc[i, translated_review_col_id] = \
+                    translate_client.translate(original_review, target_language='en')['translatedText']
             except:
                 df.iloc[i, translated_review_col_id] = 'Error: no language detected!'
         if i % 100 == 0:
@@ -225,6 +243,11 @@ def translate_reviews(df):
     print('All reviews have been processed!')
 
     return df
+
+
+def clean_text_after_translation(text):
+    text.replace("&#39;", "\s")
+    return text
 
 
 def get_counter_contents(counter, sorted=False):
@@ -276,6 +299,8 @@ def phrase_process(phrase):
     :param phrase: a phrase with multiple words
     :return: a phrase of processed words (string format)
     """
+    if isNaN(phrase):
+         return ''
     processed_phrase = ''
     stop_words = get_stop_words()
     for word in re.findall(r'\w+', phrase):
@@ -394,8 +419,11 @@ def get_sentiment(client, content):
     document = types.Document(
         content=content,
         type=enums.Document.Type.PLAIN_TEXT)
-    annotations = client.analyze_sentiment(document=document)
-    score, magnitude, sent_socres, sent_magnitudes = interpret_sentiment(annotations)
+    try:
+        annotations = client.analyze_sentiment(document=document)
+        score, magnitude, sent_socres, sent_magnitudes = interpret_sentiment(annotations)
+    except:
+        return 0, 0, 0, 0
     return score, magnitude, sent_socres, sent_magnitudes
 
 
@@ -503,7 +531,7 @@ def process_texts(texts):
     return texts_processed
 
 
-def find_word_pair_in_text(text, word1, word2, distance=5):
+def find_word_pair_in_text(text, word1, word2, distance=2):
     """
     The function check if two words are present in the given text within the given distance
     outputs:
@@ -524,14 +552,12 @@ def find_phrase_in_text(text, phrase):
     """
     Phrase is given in a list of words
     """
-    found = False
-    for i in range(len(phrase) - 1):
-        for j in range(i + 1, len(phrase)):
-            result = find_word_pair_in_text(text, phrase[i], phrase[j])
-            if result:
-                found = True
-                return found
-    return found
+    n = len(phrase)
+    for i in range(n-1):
+        result = find_word_pair_in_text(text, phrase[i], phrase[i+1])
+        if not result:  # there is one combo that is not found
+            return False
+    return True
 
 
 def find_words(texts, target_words):
@@ -636,6 +662,8 @@ def get_phrases(review, label_type='VP'):
     """
     This function get the pre-defined phrases from the given reviews
     """
+    if isNaN(review):
+         return []
     sentences = split_text(review)
     phrases_lists = []
     for sentence in sentences:
@@ -739,20 +767,63 @@ def index_df(df):
 
 
 def spam_filter(df, colname='Translated Reviews'):
-    spams = np.zeros(len(df))
-    for i, row in df.iterrows():
-        feedback = row[colname]
-        too_long = (len(feedback) > 1000) & (len(re.findall(r'[Ff]irefox|browser', feedback)) < 2)
-        emails_match = len(re.findall(r'[\w\.-]+@[\w\.-]+', feedback))
-        too_many_digits = len(re.findall(r'\d+', feedback)) > 30
-        if (too_long + emails_match + too_many_digits > 0):
-            spams[i] = 1
+    """
+    Function to filter out spam and remove sensitive privacy-related content in feedbacks
+    :param df:
+    :param colname:
+    :return:
+    """
+    email_regex = '[\w\.-]+@[\w\.-]+'
+    phone_regex = '(\d{3}[-\.\s]??\d{3}[-\.\s]??\d{4}|\(\d{3}\)\s*\d{3}[-\.\s]??\d{4}|\d{3}[-\.\s]??\d{4})'
+
+    def identify_sensitive_info(text):
+        return (len(re.findall(email_regex, text)) + len(re.findall(phone_regex, text))) > 0
+
+    def remove_sensitive_info(text):
+        """Function to remove sensitive email from feedbacks"""
+        text = re.sub(email_regex, "", text)
+        text = re.sub(phone_regex, "", text)
+        return text
+
+    def spam_detector(text):
+        """Function to detect if there is a clue of spam in the sentence"""
+        if text == 'Error: no language detected!':
+            return 1, text
+        if isNaN(text):
+            return 1, text
+        result = 0  # assume not a spam
+        too_long = (len(text) > 1000) & (len(re.findall(r'[Ff]irefox|browser', text)) < 2)
+        include_sensitive_info = identify_sensitive_info(text)
+        too_many_digits = len(re.findall(r'\d+', text)) > 30
+        if include_sensitive_info:
+            text = remove_sensitive_info(text)
+            result, text = spam_detector(text)  # recursor
+        if too_long + too_many_digits + result > 0:
+            result = 1  # Spam
+        else:
+            result = 0
+        return result, text
+
+    feedbacks = list(df[colname])
+    spams = np.zeros(len(feedbacks))
+    need_another_round = True
+    while need_another_round:
+        need_another_round = False
+        feedbacks_processed = []
+        for i, feedback in enumerate(feedbacks):
+            result, feedback = spam_detector(feedback)
+            spams[i] = result
+            if result == 0:  #not spam
+                feedbacks_processed.append(feedback)
+        feedbacks = feedbacks_processed
     df['Spam'] = spams
     df_filtered = df[df['Spam'] == 0]
+    df_filtered = df_filtered.reset_index(drop=True)
+    df_filtered[colname] = feedbacks
     return df_filtered
 
 
-def cluster_based_on_similarity(similarity_matrix, thresh):
+def cluster_based_on_similarity(similarity_matrix, sim_thresh=0.3, size_thresh=4):
     """
     Cluster items based on the mutual similarity
     :param similarity_matrix: nxn similarity matrix
@@ -762,7 +833,7 @@ def cluster_based_on_similarity(similarity_matrix, thresh):
     indice_list = []
     n = similarity_matrix.shape[0]
     for index, x in np.ndenumerate(np.triu(similarity_matrix, k=1)):
-        if x >= thresh:
+        if x >= sim_thresh:
             indice_list.append(list(index))
     clusters = merge_overlapped_lists(indice_list)
     if len(clusters) > 0:
@@ -770,7 +841,14 @@ def cluster_based_on_similarity(similarity_matrix, thresh):
         joint_clusters = clusters + remaining
     else:  # No cluster is found
         joint_clusters = np.arange(n)
-    clusters_final = [[cluster] if not (isinstance(cluster, list)) else cluster for cluster in joint_clusters]
+
+    clusters_final = []
+    for cluster in joint_clusters:
+        if not isinstance(cluster, list):
+            cluster = [cluster]
+
+        if len(cluster) >= size_thresh:
+            clusters_final.append(cluster)
     return clusters_final
 
 
@@ -835,3 +913,19 @@ def compute_similarity_words(words):
 
 def isNaN(num):
     return num != num
+
+
+def split_input_words(word_string):
+    """
+    Split a given string of words; especially process the unpredictable case of "," (without space) and ", " (with space)
+    :param word_string: a string of words divided by "," (without space) or ", " (with space)
+    :return: a list of words
+    """
+    words = word_string.split(',')
+    output_word_list = []
+    for word in words:
+        if len(word)> 0:
+            word = word[1:] if word[0] == ' ' else word
+            word = word[:-1] if word[-1] == ' ' else word
+            output_word_list.append(word)
+    return output_word_list

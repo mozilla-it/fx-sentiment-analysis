@@ -1,8 +1,7 @@
 import sqlite3
 from sqlite3 import Error
-import pandas as pd
-import datetime
-
+from support_functions import *
+from visualize_results import print_contents
 
 
 def create_connection(db_file):
@@ -29,7 +28,7 @@ def check_tables(conn):
 
     def get_sql_create_reviews_table():
         sql_create_reviews_table = """ CREATE TABLE IF NOT EXISTS reviews (
-                                                    ID integer PRIMARY KEY,
+                                                    ID text PRIMARY KEY,
                                                     Store text NOT NULL,
                                                     Source text NOT NULL,
                                                     Country text,
@@ -48,18 +47,17 @@ def check_tables(conn):
 
     def get_sql_create_categorization_table():
         sql_create_categorization_table = """ CREATE TABLE IF NOT EXISTS categorization (
-                                                    ID integer NOT NULL,
+                                                    ID text NOT NULL,
                                                     Feature text NOT NULL,
                                                     Component text NOT NULL,
                                                     theAction text NOT NULL
                                                 ); """
         return sql_create_categorization_table
 
-    def get_sql_create_tag_table():
-        sql_create_categorization_table = """ CREATE TABLE IF NOT EXISTS tag (
-                                                    ID integer NOT NULL,
-                                                    Component text NOT NULL,
-                                                    Tag NOT NULL
+    def get_sql_create_key_issue_table():
+        sql_create_categorization_table = """ CREATE TABLE IF NOT EXISTS key_issue (
+                                                    ID text NOT NULL,
+                                                    'Key Issue' NOT NULL
                                                 ); """
         return sql_create_categorization_table
 
@@ -77,10 +75,10 @@ def check_tables(conn):
 
     sql_create_reviews_table = get_sql_create_reviews_table()
     sql_create_categorization_table = get_sql_create_categorization_table()
-    sql_create_tag_table = get_sql_create_tag_table()
+    sql_create_key_issue_table = get_sql_create_key_issue_table()
     create_table(conn, sql_create_reviews_table)
     create_table(conn, sql_create_categorization_table)
-    create_table(conn, sql_create_tag_table)
+    create_table(conn, sql_create_key_issue_table)
 
 
 def insert_review(conn, review):
@@ -100,11 +98,11 @@ def insert_categorization(conn, cate):
     return cur.lastrowid
 
 
-def insert_tag(conn, tag):
-    sql = ''' INSERT INTO tag(ID, Component, Tag)
-              VALUES(?,?,?) '''
+def insert_key_issue(conn, key_issue):
+    sql = ''' INSERT INTO key_issue(ID, 'Key Issue')
+              VALUES(?,?) '''
     cur = conn.cursor()
-    cur.execute(sql, tag)
+    cur.execute(sql, key_issue)
     return cur.lastrowid
 
 
@@ -112,31 +110,32 @@ def insert_review_list(conn, initial_id, file_path):
     df_reviews_path = file_path + 'feedbacks.csv'
     df_reviews = pd.read_csv(df_reviews_path)
     for i, row in df_reviews.iterrows():
-        id_value = row['ID'] + initial_id
-        store_value = row['Store']
-        source_value = row['Source']
-        country_value = row['Country']
-        date_value = row['Date']
-        version_value = row['Version']
-        rating_value = row['Rating']
-        original_reviews_value = row['Original Reviews']
-        translated_reviews_value = row['Translated Reviews']
-        sentiment_value = row['Sentiment']
-        spam_value = int(row['Spam'])
-        verb_phrases_value = row['Verb Phrases']
-        noun_phrases_value = row['Noun Phrases']
-        clear_filters = 'Clear Filters'
-        review = (id_value, store_value, source_value, country_value, date_value, version_value, rating_value,
-                      original_reviews_value, translated_reviews_value, sentiment_value, spam_value,
-                      verb_phrases_value, noun_phrases_value, clear_filters)
-        insert_review(conn, review)
+        if not isNaN(row['Translated Reviews']):
+            id_value = str(row['ID'] + initial_id)
+            store_value = row['Store']
+            source_value = row['Source']
+            country_value = row['Country']
+            date_value = row['Date']
+            version_value = row['Version']
+            rating_value = row['Rating']
+            original_reviews_value = row['Original Reviews']
+            translated_reviews_value = row['Translated Reviews']
+            sentiment_value = row['Sentiment']
+            spam_value = int(row['Spam'])
+            verb_phrases_value = row['Verb Phrases']
+            noun_phrases_value = row['Noun Phrases']
+            clear_filters = 'Clear Filters'
+            review = (id_value, store_value, source_value, country_value, date_value, version_value, rating_value,
+                          original_reviews_value, translated_reviews_value, sentiment_value, spam_value,
+                          verb_phrases_value, noun_phrases_value, clear_filters)
+            insert_review(conn, review)
 
 
 def insert_categorization_list(conn, initial_id, file_path):
     df_cate_path = file_path + 'categorization.csv'
     df_cate = pd.read_csv(df_cate_path)
     for i, row in df_cate.iterrows():
-        id_value = row['ID'] + initial_id
+        id_value = str(row['ID'] + initial_id)
         feature_value = row['Feature']
         component_value = row['Component']
         action_value = row['Actions']
@@ -144,15 +143,14 @@ def insert_categorization_list(conn, initial_id, file_path):
         insert_categorization(conn, new_cate)
 
 
-def insert_tag_list(conn, initial_id, file_path):
-    df_tag_path = file_path + 'tag.csv'
-    df_tag = pd.read_csv(df_tag_path)
-    for i, row in df_tag.iterrows():
-        id_value = row['ID'] + initial_id
-        component_value = row['Component']
-        tag_value = row['Tag']
-        new_tag = (id_value, component_value, tag_value)
-        insert_tag(conn, new_tag)
+def insert_key_issue_list(conn, initial_id, file_path):
+    df_key_issue_path = file_path + 'key_issue.csv'
+    df_key_issue = pd.read_csv(df_key_issue_path)
+    for i, row in df_key_issue.iterrows():
+        id_value = str(row['ID'] + initial_id)
+        key_issue_value = row['Issue']
+        new_key_issue = (id_value, key_issue_value)
+        insert_key_issue(conn, new_key_issue)
 
 
 def select_all_from_table(conn, table):
@@ -186,7 +184,7 @@ def initiate_id(conn):
         """
         :return: an 8-digit number to represent the current date in integer type
         """
-        now = datetime.datetime.now()
+        now = datetime.now()
         year_str = str(now.year)
         month_str = str(now.month) if len(str(now.month)) > 1 else '0' + str(now.month)
         day_str = str(now.day) if len(str(now.day)) > 1 else '0' + str(now.day)
@@ -200,21 +198,21 @@ def initiate_id(conn):
         :return:
         """
         max_id = 0
-        sql = ''' SELECT max(ID) from reviews'''
+        sql = ''' SELECT MAX(CAST(ID AS Int)) from reviews'''
         cur = conn.cursor()
         cur.execute(sql)
         extraction = cur.fetchone()[0]
         max_result = extraction if extraction else 0
         max_id = max(max_id, max_result)
 
-        sql = ''' SELECT max(ID) from categorization'''
+        sql = ''' SELECT MAX(CAST(ID AS Int)) from categorization'''
         cur = conn.cursor()
         cur.execute(sql)
         extraction = cur.fetchone()[0]
         max_result = extraction if extraction else 0
         max_id = max(max_id, max_result)
 
-        sql = ''' SELECT max(ID) from tag'''
+        sql = ''' SELECT MAX(CAST(ID AS Int)) from key_issue'''
         cur = conn.cursor()
         cur.execute(sql)
         extraction = cur.fetchone()[0]
@@ -234,16 +232,13 @@ def initiate_id(conn):
     return initial_id
 
 
-
-
-
 def update_db(conn, data_file_path):
     check_tables(conn)
     initial_id = initiate_id(conn)
 
     insert_review_list(conn, initial_id, data_file_path)
     insert_categorization_list(conn, initial_id, data_file_path)
-    insert_tag_list(conn, initial_id, data_file_path)
+    insert_key_issue_list(conn, initial_id, data_file_path)
 
 
 def remove_db(db):
@@ -271,18 +266,29 @@ def read_db():
     conn = create_connection(db)
 
     if conn is not None:
-        select_all_from_table(conn, 'reviews')
-        select_all_from_table(conn, 'categorization')
-        select_all_from_table(conn, 'tag')
+        # select_all_from_table(conn, 'reviews')
+        # select_all_from_table(conn, 'categorization')
+        # select_all_from_table(conn, 'key_issue')
+        print_contents_from_db(conn, 'reviews', 'categorization', 'key_issue')
     else:
         print('Error! Cannot create the database connection!')
     conn.close()
 
 
+def print_contents_from_db(conn, df_reviews_name, df_cate_name, df_key_issue_name):
+    df_reviews = pd.read_sql_query("SELECT * FROM " + df_reviews_name, conn)
+    df_reviews['ID'] = df_reviews['ID'].astype(int)
+    df_categorization = pd.read_sql_query("SELECT * FROM " + df_cate_name, conn)
+    df_categorization['ID'] = df_categorization['ID'].astype(int)
+    df_key_issue = pd.read_sql_query("SELECT * FROM " + df_key_issue_name, conn)
+    df_key_issue['ID'] = df_key_issue['ID'].astype(int)
+    print_contents(df_categorization, df_reviews, df_key_issue)
+
+
 if __name__ == '__main__':
     db = "reviews.sqlite"
-    files_to_be_read = ['Data/2018_02_15/output/']
-    # remove_db(db)
+    files_to_be_read = ['Data/2018_02_22/output/']
+    remove_db(db)
     main(db, files_to_be_read)
     read_db()
 

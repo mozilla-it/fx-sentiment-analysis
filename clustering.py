@@ -1,5 +1,6 @@
 from support_functions import *
 from read_categorization_input import get_categorization_input
+from read_key_issues_input import get_key_issue_input
 
 
 def summarize(text_list):
@@ -21,7 +22,7 @@ def create_cluster(df, thresh=0.3):
     texts = df['Translated Reviews']
     texts_processed = process_texts_for_clustering(texts)
     similarity_matrix = measure_sim_tfidf(texts_processed, viz=False)
-    return cluster_based_on_similarity(similarity_matrix, thresh)
+    return cluster_based_on_similarity(similarity_matrix, sim_thresh=0.3, size_thresh=4)
 
 
 def extract_keywords(texts, top_k=4):
@@ -53,9 +54,9 @@ def select_keywords(keywords, counts, top_k):
     return keywords_selected
 
 
-def update_df_tag(df, ID, component, tags):
-    for tag in tags:
-        df.loc[len(df)] = [ID, component, tag]
+def update_df_key_issue(df, ID, component, key_issues):
+    for key_issue in key_issues:
+        df.loc[len(df)] = [ID, component, key_issue]
     return df
 
 
@@ -87,9 +88,10 @@ def recover_word_from_texts(keyword, texts):
     word_recovered = keyword
     words_candidates = []
     for text in texts:
-        for word in re.findall(r'\w+', text):
-            if keyword == word_process(word):
-                words_candidates.append(word)
+        if isinstance(text, str):
+            for word in re.findall(r'\w+', text):
+                if keyword == word_process(word):
+                    words_candidates.append(word)
     counter = Counter(words_candidates)
     if len(counter) > 0:
         words, counts = get_counter_contents(counter, sorted=True)
@@ -133,8 +135,7 @@ def process_texts_for_clustering(texts):
                                                         get_counts=True)
     keywords_recoverd = recover_words_from_texts(keywords, texts)
     similarity_matrix = compute_similarity_words(keywords_recoverd)
-    clusters = cluster_based_on_similarity(similarity_matrix, thresh=0.6)
-
+    clusters = cluster_based_on_similarity(similarity_matrix, sim_thresh=0.6, size_thresh=0)
     for cluster in clusters:
         if len(cluster) > 1:
             words = [keywords[i] for i in cluster]
@@ -144,9 +145,52 @@ def process_texts_for_clustering(texts):
     return texts_processed
 
 
+def extract_user_defined_issue(df):
+    """
+    Function to extract user-defined issues from the given feedbbacks (top-down approach)
+    :param df: df contains ID and translated feedbacks
+    :return:
+    """
+    def find_issue_with_keyword(input_keyword, keyissueDict):
+        issue = []
+        try:
+            issue = keyissueDict.keyword2issues[input_keyword]
+        except KeyError:
+            for word in input_keyword.split(' '):
+                for keyword in keyissueDict.keywords:
+                    if word in keyword:
+                        issue = keyissueDict.keyword2issues[keyword]
+        if len(issue) > 0:
+            if not isinstance(issue, list):
+                return [issue]
+        return issue
+
+    keyissueDict = get_key_issue_input()
+    keywords_found_text_list = find_words(df['Translated Reviews'], keyissueDict.keywords)
+    id_list = []
+    issues_list = []
+    for i, row in df.iterrows():
+        issues_found = []
+        if len(keywords_found_text_list[i]) > 0:
+            keywords = split_input_words(keywords_found_text_list[i])
+            for keyword in keywords:
+                issues_found = issues_found + find_issue_with_keyword(keyword, keyissueDict)
+            issues_found = list(set(issues_found))  # remove duplicate
+        for issue in issues_found:
+            id_list.append(row['ID'])
+            issues_list.append(issue)
+    return pd.DataFrame(
+        {
+            'ID': id_list,
+            'Issue': issues_list,
+        }
+    )
+
+
 def cluster_and_summarize(df_feedbacks, df_categorization):
     df_join = df_feedbacks.merge(df_categorization, on='ID')
-    df_tag = pd.DataFrame(columns=['ID', 'Component', 'Tag'])
+    df_key_issue = extract_user_defined_issue(df_join)
+    """
     components = df_join.Component.unique()
     for component in components:
         df_selected = df_join[df_join['Component'] == component]
@@ -157,5 +201,6 @@ def cluster_and_summarize(df_feedbacks, df_categorization):
             if len(keywords) > 0:
                 for i in cluster:
                     ID = df_selected['ID'].iloc[i]
-                    update_df_tag(df_tag, ID, component, keywords)
-    return df_categorization, df_tag
+                    df_key_issue = update_df_key_issue(df_key_issue, ID, component, keywords)
+    """
+    return df_categorization, df_key_issue

@@ -28,7 +28,6 @@ def categorize(df):
     cateDict = get_categorization_input() # Read the content from the categorization file
     print('Start to categorize: ' + str(len(df)) + ' reviews: ')
 
-    #Identify the target phrases
     df['Verb Phrases'] = extract_phrases(df['Translated Reviews'], 'VP')
     df['Noun Phrases'] = extract_phrases(df['Translated Reviews'], 'NP')
 
@@ -71,17 +70,21 @@ def categorize(df):
                 else:
                     actions_found = extract_phrases_with_keywords(str(row['Translated Reviews']), keyword)
 
-                component_found = cateDict.keywords2components[keyword]
-                if component_found in components_found:
-                    for action in actions_found:
-                        if action not in components_dict[component_found]['Action']:
-                            components_dict[component_found]['Action'].append(action)
+                if not isinstance(cateDict.keywords2components[keyword], list):
+                    keyword_component_list = [cateDict.keywords2components[keyword]]
                 else:
-                    components_found.append(component_found)
-                    components_dict[component_found] = {
-                        'Feature': cateDict.components2features[component_found],
-                        'Action': actions_found
-                    }
+                    keyword_component_list = cateDict.keywords2components[keyword]
+                for component_found in keyword_component_list:
+                    if component_found in components_found:
+                        for action in actions_found:
+                            if action not in components_dict[component_found]['Action']:
+                                components_dict[component_found]['Action'].append(action)
+                    else:
+                        components_found.append(component_found)
+                        components_dict[component_found] = {
+                            'Feature': cateDict.components2features[component_found],
+                            'Action': actions_found
+                        }
         components_found = clean_components(components_found)
         for component in components_found:
             row_id_list.append(row['ID'])
@@ -99,7 +102,7 @@ def categorize(df):
         }
     )
     df_categorization = df_categorization.replace(np.nan, '', regex=True)
-    return df_categorization
+    return df_categorization, df
 
 
 def extract_phrases_with_keywords(text, keyword):

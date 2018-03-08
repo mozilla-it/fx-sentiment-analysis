@@ -115,3 +115,9 @@ Appbot data to `United States` for consistency
 ## Feb 25
 [x] Modify the keyword extraction for components
 - Find synonyms from user-defined keywords as well
+
+<br>
+
+## Mar 6
+[x] Remove stopwords that are related to Firefox
+- Previously I define them as stopwords to prevent them 
