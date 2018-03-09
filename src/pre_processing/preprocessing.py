@@ -50,6 +50,7 @@ def spam_filter(df, colname='Translated Reviews'):
             result = 0
         return result, text
 
+    df[colname].fillna('Error: no language detected!')
     feedbacks = list(df[colname])
     spams = np.zeros(len(feedbacks))
     need_another_round = True
