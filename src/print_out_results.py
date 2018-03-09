@@ -1,4 +1,4 @@
-from support_functions import *
+from src.support_functions import *
 
 
 def list_to_array(l):

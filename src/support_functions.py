@@ -25,9 +25,8 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import scipy.stats as ss
 from sklearn.feature_extraction.text import TfidfVectorizer
-import itertools
 
-stop_words_file_path = 'Data/stop_words/stop_words.txt'
+stop_words_file_path = 'spec/stop_words/stop_words.txt'
 
 
 def read_exist_output(file_path):
@@ -59,157 +58,6 @@ def write_to_file(words, file_path):
     for stop_word in words:
         myfile.write("%s\n" % stop_word)
     myfile.close()
-
-
-def read_all_data(col_names, target_folder_path):
-    """
-    Function to read through all the datasets in the target folder
-    todo: add support to the senario where there are multiple Appbot/SurveyGizmo files in the folder
-    """
-    df = pd.DataFrame()
-    # Read in all the dataset
-    file_paths = glob.glob(target_folder_path + '*')
-    dates_processed_surveygizmo = []
-    dates_processed_appbot = []
-    for file_path in file_paths:
-        # We need to ignore the previously generated output file, which contains 'py' in the end of filename
-        if file_path.split('.')[-2][-2:] == 'py':  # All of the code-generated file contains 'py' in the end of filename
-            os.remove(file_path)  # Remove it - we will create a new one
-        else:
-            file_format = file_path.split('.')[-1]
-            if file_format == 'xlsx':
-                xl = pd.ExcelFile(file_path)
-                SurveyGizmo_df = xl.parse(xl.sheet_names[0]).fillna('')
-                SurveyGizmo_Processed, dates_processed_surveygizmo = process_surveygizmo_df(SurveyGizmo_df, col_names,
-                                                                                            dates_processed_surveygizmo)
-                df = pd.concat([df, SurveyGizmo_Processed])  # Merged the dataframes
-            else:
-                Appbot_df = pd.read_csv(file_path).fillna('')
-                Appbot_Processed, dates_processed_appbot = process_appbot_df(Appbot_df, col_names,
-                                                                             dates_processed_appbot)
-                df = pd.concat([df, Appbot_Processed])  # Merged the dataframes
-    return df
-
-
-def create_empty_df(n, col_names):
-    df = pd.DataFrame('', index=range(n), columns=col_names)
-    return df
-
-
-def extract_version_SG(SG_Col):
-    """
-    Function to extract the version information from the Corresponding Column in SurveyGizmo
-    todo: add support to the format of 9.34 - now we can only extract 9.3
-    todo: add support to the format of 9.0.1 - now we can only extracvt 9.0
-    """
-    version_list = []
-    for i in range(len(SG_Col)):
-        string = SG_Col[i]  # Extract the string in the current row
-        locator = string.find("FxiOS/")  # Locate the target term in each string
-        if locator > 0:  # Find the keyword
-            version_code = string.split("FxiOS/", 1)[1].split(' ')[0]  # Example: 10.0b6373
-            version = re.findall("^\d+\.\d+\.\d+|^\d+\.\d+", version_code)[
-                0]  # Extract the float number in the string with multiple dot
-            digits = version.split('.')
-            if len(digits) >= 2:  # 10.1 or 10.0.1
-                version = float(digits[0] + '.' + digits[
-                    1])  # Temporary use - just capture the first two digits so that we can return as a number
-            else:
-                version = int(version)
-        else:
-            version = 0
-        version_list.append(version)
-        # print('Origin: ' + string + ', Version: ' + str(version))
-    return version_list
-
-
-def process_country(Countries):
-    """
-    Process the country column in the two datasets
-    :param Countries: a column of country value
-    :return: cleaned country values
-    """
-    Countries.replace(to_replace=dict(USA='United States'), inplace=True)
-    return Countries
-
-def process_appbot_df(Appbot, col_names, dates_processed_appbot):
-    """
-    Function to Process the Appbot Dataframe
-    """
-    Appbot_Processed = create_empty_df(len(Appbot), col_names)  # Initialize a new dataframe
-
-    Appbot_Processed['Store'] = Appbot['Store']
-    Appbot_Processed['Source'] = 'Appbot'
-    Appbot_Processed['Date'] = pd.to_datetime(Appbot['Date']).dt.date
-    Appbot_Processed['Version'] = Appbot['Version']
-    Appbot_Processed['Rating'] = Appbot['Rating']
-    # Appbot_Processed['Emotion'] =  Appbot['Emotion']
-    Appbot_Processed['Original Reviews'] = Appbot[['Subject', 'Body']].apply(lambda x: '{}. {}'.format(x[0], x[1]),
-                                                                             axis=1)
-    Appbot_Processed['Translated Reviews'] = Appbot[['Translated Subject', 'Translated Body']].apply(
-        lambda x: '{}. {}'.format(x[0], x[1]), axis=1)
-    Appbot_Processed['Country'] = process_country(Appbot['Country'])
-    Appbot_Processed, dates_processed_appbot = update_dates_processed(Appbot_Processed,
-                                                                      dates_processed_appbot)
-    print('Finish processing the Appbot Data!\n')
-    return Appbot_Processed, dates_processed_appbot
-
-
-def update_dates_processed(df, dates_processed, colname = 'Date'):
-    dates_in_process = df[colname].unique()
-    for date in dates_in_process:
-        if date in dates_in_process:
-            df[df[colname] != date]
-        dates_processed.append(date)
-    return df, dates_processed
-
-
-def process_surveygizmo_df(SurveyGizmo, col_names, dates_processed_surveygizmo):
-    """
-    Function to Process the SurveyGizmo Dataframe
-    """
-    SurveyGizmo_Processed = create_empty_df(len(SurveyGizmo), col_names)  # Initialize a new dataframe
-    SurveyGizmo_Processed['Store'] = 'iOS'
-    SurveyGizmo_Processed['Source'] = 'SurveyGizmo'
-    SurveyGizmo_Processed['Date'] = pd.to_datetime(SurveyGizmo[SurveyGizmo.columns[0]]).dt.date
-    SurveyGizmo_Processed['Version'] = extract_version_SG(SurveyGizmo['Extended User Agent'])
-    # SurveyGizmo_Processed['Emotion'] = SurveyGizmo[SurveyGizmo.columns[5]]
-    SurveyGizmo_Processed['Original Reviews'] = SurveyGizmo[[SurveyGizmo.columns[6], SurveyGizmo.columns[7]]].apply(
-        lambda x: '{}{}'.format(x[0], x[1]), axis=1)
-    SurveyGizmo_Processed['Translated Reviews'] = ''
-    SurveyGizmo_Processed['Country'] = process_country(SurveyGizmo['Country'])
-    SurveyGizmo_Processed, dates_processed_surveygizmo = update_dates_processed(SurveyGizmo_Processed,
-                                                                                dates_processed_surveygizmo)
-    print('Finish processing the SurveyGizmo Data!\n')
-    return SurveyGizmo_Processed, dates_processed_surveygizmo
-
-
-def filter_by_date(df, date_threshold):
-    """
-    The function remove rows whose date is before the given date threshold
-    """
-    date = datetime.strptime(date_threshold, '%Y-%m-%d').date()  # Convert the given threshold (in string) to date
-    filtered_id = df['Date'] >= date  # Index of the row to drop
-    print(str(len(df) - sum(filtered_id)) + ' records are before the specified date (' +
-          date.strftime("%B") + ' ' + str(date.day) + ', ' + str(date.year) + '). They will be dropped!\n')
-
-    df_filtered = df[filtered_id]
-
-    return df_filtered
-
-
-def filter_by_version(df, version_threshold):
-    """
-    The function remove rows whose date is before the given date threshold
-    """
-
-    filtered_id = df['Version'] >= version_threshold  # Index of the row to drop
-    print(str(len(df) - sum(filtered_id)) + ' records are before the specified version (' +
-          str(version_threshold) + '). They will be dropped!\n')
-
-    df_filtered = df[filtered_id]
-
-    return df_filtered
 
 
 def translate_reviews(df):
@@ -929,3 +777,25 @@ def split_input_words(word_string):
             word = word[:-1] if word[-1] == ' ' else word
             output_word_list.append(word)
     return output_word_list
+
+
+def cut_feedbacks(feedbacks, length = 2):
+    """
+    Function to cut long feedbacks into sentences with specified length
+    :param feedbacks: feedbacks in dataframe
+    :param length: maximum length of a group of sentences
+    :return: a list of cut sentences and a dictionary that map each sentence ID to feedback ID
+    """
+    feedbacks = df['Translated Reviews'].as_matrix()
+    sentence_to_feedback = {}
+    sentences_list = []
+    for i, text in enumerate(feedbacks):
+        sentences = split_text(text)
+        if len(sentences) > length:
+            for j in range(len(sentences) - (length-1)):
+                sentences_list.append(sentences[j:j+(length-1)])
+                sentence_to_feedback[len(sentences_list) - 1] = i
+        else:
+            sentences_list.append(sentences)
+            sentence_to_feedback[len(sentences_list) - 1] = i
+    return sentences_list, sentence_to_feedback

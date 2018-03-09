@@ -1,6 +1,6 @@
-from support_functions import *
-from read_categorization_input import get_categorization_input
-from read_key_issues_input import get_key_issue_input
+from src.support_functions import *
+from src.read_categorization_input import get_categorization_input
+from src.read_key_issues_input import get_key_issue_input
 
 
 def summarize(text_list):

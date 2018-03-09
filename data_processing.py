@@ -1,9 +1,10 @@
-from categorization import *
-from clustering import *
-from support_functions import *
+from src.input.read_data import read_all_data
+from src.categorization import *
+from src.clustering import *
+from src.support_functions import *
 
 
-def data_processing(col_names, target_folder_path, date_threshold='', save_output=True):
+def data_processing():
     """
     Data Processing Pipeline
     :param col_names:
@@ -13,27 +14,17 @@ def data_processing(col_names, target_folder_path, date_threshold='', save_outpu
     :param save_output: trigger to save the output; True by default
     :return:
     """
-    """
-    df = read_all_data(col_names, target_folder_path)
-    df.to_csv('temp.csv', index=False)
-    if len(date_threshold) > 0:
-        df = filter_by_date(df, date_threshold)  # Remove rows whose date is before the given date thershold
+    target_folder_path = 'Input/'
+    df = read_all_data()
     df = spam_filter(df, colname='Original Reviews')
     df = translate_reviews(df)  # Translate non-English reviews
     df = spam_filter(df)
     df = measure_sentiments(df)  # Sentiment Analysis
     df['ID'] = np.arange(len(df))  # Add ID Column
-    df.to_csv('temp.csv', index=False)
-    
-    df = pd.read_csv('temp.csv')
     df_categorization, df = categorize(df)
     df.to_csv('temp.csv', index=False)
     df_categorization.to_csv('temp2.csv')
-    """
-    df = pd.read_csv('temp.csv')
-    df_categorization = pd.read_csv('temp2.csv')
     df_categorization, df_key_issue = cluster_and_summarize(df, df_categorization)
-    """
     output_path = target_folder_path + 'output/'
     if not os.path.exists(output_path):
         os.makedirs(output_path)
@@ -41,10 +32,7 @@ def data_processing(col_names, target_folder_path, date_threshold='', save_outpu
     df_categorization.to_csv(output_path + 'categorization.csv', index=False)
     df_key_issue.to_csv(output_path + 'key_issue.csv', index=False)
     print('Output has been saved to: ' + output_path)
-    """
 
 
-target_folder_path = 'Data/2018_02_22/'
-date_threshold = '2018-01-01'
-col_names = ['Store','Source','Date','Version','Rating','Original Reviews','Translated Reviews','Sentiment']
-data_processing(col_names,target_folder_path, date_threshold)
+if __name__ == '__main__':
+    data_processing()

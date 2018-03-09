@@ -1,5 +1,5 @@
 # First, you're going to need to import wordnet:
-from support_functions import *
+from src.support_functions import *
 
 
 # global cate_file_path

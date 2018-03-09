@@ -121,3 +121,8 @@ Appbot data to `United States` for consistency
 ## Mar 6
 [x] Remove stopwords that are related to Firefox
 - Previously I define them as stopwords to prevent them 
+
+<br>
+
+## Mar 7
+[x] Implement the issue summarization

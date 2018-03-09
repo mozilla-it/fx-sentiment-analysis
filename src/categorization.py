@@ -1,5 +1,5 @@
-from support_functions import *
-from read_categorization_input import get_categorization_input
+from src.support_functions import *
+from src.read_categorization_input import get_categorization_input
 
 
 def list_to_string(input_list):

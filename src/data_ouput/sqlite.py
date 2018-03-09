@@ -1,7 +1,10 @@
 import sqlite3
 from sqlite3 import Error
-from support_functions import *
-from visualize_results import print_contents
+from src.support_functions import *
+from src.print_out_results import print_contents
+
+db = "reviews.sqlite"
+table_feedbacks = 'Reviews'
 
 
 def create_connection(db_file):
@@ -260,8 +263,6 @@ def main(db, files_to_be_read):
 
 
 def read_db():
-    db = "reviews.sqlite"
-
     # create a database connection
     conn = create_connection(db)
 
@@ -285,10 +286,11 @@ def print_contents_from_db(conn, df_reviews_name, df_cate_name, df_key_issue_nam
     print_contents(df_categorization, df_reviews, df_key_issue)
 
 
+"""
 if __name__ == '__main__':
     db = "reviews.sqlite"
     files_to_be_read = ['Data/2018_02_22/output/']
     remove_db(db)
     main(db, files_to_be_read)
     read_db()
-
+"""

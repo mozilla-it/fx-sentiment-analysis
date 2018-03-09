@@ -1,5 +1,4 @@
-from support_functions import *
-from categorization import *
+from src.categorization import *
 # sentence = "my email is ivan@gmail.com, and my phone number is 6472488190"
 
 
