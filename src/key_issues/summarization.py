@@ -166,7 +166,7 @@ def extract_user_defined_issue(df):
         return issue
 
     keyissueDict = get_key_issue_input()
-    keywords_found_text_list = find_words(df['Translated Reviews'], keyissueDict.keywords)
+    keywords_found_text_list = find_words(df['Translated Review'], keyissueDict.keywords)
     id_list = []
     issues_list = []
     for i, row in df.iterrows():

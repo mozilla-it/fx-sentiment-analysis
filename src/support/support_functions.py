@@ -20,7 +20,6 @@ import re
 import nltk
 from nltk.corpus import wordnet
 from nltk.tag import PerceptronTagger
-import seaborn as sns
 import scipy.stats as ss
 from sklearn.feature_extraction.text import TfidfVectorizer
 
