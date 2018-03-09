@@ -283,7 +283,7 @@ class ConnectionPool(object):
         """
         Clean up the stale connections in all of the pools, and then
         get rid of empty pools.  Pools clean themselves every time a
-        connection is fetched; this cleaning takes care of pools that
+        connection is fetched; this pre_processing takes care of pools that
         aren't being used any more, so nothing is being gotten from
         them.
         """

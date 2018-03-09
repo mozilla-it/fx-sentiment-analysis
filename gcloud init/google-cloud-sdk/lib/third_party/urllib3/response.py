@@ -245,7 +245,7 @@ class HTTPResponse(io.IOBase):
                 # This includes IncompleteRead.
                 raise ProtocolError('Connection broken: %r' % e, e)
 
-            # If no exception is thrown, we should avoid cleaning up
+            # If no exception is thrown, we should avoid pre_processing up
             # unnecessarily.
             clean_exit = True
         finally:

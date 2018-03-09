@@ -507,7 +507,7 @@ class _LogManager(object):
 
     # If logs cleanup has been enabled, try to delete old log files
     # in the given directory. Continue normally if we try to delete log files
-    # that do not exist. This can happen when two gcloud instances are cleaning
+    # that do not exist. This can happen when two gcloud instances are pre_processing
     # up logs in parallel.
     self._CleanUpLogs(logs_dir)
 

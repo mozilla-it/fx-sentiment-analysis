@@ -1215,7 +1215,7 @@ class ConfigCommand(Command):
     except Exception as e:
       user_aborted = isinstance(e, AbortException)
       if user_aborted:
-        sys.stderr.write('\nCaught ^C; cleaning up\n')
+        sys.stderr.write('\nCaught ^C; pre_processing up\n')
       # If an error occurred during config file creation, remove the invalid
       # config file and restore the backup file.
       if output_file_name != '-':

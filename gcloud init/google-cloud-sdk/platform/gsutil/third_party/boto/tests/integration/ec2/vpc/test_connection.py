@@ -35,7 +35,7 @@ class TestVPCConnection(unittest.TestCase):
     def setUp(self):
         # Registry of instances to be removed
         self.instances = []
-        # Registry for cleaning up the vpc after all instances are terminated
+        # Registry for pre_processing up the vpc after all instances are terminated
         # in the format [ ( func, (arg1, ... argn) ) ]
         self.post_terminate_cleanups = []
 

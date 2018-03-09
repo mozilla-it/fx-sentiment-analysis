@@ -219,7 +219,7 @@ class _ProcessHolder(object):
           signum=signum,
           pid=self.process.pid
       ))
-      # We could have jumped to the signal handler between cleaning up our
+      # We could have jumped to the signal handler between pre_processing up our
       # finished child process in communicate() and removing the signal handler.
       # Check to see if our process is still running before we attempt to send
       # it a signal. If poll() returns None, even if the process dies right

@@ -1,6 +1,6 @@
-from src.support_functions import *
-from src.read_categorization_input import get_categorization_input
-from src.read_key_issues_input import get_key_issue_input
+from src.support.support_functions import *
+from src.categorization.read_categorization_input import get_categorization_input
+from src.key_issues.read_key_issues_input import get_key_issue_input
 
 
 def summarize(text_list):
@@ -170,8 +170,8 @@ def extract_user_defined_issue(df):
     id_list = []
     issues_list = []
     for i, row in df.iterrows():
-        print(i)
-        print(row['Translated Reviews'])
+        # print()
+        # print(str(i) + ': ' + str(row['Translated Reviews']))
         issues_found = []
         if len(keywords_found_text_list[i]) > 0:
             keywords = split_input_words(keywords_found_text_list[i])
@@ -181,10 +181,9 @@ def extract_user_defined_issue(df):
         for issue in issues_found:
             id_list.append(row['ID'])
             issues_list.append(issue)
-        if len(issues_found) > 0:
-            print('Issue Found:')
-            print(issues_found)
-        print()
+        # if len(issues_found) > 0:
+            # print('Issues found: ')
+            # print(issues_found)
     return pd.DataFrame(
         {
             'ID': id_list,
@@ -209,4 +208,4 @@ def cluster_and_summarize(df_feedbacks, df_categorization):
                     ID = df_selected['ID'].iloc[i]
                     df_key_issue = update_df_key_issue(df_key_issue, ID, component, keywords)
     """
-    return df_categorization, df_key_issue
+    return df_key_issue

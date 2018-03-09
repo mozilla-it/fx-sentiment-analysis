@@ -1,5 +1,5 @@
-from src.support_functions import *
-from src.read_categorization_input import get_categorization_input
+from src.support.support_functions import *
+from src.categorization.read_categorization_input import get_categorization_input
 
 
 def list_to_string(input_list):
@@ -15,9 +15,9 @@ def list_to_string(input_list):
 
 def clean_components(components):
     """
-    This function defines all the cleaning procedures to components identified
+    This function defines all the pre_processing procedures to components identified
     :param components: a list of components found in a piece of feedback
-    :return: a list of components after cleaning
+    :return: a list of components after pre_processing
     """
     if len(components) > 1 and 'Firefox Browser' in components:
         components.remove('Firefox Browser')
@@ -26,7 +26,6 @@ def clean_components(components):
 
 def categorize(df):
     cateDict = get_categorization_input() # Read the content from the categorization file
-    print('Start to categorize: ' + str(len(df)) + ' reviews: ')
 
     df['Verb Phrases'] = extract_phrases(df['Translated Reviews'], 'VP')
     df['Noun Phrases'] = extract_phrases(df['Translated Reviews'], 'NP')

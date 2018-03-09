@@ -1,9 +1,9 @@
 # First, you're going to need to import wordnet:
-from src.support_functions import *
+from src.support.support_functions import *
 
 
 # global cate_file_path
-cate_file_path = 'Data/Categorization.csv'
+cate_file_path = 'Spec/categorization_keywords.csv'
 
 class CategorizationDict:
     def __init__(self, features, components, keywords, components2tiers, components2features, keywords2components):

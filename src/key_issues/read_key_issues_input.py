@@ -1,4 +1,4 @@
-from src.read_categorization_input import *
+from src.categorization.read_categorization_input import *
 
 
 # global cate_file_path

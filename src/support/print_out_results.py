@@ -1,4 +1,4 @@
-from src.support_functions import *
+from src.data_ouptut.sqlite import extract_contents_from_db
 
 
 def list_to_array(l):
@@ -12,11 +12,8 @@ def list_to_array(l):
     return output[:-2]
 
 
-def print_outputs(target_folder_path, n):
-    outputs_path = target_folder_path + 'output/'
-    df_categorization = pd.read_csv(outputs_path + 'categorization.csv')
-    df_feedbacks = pd.read_csv(outputs_path + 'feedbacks.csv')
-    df_key_issue = pd.read_csv(outputs_path + 'key_issue.csv')
+def print_outputs():
+    df_feedbacks, df_categorization, df_key_issue = extract_contents_from_db()
     print_contents(df_categorization, df_feedbacks, df_key_issue)
 
 
@@ -48,6 +45,5 @@ def print_contents(df_categorization, df_feedbacks, df_key_issue, i_max=50):
             print('==============')
 
 
-target_folder_path = 'Data/2018_02_22/'
-i_max = 100
-print_outputs(target_folder_path, i_max)
+if __name__ == '__main__':
+    print_outputs()

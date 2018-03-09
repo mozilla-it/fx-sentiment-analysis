@@ -93,7 +93,7 @@ def AtomicWrite(filename, contents, mode=0666):
     try:
       os.remove(tmp_filename)
     except OSError, e:
-      exc = OSError('%s. Additional errors cleaning up: %s' % (exc, e))
+      exc = OSError('%s. Additional errors pre_processing up: %s' % (exc, e))
     raise exc
 
 

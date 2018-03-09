@@ -47,7 +47,7 @@ def _SortLengthFirstKey(a):
 
 class Names(object):
 
-    """Utility class for cleaning and normalizing names in a fixed style."""
+    """Utility class for pre_processing and normalizing names in a fixed style."""
     DEFAULT_NAME_CONVENTION = 'LOWER_CAMEL'
     NAME_CONVENTIONS = ['LOWER_CAMEL', 'LOWER_WITH_UNDER', 'NONE']
 
@@ -86,7 +86,7 @@ class Names(object):
 
     @staticmethod
     def CleanName(name):
-        """Perform generic name cleaning."""
+        """Perform generic name pre_processing."""
         name = re.sub('[^_A-Za-z0-9]', '_', name)
         if name[0].isdigit():
             name = '_%s' % name

@@ -210,7 +210,7 @@ class Update(base.UpdateCommand, dm_base.DmCommand):
         deployment.fingerprint = dm_util.DecodeFingerprint(args.fingerprint)
       else:
         # If no fingerprint is present, default to an empty fingerprint.
-        # TODO(b/34966984): Remove the empty default after cleaning up all
+        # TODO(b/34966984): Remove the empty default after pre_processing up all
         # deployments that has no fingerprint
         deployment.fingerprint = current_deployment.fingerprint or ''
 

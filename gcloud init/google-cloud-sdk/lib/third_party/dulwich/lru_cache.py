@@ -287,7 +287,7 @@ class LRUSizeCache(LRUCache):
 
         :param max_size: The max number of bytes to store before we start
             clearing out entries.
-        :param after_cleanup_size: After cleaning up, shrink everything to this
+        :param after_cleanup_size: After pre_processing up, shrink everything to this
             size.
         :param compute_size: A function to compute the size of the values. We
             use a function here, so that you can pass 'len' if you are just

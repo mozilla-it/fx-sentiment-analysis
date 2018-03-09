@@ -238,7 +238,7 @@ def InitializeMultiprocessingVariables():
   1. __main__: initializes multiprocessing variables, including any necessary
      Manager processes (here and in gslib.util).
   2. __main__: Registers signal handlers for terminating signals responsible
-     for cleaning up multiprocessing variables and manager processes upon exit.
+     for pre_processing up multiprocessing variables and manager processes upon exit.
   3. Command.Apply registers signal handlers for the main process to kill
      itself after the cleanup handlers registered by __main__ have executed.
   4. If worker processes have not been created for the current level of
@@ -1521,7 +1521,7 @@ class Command(HelpProvider):
       # For multi-thread or multi-process scenarios, the main process must
       # kill itself on a terminating signal, because sys.exit(1) only exits
       # the currently executing thread, leaving orphaned processes. The main
-      # thread is responsible for cleaning up multiprocessing variables such
+      # thread is responsible for pre_processing up multiprocessing variables such
       # as manager processes. Therefore, the main thread's signal handling
       # chain is:
       # 1: __main__._CleanupSignalHandler (clean up processes)

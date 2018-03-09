@@ -1,4 +1,4 @@
-from src.support_functions import *
+from src.support.support_functions import *
 from spec.input_data_columns.appbot import get_appbot_column_names
 from spec.input_data_columns.survey_gizmo import get_survey_gizmo_columns
 
@@ -18,16 +18,15 @@ data_specs = {
 }
 
 
-def read_all_data(date_threshold):
+def read_all_data():
     """
     Function to read through all the datasets in the target folder
     """
+    input_data_path = 'Input/'
     df = pd.DataFrame()
-    # Read in all the dataset
     file_paths = glob.glob(input_data_path + '*')
     for file_path in file_paths:
         df = read_input_file(file_path, df)
-    df = filter_by_date(df, date_threshold)
     return df
 
 
@@ -166,13 +165,3 @@ def update_dates_processed(df, source_name, colname='Date'):
             data_specs[source_name]['dates_covered'].append(date)  # Mark this date as been processed
     df = df.reset_index(drop=True)  # Reset the index as we have removed contents
     return df
-
-
-def filter_by_date(df, date_threshold):
-    """
-    The function remove rows whose date is before the given date threshold
-    """
-    date = datetime.strptime(date_threshold, '%Y-%m-%d').date()  # Convert the given threshold (in string) to date
-    df_filtered = df[df['Date'] >= date]
-    df = df.reset_index(drop=True)  # Reset the index as we have removed contents
-    return df_filtered

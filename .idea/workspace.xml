@@ -17,95 +17,68 @@
     <SUITE FILE_PATH="coverage/Mozilla_UofT_Capstone_User_Feedback$experiment2.coverage" NAME="experiment2 Coverage Results" MODIFIED="1512094683928" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Mozilla_UofT_Capstone_User_Feedback$experiment__1_.coverage" NAME="experiment (1) Coverage Results" MODIFIED="1520385025484" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Mozilla_UofT_Capstone_User_Feedback$test.coverage" NAME="test Coverage Results" MODIFIED="1516690130898" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/Mozilla_UofT_Capstone_User_Feedback$data_processing.coverage" NAME="data_processing Coverage Results" MODIFIED="1520559602704" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Mozilla_UofT_Capstone_User_Feedback$data_processing.coverage" NAME="data_processing Coverage Results" MODIFIED="1520567294018" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.5458221">
-      <split-first>
-        <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file leaf-file-name="data_processing.py" pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/data_processing.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="493">
-                  <caret line="33" column="53" lean-forward="false" selection-start-line="33" selection-start-column="53" selection-end-line="33" selection-end-column="53" />
-                  <folding>
-                    <element signature="e#0#45#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="sqlite.py" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/src/data_ouput/sqlite.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="430">
-                  <caret line="290" column="0" lean-forward="true" selection-start-line="289" selection-start-column="0" selection-end-line="290" selection-end-column="0" />
-                  <folding>
-                    <marker date="1520560066293" expanded="true" signature="697:1825" ph="CREATE TABLE... IF" />
-                    <marker date="1520560066293" expanded="true" signature="1965:2356" ph="CREATE TABLE... IF" />
-                    <marker date="1520560066293" expanded="true" signature="2498:2729" ph="CREATE TABLE... IF" />
-                    <marker date="1520560066293" expanded="true" signature="3559:3811" ph="INSERT INTO reviews... " />
-                    <marker date="1520560066293" expanded="true" signature="3949:4040" ph="INSERT INTO categorization... " />
-                    <marker date="1520560066293" expanded="true" signature="4176:4240" ph="INSERT INTO key_issue... " />
-                    <marker date="1520560066293" expanded="true" signature="7638:7678" ph="SELECT MAX(C... reviews" />
-                    <marker date="1520560066293" expanded="true" signature="7887:7934" ph="SELECT MAX(C... categorization" />
-                    <marker date="1520560066293" expanded="true" signature="8143:8185" ph="SELECT MAX(C... key_issue" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="temp.py" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/temp.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="225">
-                  <caret line="15" column="0" lean-forward="false" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="read_data.py" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/src/input/read_data.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="2550">
-                  <caret line="170" column="4" lean-forward="false" selection-start-line="170" selection-start-column="4" selection-end-line="170" selection-end-column="4" />
-                  <folding>
-                    <element signature="e#0#35#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="appbot.py" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/spec/input_data_columns/appbot.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="0">
-                  <caret line="0" column="4" lean-forward="false" selection-start-line="0" selection-start-column="4" selection-end-line="0" selection-end-column="4" />
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-        </leaf>
-      </split-first>
-      <split-second>
-        <leaf>
-          <file leaf-file-name="support_functions.py" pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/src/support_functions.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="122">
-                  <caret line="60" column="0" lean-forward="false" selection-start-line="60" selection-start-column="0" selection-end-line="60" selection-end-column="0" />
-                  <folding>
-                    <element signature="e#0#18#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-        </leaf>
-      </split-second>
-    </splitter>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="data_processing.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/data_processing.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="255">
+              <caret line="17" column="0" lean-forward="true" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
+              <folding>
+                <element signature="e#0#45#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="read_data.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/input/read_data.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="227">
+              <caret line="113" column="24" lean-forward="true" selection-start-line="113" selection-start-column="24" selection-end-line="113" selection-end-column="74" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="sqlite.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/data_ouptut/sqlite.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="225">
+              <caret line="15" column="40" lean-forward="true" selection-start-line="15" selection-start-column="40" selection-end-line="15" selection-end-column="40" />
+              <folding>
+                <element signature="e#0#14#0" expanded="true" />
+                <marker date="1520565504343" expanded="true" signature="1089:1127" ph="SELECT MAX(&quot;... reviews" />
+                <marker date="1520565504343" expanded="true" signature="1808:2936" ph="CREATE TABLE... IF" />
+                <marker date="1520565504343" expanded="true" signature="3076:3467" ph="CREATE TABLE... IF" />
+                <marker date="1520565504343" expanded="true" signature="3609:3840" ph="CREATE TABLE... IF" />
+                <marker date="1520565504343" expanded="true" signature="4732:4992" ph="INSERT INTO reviews... " />
+                <marker date="1520565504343" expanded="true" signature="6311:6406" ph="INSERT INTO categorization... " />
+                <marker date="1520565504343" expanded="true" signature="6959:7027" ph="INSERT INTO key_issue... " />
+                <marker date="1520565504343" expanded="true" signature="8554:8594" ph="SELECT MAX(C... reviews" />
+                <marker date="1520565504343" expanded="true" signature="8803:8850" ph="SELECT MAX(C... categorization" />
+                <marker date="1520565504343" expanded="true" signature="9059:9101" ph="SELECT MAX(C... key_issue" />
+                <marker date="1520565504343" expanded="true" signature="9874:9895" ph="SELECT * FRO... reviews" />
+                <marker date="1520565504343" expanded="true" signature="9999:10027" ph="SELECT * FRO... categorization" />
+                <marker date="1520565504343" expanded="true" signature="10140:10163" ph="SELECT * FRO... key_issue" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="output_processing.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/data_ouptut/output_processing.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="135">
+              <caret line="9" column="82" lean-forward="false" selection-start-line="9" selection-start-column="82" selection-end-line="9" selection-end-column="82" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -116,18 +89,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>track</find>
-      <find>pop</find>
-      <find>pop up</find>
-      <find>read_all_data</find>
-      <find>date</find>
-      <find>469</find>
-      <find>others;</find>
-      <find>Key Issue</find>
-      <find>key_issue</find>
-      <find>get_keywords_for_component</find>
-      <find>tag</find>
-      <find>update_df_tag</find>
       <find>proces</find>
       <find>translat</find>
       <find>nice</find>
@@ -146,6 +107,18 @@
       <find>process_surveygizmo_df</find>
       <find>appbot</find>
       <find>review</find>
+      <find>clean_text_after_translation</find>
+      <find>read_db</find>
+      <find>print_contents_from_db</find>
+      <find>create_connection</find>
+      <find>check_tables</find>
+      <find>get_sql_create_reviews_table</find>
+      <find>create_table</find>
+      <find>extract_user_defined_issue</find>
+      <find>date</find>
+      <find>82</find>
+      <find>datetime</find>
+      <find>max</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -182,11 +155,27 @@
         <option value="$PROJECT_DIR$/spec/input_data_columns/appbot.py" />
         <option value="$PROJECT_DIR$/spec/input_data_columns/input_data_columns.txt" />
         <option value="$PROJECT_DIR$/support_functions.py" />
-        <option value="$PROJECT_DIR$/src/support_functions.py" />
-        <option value="$PROJECT_DIR$/src/input/read_data.py" />
         <option value="$PROJECT_DIR$/spec/input_data_columns/survey_gizmo.py" />
         <option value="$PROJECT_DIR$/sqlite.py" />
         <option value="$PROJECT_DIR$/src/data_ouput/sqlite.py" />
+        <option value="$PROJECT_DIR$/src/cleaning/data_cleaning.py" />
+        <option value="$PROJECT_DIR$/Translation.py" />
+        <option value="$PROJECT_DIR$/src/pre_processing/data_cleaning.py" />
+        <option value="$PROJECT_DIR$/src/support_functions.py" />
+        <option value="$PROJECT_DIR$/src/clustering.py" />
+        <option value="$PROJECT_DIR$/src/pre_processing/Sentiment.py" />
+        <option value="$PROJECT_DIR$/src/categorization.py" />
+        <option value="$PROJECT_DIR$/src/categorization/categorization.py" />
+        <option value="$PROJECT_DIR$/src/categorization/read_categorization_input.py" />
+        <option value="$PROJECT_DIR$/src/key_issues.py" />
+        <option value="$PROJECT_DIR$/src/pre_processing/preprocessing.py" />
+        <option value="$PROJECT_DIR$/src/pre_processing/Translation.py" />
+        <option value="$PROJECT_DIR$/src/support/print_out_results.py" />
+        <option value="$PROJECT_DIR$/src/support/support_functions.py" />
+        <option value="$PROJECT_DIR$/src/data_ouptut/sqlite.py" />
+        <option value="$PROJECT_DIR$/src/key_issues/summarization.py" />
+        <option value="$PROJECT_DIR$/src/input/read_data.py" />
+        <option value="$PROJECT_DIR$/src/data_ouptut/output_processing.py" />
         <option value="$PROJECT_DIR$/data_processing.py" />
       </list>
     </option>
@@ -232,24 +221,12 @@
             <path>
               <item name="Mozilla_UofT_Capstone_User_Feedback" type="b2602c69:ProjectViewProjectNode" />
               <item name="Mozilla_UofT_Capstone_User_Feedback" type="462c0819:PsiDirectoryNode" />
-              <item name="Data" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Mozilla_UofT_Capstone_User_Feedback" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Mozilla_UofT_Capstone_User_Feedback" type="462c0819:PsiDirectoryNode" />
-              <item name="Data" type="462c0819:PsiDirectoryNode" />
-              <item name="2018_02_22" type="462c0819:PsiDirectoryNode" />
+              <item name="spec" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="Mozilla_UofT_Capstone_User_Feedback" type="b2602c69:ProjectViewProjectNode" />
               <item name="Mozilla_UofT_Capstone_User_Feedback" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Mozilla_UofT_Capstone_User_Feedback" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Mozilla_UofT_Capstone_User_Feedback" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="data_ouput" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -270,11 +247,11 @@
       <recent name="$PROJECT_DIR$" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/src/data_ouput" />
-      <recent name="$PROJECT_DIR$/src" />
-      <recent name="$PROJECT_DIR$/spec/input_data_columns" />
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/src/key_issues" />
+      <recent name="$PROJECT_DIR$/src/categorization" />
+      <recent name="$PROJECT_DIR$/src/support" />
       <recent name="$PROJECT_DIR$/spec" />
-      <recent name="$PROJECT_DIR$/Input" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -367,20 +344,20 @@
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
     </configuration>
-    <configuration name="sqlite" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="print_out_results" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/support" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="Mozilla_UofT_Capstone_User_Feedback" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/data_ouput/sqlite.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/support/print_out_results.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -534,18 +511,18 @@
     </configuration>
     <list size="5">
       <item index="0" class="java.lang.String" itemvalue="Python.data_processing" />
-      <item index="1" class="java.lang.String" itemvalue="Python.sqlite" />
-      <item index="2" class="java.lang.String" itemvalue="Python.clean_stop_words" />
-      <item index="3" class="java.lang.String" itemvalue="Python.clean_stop_words (1)" />
-      <item index="4" class="java.lang.String" itemvalue="Python.temp" />
+      <item index="1" class="java.lang.String" itemvalue="Python.clean_stop_words" />
+      <item index="2" class="java.lang.String" itemvalue="Python.clean_stop_words (1)" />
+      <item index="3" class="java.lang.String" itemvalue="Python.temp" />
+      <item index="4" class="java.lang.String" itemvalue="Python.print_out_results" />
     </list>
     <recent_temporary>
       <list size="5">
         <item index="0" class="java.lang.String" itemvalue="Python.data_processing" />
-        <item index="1" class="java.lang.String" itemvalue="Python.temp" />
-        <item index="2" class="java.lang.String" itemvalue="Python.clean_stop_words (1)" />
-        <item index="3" class="java.lang.String" itemvalue="Python.clean_stop_words" />
-        <item index="4" class="java.lang.String" itemvalue="Python.sqlite" />
+        <item index="1" class="java.lang.String" itemvalue="Python.print_out_results" />
+        <item index="2" class="java.lang.String" itemvalue="Python.temp" />
+        <item index="3" class="java.lang.String" itemvalue="Python.clean_stop_words (1)" />
+        <item index="4" class="java.lang.String" itemvalue="Python.clean_stop_words" />
       </list>
     </recent_temporary>
   </component>
@@ -580,7 +557,7 @@
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32969216" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3553398" sideWeight="0.5046875" order="7" side_tool="true" content_ui="tabs" x="0" y="334" width="2560" height="411" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.317" sideWeight="0.4945055" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.321" sideWeight="0.4945055" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32958034" sideWeight="0.49841145" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.37" sideWeight="0.4953125" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.328" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
@@ -634,35 +611,11 @@
           </properties>
         </breakpoint>
       </default-breakpoints>
-      <option name="time" value="152" />
+      <option name="time" value="158" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$USER_HOME$/General_Software/anaconda/lib/python3.6/site-packages/pandas/core/frame.py" />
-    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/_pydev_imps/_pydev_execfile.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="17" column="0" lean-forward="false" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/print_out_results.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="4" column="0" lean-forward="false" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/pydevd.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="169">
-          <caret line="1589" column="12" lean-forward="true" selection-start-line="1589" selection-start-column="12" selection-end-line="1589" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/categorization.csv" />
     <entry file="file://$PROJECT_DIR$/Data/2017_12_28/output/categorization.csv" />
     <entry file="file://$USER_HOME$/General_Software/anaconda/lib/python3.6/site-packages/sklearn/feature_extraction/text.py" />
     <entry file="file://$USER_HOME$/General_Software/anaconda/lib/python3.6/site-packages/pandas/core/reshape/merge.py" />
@@ -720,13 +673,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/temp.csv">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="1495" column="35" lean-forward="false" selection-start-line="1495" selection-start-column="35" selection-end-line="1495" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Data/2018_02_22/output/categorization.csv">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="105">
@@ -734,7 +680,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Data/Categorization.csv">
+    <entry file="file://$PROJECT_DIR$/spec/categorization_keywords.csv">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="187">
           <caret line="16" column="44" lean-forward="false" selection-start-line="16" selection-start-column="44" selection-end-line="16" selection-end-column="44" />
@@ -766,22 +712,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/temp2.py" />
-    <entry file="file://$PROJECT_DIR$/src/read_categorization_input.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="263">
-          <caret line="50" column="36" lean-forward="true" selection-start-line="50" selection-start-column="36" selection-end-line="50" selection-end-column="36" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/categorization.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="309">
-          <caret line="90" column="9" lean-forward="false" selection-start-line="90" selection-start-column="9" selection-end-line="90" selection-end-column="9" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/spec/key_issues_keywords2.csv">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -798,14 +728,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/print_out_results.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="630">
-          <caret line="42" column="77" lean-forward="false" selection-start-line="42" selection-start-column="77" selection-end-line="42" selection-end-column="77" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pm/project_log.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="FIRST">
@@ -814,14 +736,6 @@
             <folding />
           </first_editor>
           <second_editor />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/read_key_issues_input.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="600">
-          <caret line="40" column="32" lean-forward="false" selection-start-line="40" selection-start-column="32" selection-end-line="40" selection-end-column="32" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -849,14 +763,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/spec/key_issues_keywords.csv">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="6" column="271" lean-forward="false" selection-start-line="6" selection-start-column="271" selection-end-line="6" selection-end-column="271" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Data/2018_02_22/export_export_reviews.csv">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -870,34 +776,6 @@
         <state relative-caret-position="60">
           <caret line="4" column="0" lean-forward="true" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/temp.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="15" column="0" lean-forward="false" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/support_functions.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="122">
-          <caret line="60" column="0" lean-forward="false" selection-start-line="60" selection-start-column="0" selection-end-line="60" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/clustering.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="670">
-          <caret line="186" column="15" lean-forward="false" selection-start-line="186" selection-start-column="15" selection-end-line="186" selection-end-column="15" />
-          <folding>
-            <element signature="e#0#35#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -917,6 +795,14 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/temp.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="15" column="0" lean-forward="false" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/spec/input_data_columns/appbot.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -925,38 +811,147 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/input/read_data.py">
+    <entry file="file://$PROJECT_DIR$/src/pre_processing/Sentiment.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2550">
-          <caret line="170" column="4" lean-forward="false" selection-start-line="170" selection-start-column="4" selection-end-line="170" selection-end-column="4" />
+        <state relative-caret-position="-129">
+          <caret line="19" column="23" lean-forward="false" selection-start-line="19" selection-start-column="4" selection-end-line="19" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/categorization/read_categorization_input.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="9" column="31" lean-forward="true" selection-start-line="9" selection-start-column="31" selection-end-line="9" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/categorization/categorization.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="286">
+          <caret line="43" column="4" lean-forward="true" selection-start-line="43" selection-start-column="4" selection-end-line="43" selection-end-column="32" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/key_issues/read_key_issues_input.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" column="23" lean-forward="true" selection-start-line="4" selection-start-column="23" selection-end-line="4" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/key_issues.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pre_processing/preprocessing.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="10" column="24" lean-forward="true" selection-start-line="10" selection-start-column="24" selection-end-line="10" selection-end-column="24" />
           <folding>
-            <element signature="e#0#35#0" expanded="true" />
+            <element signature="e#0#43#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/data_ouput/sqlite.py">
+    <entry file="file://$PROJECT_DIR$/temp.csv">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="430">
-          <caret line="290" column="0" lean-forward="true" selection-start-line="289" selection-start-column="0" selection-end-line="290" selection-end-column="0" />
+        <state relative-caret-position="227">
+          <caret line="872" column="48" lean-forward="false" selection-start-line="872" selection-start-column="48" selection-end-line="872" selection-end-column="48" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spec/key_issues_keywords.csv">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="6" column="271" lean-forward="false" selection-start-line="6" selection-start-column="271" selection-end-line="6" selection-end-column="271" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/key_issues/summarization.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="284">
+          <caret line="180" column="34" lean-forward="true" selection-start-line="180" selection-start-column="34" selection-end-line="180" selection-end-column="34" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/support/support_functions.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="12" column="13" lean-forward="false" selection-start-line="12" selection-start-column="5" selection-end-line="12" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pre_processing/Translation.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="43" lean-forward="false" selection-start-line="0" selection-start-column="43" selection-end-line="0" selection-end-column="43" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/support/print_out_results.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="18" column="0" lean-forward="true" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/input/read_data.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="227">
+          <caret line="113" column="24" lean-forward="true" selection-start-line="113" selection-start-column="24" selection-end-line="113" selection-end-column="74" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/data_ouptut/output_processing.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="9" column="82" lean-forward="false" selection-start-line="9" selection-start-column="82" selection-end-line="9" selection-end-column="82" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/data_ouptut/sqlite.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="15" column="40" lean-forward="true" selection-start-line="15" selection-start-column="40" selection-end-line="15" selection-end-column="40" />
           <folding>
-            <marker date="1520560066293" expanded="true" signature="697:1825" ph="CREATE TABLE... IF" />
-            <marker date="1520560066293" expanded="true" signature="1965:2356" ph="CREATE TABLE... IF" />
-            <marker date="1520560066293" expanded="true" signature="2498:2729" ph="CREATE TABLE... IF" />
-            <marker date="1520560066293" expanded="true" signature="3559:3811" ph="INSERT INTO reviews... " />
-            <marker date="1520560066293" expanded="true" signature="3949:4040" ph="INSERT INTO categorization... " />
-            <marker date="1520560066293" expanded="true" signature="4176:4240" ph="INSERT INTO key_issue... " />
-            <marker date="1520560066293" expanded="true" signature="7638:7678" ph="SELECT MAX(C... reviews" />
-            <marker date="1520560066293" expanded="true" signature="7887:7934" ph="SELECT MAX(C... categorization" />
-            <marker date="1520560066293" expanded="true" signature="8143:8185" ph="SELECT MAX(C... key_issue" />
+            <element signature="e#0#14#0" expanded="true" />
+            <marker date="1520565504343" expanded="true" signature="1089:1127" ph="SELECT MAX(&quot;... reviews" />
+            <marker date="1520565504343" expanded="true" signature="1808:2936" ph="CREATE TABLE... IF" />
+            <marker date="1520565504343" expanded="true" signature="3076:3467" ph="CREATE TABLE... IF" />
+            <marker date="1520565504343" expanded="true" signature="3609:3840" ph="CREATE TABLE... IF" />
+            <marker date="1520565504343" expanded="true" signature="4732:4992" ph="INSERT INTO reviews... " />
+            <marker date="1520565504343" expanded="true" signature="6311:6406" ph="INSERT INTO categorization... " />
+            <marker date="1520565504343" expanded="true" signature="6959:7027" ph="INSERT INTO key_issue... " />
+            <marker date="1520565504343" expanded="true" signature="8554:8594" ph="SELECT MAX(C... reviews" />
+            <marker date="1520565504343" expanded="true" signature="8803:8850" ph="SELECT MAX(C... categorization" />
+            <marker date="1520565504343" expanded="true" signature="9059:9101" ph="SELECT MAX(C... key_issue" />
+            <marker date="1520565504343" expanded="true" signature="9874:9895" ph="SELECT * FRO... reviews" />
+            <marker date="1520565504343" expanded="true" signature="9999:10027" ph="SELECT * FRO... categorization" />
+            <marker date="1520565504343" expanded="true" signature="10140:10163" ph="SELECT * FRO... key_issue" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/data_processing.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="493">
-          <caret line="33" column="53" lean-forward="false" selection-start-line="33" selection-start-column="53" selection-end-line="33" selection-end-column="53" />
+        <state relative-caret-position="255">
+          <caret line="17" column="0" lean-forward="true" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
           <folding>
             <element signature="e#0#45#0" expanded="true" />
           </folding>

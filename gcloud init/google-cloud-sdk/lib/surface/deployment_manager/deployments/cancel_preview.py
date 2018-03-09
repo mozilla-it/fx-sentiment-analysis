@@ -91,7 +91,7 @@ class CancelPreview(base.Command, dm_base.DmCommand):
       fingerprint = dm_util.DecodeFingerprint(args.fingerprint)
     else:
       # If no fingerprint is present, default to an empty fingerprint.
-      # TODO(b/34966984): Remove the empty default after cleaning up all
+      # TODO(b/34966984): Remove the empty default after pre_processing up all
       # deployments that has no fingerprint
       fingerprint = dm_api_util.FetchDeploymentFingerprint(
           self.client,

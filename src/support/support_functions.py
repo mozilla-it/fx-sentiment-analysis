@@ -60,44 +60,6 @@ def write_to_file(words, file_path):
     myfile.close()
 
 
-def translate_reviews(df):
-    """
-    This function scans through each review and translate the non-English reviews
-    """
-    translate_client = translate.Client()
-    # Get column index: for the convenience of extraction
-    original_review_col_id = df.columns.get_loc('Original Reviews')  # Get the index of the target column
-    translated_review_col_id = df.columns.get_loc('Translated Reviews')  # Get the index of the target column
-
-    # Start Translation
-    print('Start to translate: ' + str(len(df)) + ' reviews: ')
-    for i in range(len(df)):
-        if len(df.iloc[i, translated_review_col_id]) < min(4, len(
-                df.iloc[i, original_review_col_id])):  # Detect if the translated review is empty
-            original_review = df.iloc[i, original_review_col_id]  # Extract the original review
-            try:  # Some reviews may contain non-language contents
-                """
-                if detect(original_review) == 'en':  # If the original review is in English
-                    df.iloc[
-                        i, translated_review_col_id] = original_review  # Copy the original review - do not waste API usage
-                else:  # Otherwise, call Google Cloud API for translation
-                """
-                df.iloc[i, translated_review_col_id] = \
-                    translate_client.translate(original_review, target_language='en')['translatedText']
-            except:
-                df.iloc[i, translated_review_col_id] = 'Error: no language detected!'
-        if i % 100 == 0:
-            print(str(i + 1) + ' reviews have been processed!')
-    print('All reviews have been processed!')
-
-    return df
-
-
-def clean_text_after_translation(text):
-    text.replace("&#39;", "\s")
-    return text
-
-
 def get_counter_contents(counter, sorted=False):
     """
     Get the labels and counts in the counters
@@ -108,6 +70,11 @@ def get_counter_contents(counter, sorted=False):
         labels = np.array(labels)[ind_sorted]
         values = np.array(values)[ind_sorted]
     return labels, values
+
+
+def clean_text_after_translation(text):
+    text.replace("&#39;", "\s")
+    return text
 
 
 def plot_hists(values):
@@ -250,75 +217,6 @@ def select_keywords_on_freq(texts, k=50, min_thresh=0, process_word=True, additi
         return words_selected, counts_selected
     else:
         return words_selected
-
-
-def interpret_sentiment(annotations):
-    score = annotations.document_sentiment.score
-    magnitude = annotations.document_sentiment.magnitude / max(1, len(annotations.sentences))  # Take the average
-    sent_scores = []
-    sent_magnitudes = []
-    for index, sentence in enumerate(annotations.sentences):
-        sent_scores.append(sentence.sentiment.score)
-        sent_magnitudes.append(sentence.sentiment.magnitude)
-    return score, magnitude, sent_scores, sent_magnitudes
-
-
-def get_sentiment(client, content):
-    document = types.Document(
-        content=content,
-        type=enums.Document.Type.PLAIN_TEXT)
-    try:
-        annotations = client.analyze_sentiment(document=document)
-        score, magnitude, sent_socres, sent_magnitudes = interpret_sentiment(annotations)
-    except:
-        return 0, 0, 0, 0
-    return score, magnitude, sent_socres, sent_magnitudes
-
-
-def sentiment_analysize(texts, client):
-    print('Start Sentiment Analysis: ' + str(len(texts)) + ' reviews: ')
-    scores = np.zeros(len(texts))
-    magnitudes = np.zeros(len(texts))
-    sent_scores_list = []
-    sent_magnitudes_list = []
-    count = 0
-    for i, review in enumerate(texts):
-        if (i % 500 == 0 and i > 0):
-            print('500 reviews have been processed, and the programme need to be paused for 60 seconds!')
-            time.sleep(60)
-        scores[i], magnitudes[i], sent_scores, sent_magnitudes = get_sentiment(client, review)
-        sent_scores_list.append(sent_scores)
-        sent_magnitudes_list.append(sent_magnitudes)
-        if i % 100 == 0:
-            print(str(i + 1) + ' reviews have been processed!')
-    print('All reviews have been processed!')
-    return scores, magnitudes, sent_scores_list, sent_magnitudes_list
-
-
-def discretize_sentiment(score, magnitudes):
-    if np.abs(magnitudes) <= 0.25 or np.abs(score) <= 0.15:
-        sentiment = 'Neutral'
-    elif score > 0:
-        sentiment = 'Positive'
-    else:
-        sentiment = 'Negative'
-    return sentiment
-
-
-def measure_sentiments(df):
-    client = language.LanguageServiceClient()
-    scores, magnitudes, sent_scores_list, sent_magnitudes_list = sentiment_analysize(df['Translated Reviews'], client)
-    # df['sentiment_score'] = scores
-    # df['sentiment_magnitude'] = magnitudes
-    # df['score_by_sentence'] = sent_scores_list
-    # df['magnitude_by_sentence'] = sent_magnitudes_list
-
-    sentiments = []
-    for i in range(len(df)):
-        sentiment = discretize_sentiment(scores[i], magnitudes[i])
-        sentiments.append(sentiment)
-    df['Sentiment'] = sentiments
-    return df
 
 
 def identify_keywords(df, n_top_words=30):
@@ -614,61 +512,6 @@ def index_df(df):
     return df
 
 
-def spam_filter(df, colname='Translated Reviews'):
-    """
-    Function to filter out spam and remove sensitive privacy-related content in feedbacks
-    :param df:
-    :param colname:
-    :return:
-    """
-    email_regex = '[\w\.-]+@[\w\.-]+'
-    phone_regex = '(\d{3}[-\.\s]??\d{3}[-\.\s]??\d{4}|\(\d{3}\)\s*\d{3}[-\.\s]??\d{4}|\d{3}[-\.\s]??\d{4})'
-
-    def identify_sensitive_info(text):
-        return (len(re.findall(email_regex, text)) + len(re.findall(phone_regex, text))) > 0
-
-    def remove_sensitive_info(text):
-        """Function to remove sensitive email from feedbacks"""
-        text = re.sub(email_regex, "", text)
-        text = re.sub(phone_regex, "", text)
-        return text
-
-    def spam_detector(text):
-        """Function to detect if there is a clue of spam in the sentence"""
-        if text == 'Error: no language detected!':
-            return 1, text
-        if isNaN(text):
-            return 1, text
-        result = 0  # assume not a spam
-        too_long = (len(text) > 1000) & (len(re.findall(r'[Ff]irefox|browser', text)) < 2)
-        include_sensitive_info = identify_sensitive_info(text)
-        too_many_digits = len(re.findall(r'\d+', text)) > 30
-        if include_sensitive_info:
-            text = remove_sensitive_info(text)
-            result, text = spam_detector(text)  # recursor
-        if too_long + too_many_digits + result > 0:
-            result = 1  # Spam
-        else:
-            result = 0
-        return result, text
-
-    feedbacks = list(df[colname])
-    spams = np.zeros(len(feedbacks))
-    need_another_round = True
-    while need_another_round:
-        need_another_round = False
-        feedbacks_processed = []
-        for i, feedback in enumerate(feedbacks):
-            result, feedback = spam_detector(feedback)
-            spams[i] = result
-            if result == 0:  #not spam
-                feedbacks_processed.append(feedback)
-        feedbacks = feedbacks_processed
-    df['Spam'] = spams
-    df_filtered = df[df['Spam'] == 0]
-    df_filtered = df_filtered.reset_index(drop=True)
-    df_filtered[colname] = feedbacks
-    return df_filtered
 
 
 def cluster_based_on_similarity(similarity_matrix, sim_thresh=0.3, size_thresh=4):
