@@ -11,7 +11,6 @@ from google.cloud.language import types
 import argparse
 from langdetect import detect
 from datetime import datetime
-from matplotlib import pyplot as plt
 from collections import Counter
 import nltk
 from nltk.stem import *
@@ -22,7 +21,6 @@ import nltk
 from nltk.corpus import wordnet
 from nltk.tag import PerceptronTagger
 import seaborn as sns
-import matplotlib.pyplot as plt
 import scipy.stats as ss
 from sklearn.feature_extraction.text import TfidfVectorizer
 
@@ -77,30 +75,6 @@ def clean_text_after_translation(text):
     return text
 
 
-def plot_hists(values):
-    """
-    Plot the histogram with the given value. Since the histogram is skewed to the right, I also plot a hist at
-    the range [0,9] at a detailed look
-    """
-    plt.figure()
-    fig, axes = plt.subplots(1, 2, figsize=(15, 8))  # Create two subplots side by side
-
-    # A histogram of the entire frequency dataset
-    axes[0].hist(values, bins=50)
-    axes[0].set_title('Histogram of the frequency of all the words')
-    # Set common labels
-    axes[0].set_xlabel('Word Frequency')
-    axes[0].set_ylabel('# Unique Words')
-
-    # A histogram with a narrow range to get a detailed look at the left-most bin
-    axes[1].hist(values, range=(0, 10))
-    axes[1].set_title('Histogram of the frequency of words with range [0,9]')
-    # Set common labels
-    axes[1].set_xlabel('Word Frequency')
-    axes[1].set_ylabel('# Unique Words')
-    plt.show()
-
-
 def word_process(word):
     sbStem = SnowballStemmer("english")
     word_processed = sbStem.stem(word)
@@ -148,18 +122,6 @@ def clean_words(counter, stop_words):
             words.insert(0, word)
             values.insert(0, counter[i][1])
     return words, values
-
-
-def plot_bar_plots(X, Y, label_x='', label_y='', title=''):
-    fig = plt.figure(figsize=(10, 6))
-    width = .35
-    indices = np.arange(len(X))
-    plt.bar(indices, Y, width=width)
-    plt.xticks(indices + width / 2, X)
-    plt.xlabel(label_x)
-    plt.ylabel(label_y)
-    plt.title(title)
-    plt.show()
 
 
 def select_from_list_a_based_on_list_b(list_a, list_b, min_thresh, k):
@@ -456,7 +418,7 @@ def vectorize_tfidf(texts):
     return tfidf_encoded
 
 
-def measure_sim_tfidf(texts, viz=False):
+def measure_sim_tfidf(texts):
     """
     Function to measure the similarity between texts with TF-IDF
     :param texts: list of texts in arrays
@@ -465,22 +427,7 @@ def measure_sim_tfidf(texts, viz=False):
     """
     tfidf = vectorize_tfidf(texts)
     similarity_matrix = (tfidf * tfidf.T).A
-    if viz:
-        plot_heatmap(similarity_matrix, title='Heatmap of the Similarity Matrix')
     return similarity_matrix
-
-
-def plot_heatmap(data, title=''):
-    """
-    This function plots a heatmap with the input data matrix
-    """
-    plt.figure(figsize=(10, 5))
-    cmap = sns.diverging_palette(220, 10, as_cmap=True)
-    plt.imshow(data, cmap=cmap, interpolation='nearest')  # Create a heatmap
-    plt.colorbar()  # Add a Color Bar by the side
-    if len(title) > 0:
-        plt.title(title)
-    plt.show()
 
 
 def cut_feedbacks(feedbacks, length=2):
