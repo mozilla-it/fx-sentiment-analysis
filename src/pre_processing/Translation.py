@@ -15,5 +15,5 @@ def translate_reviews(df):
         except:
             translated_review = 'Error: no language detected!'
         translated_reviews.append(translated_review)
-    df['Translated Review'] = translated_reviews
+    df['Translated Reviews'] = translated_reviews
     return df

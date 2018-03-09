@@ -3,7 +3,7 @@ from src.support.support_functions import *
 
 def measure_sentiments(df):
     client = language.LanguageServiceClient()
-    scores, magnitudes, sent_scores_list, sent_magnitudes_list = sentiment_analysize(df['Translated Review'], client)
+    scores, magnitudes, sent_scores_list, sent_magnitudes_list = sentiment_analysize(df['Translated Reviews'], client)
     # df['sentiment_score'] = scores
     # df['sentiment_magnitude'] = magnitudes
     # df['score_by_sentence'] = sent_scores_list
