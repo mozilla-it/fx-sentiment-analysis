@@ -27,4 +27,4 @@ For the input data, I included a few user feedback files from both Appbot and Su
 The data pipeline has been build into the [data_processing](https://github.com/Ivan-Zhou/Mozilla_UofT_Capstone_User_Feedback/blob/master/data_processing.py) python file. By runing the file, it will automatically extract data from the input folder and run the pipeline. 
 
 ### Output
-Output data will be saved in a SQLite database in the [Output](/Output) folder. If no database is found (as in the current case), a new database file will be automatically created in the target folder. All the results from the later jobs will be automatically updated in the database.
+Output data will be saved in a SQLite database in the Output folder (which does not required to be created manually). If no database is found (as in the current case), a new database file will be automatically created in the target folder. All the results from the later jobs will be automatically updated in the database.
