@@ -1,3 +1,6 @@
 
 *.xml
 *.pyc
+*.iml
+.DS_Store
+*.sqlite
