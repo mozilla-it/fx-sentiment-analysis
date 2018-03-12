@@ -25,7 +25,21 @@ def clean_components(components):
 
 
 def categorize(df):
-    cateDict = get_categorization_input() # Read the content from the categorization file
+    store_list = df['Store'].unique()
+    df_processed = pd.DataFrame()
+    df_categorization = pd.DataFrame()
+    for store in store_list:
+        df_by_store = df[df['Store'] == store]
+        df_by_store = df_by_store.reset_index(drop=True)
+        df_categorization_by_store, df_by_store = categorize_by_store(df_by_store, store)
+        df_processed = pd.concat([df_processed, df_by_store])  # Merged the dataframes
+        df_categorization = pd.concat([df_categorization, df_categorization_by_store])
+    return df_categorization, df_processed
+
+
+
+def categorize_by_store(df, store_name):
+    cateDict = get_categorization_input(store_name) # Read the content from the categorization file
 
     df['Verb Phrases'] = extract_phrases(df['Translated Reviews'], 'VP')
     df['Noun Phrases'] = extract_phrases(df['Translated Reviews'], 'NP')
@@ -41,6 +55,8 @@ def categorize(df):
     features_found_list = []
     components_found_list = []
     actions_found_list = []
+    print(store_name)
+    print(len(df))
     for i, row in df.iterrows():
         components_found = []
         components_dict = {}

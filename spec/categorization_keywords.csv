@@ -1,29 +1,39 @@
-Tier,Feature,Component,Keywords
-1,Bookmark,Bookmark,"Book mark, favorite, marked site"
-,General,Firefox Browser,"Firefox, Browser, Like, Thank, fast, look, able to, compatible, sync, Update, Touch, mobile, gesture, Download, Release, Thank, Crash, icon, Menu, button, fast, app, support, extension, addon, integration, look, iphone, interface, logo, Quantum, design, fast, menu, version, ui, safari, chrome, ie, navigation"
-,History,History/cookies/cache,cook
-1,New Tab,Top Sites,"trending, suggestion"
-1,New Tab,Highlights,recommend
-1,New Tab,Pocket,
-1,Privacy/Security,Private Mode,"private browsing,  private window, private page"
-1,Privacy/Security,Log in,
-1,Privacy/Security,Touch ID/Passcode,password
-1,Privacy/Security,Tracking Protection,"ad, ads, adblocker, track"
-,Reading List,Reading List,reading mode
-,Settings,Night Mode,"Night, dark mode"
-,Settings,Default search engine,
-,Settings,Home page,
-,Settings,Email,
-,Settings,Block Pop-up windows,"pop-up, pop"
-,Settings,Save Logins,save log in
-1,Sync and Accounts,Accounts,"account, sign-in, sign in, sync"
-1,Tabs,Tabs,Tab
-,Utilities,Reading View,
-,Utilities,Desktop View,"Desktop Site, Desktop Mode"
-,Utilities,QR code,
-,Utilities,Page,"webpage, web page"
-,Utilities,Text,"text, font"
-,Utilities,Image,picture
-,Utilities,Video,"movie, audio"
-,Utilities,Files,pdf
-,Utilities,Link/URL,
+Store,Tier,Feature,Component,Keywords
+iOS,1,Bookmark,Bookmark,"Book mark, favorite, marked site"
+IOS,,General,Firefox Browser,"Firefox, Browser, Like, Thank, fast, look, able to, compatible, sync, Update, Touch, mobile, gesture, Download, Release, Thank, Crash, icon, Menu, button, fast, app, support, extension, addon, integration, look, iphone, interface, logo, Quantum, design, fast, menu, version, ui, safari, chrome, ie, navigation, happy, hate, suck, pretty,beautical,ugly, elegant,good looking,good-looking,nice,pleasant,awful,great,design, user interface, user experience, ux, slow,lag,laggy,quick,speed,smooth,crash, frozen,abort,abandon,freeze,dead,died,update,release,updated,new version,compatible"
+IOS,,History,History/cookies/cache,cook
+IOS,1,New Tab,Top Sites,"trending, suggestion, top sites, topsite, top websites, frequent visit, frequent site, high visit"
+IOS,1,New Tab,Highlights,"recommend, highlight, recent visit, recent site, recent bookmark, latest visit, latest site, latest bookmark"
+IOS,1,New Tab,Pocket,"pocket, save video, recommended by pocket"
+iOS,1,Privacy/Security,Private Mode,"private browsing,  private window, private page"
+IOS,1,Privacy/Security,Log in,
+IOS,1,Privacy/Security,Touch ID/Passcode,password
+IOS,1,Privacy/Security,Tracking Protection,"track, track data, collect data"
+IOS,,Reading List,Reading List,reading mode
+IOS,,Settings,Night Mode,"Night, dark mode"
+iOS,,Settings,Default search engine,
+IOS,,Settings,Home page,
+IOS,,Settings,Email,
+IOS,,Settings,Block Pop-up windows,"pop-up, pop, block window"
+IOS,,Settings,Save Logins,"save log in, save account"
+IOS,1,Sync and Accounts,Accounts,"account, sign-in, sign in, sync"
+iOS,1,Tabs,Tabs,Tab
+IOS,,Utilities,Reading View,
+IOS,,Utilities,Desktop View,"Desktop Site, Desktop Mode"
+IOS,,Utilities,QR code,
+IOS,,Utilities,Page,"webpage, web page"
+IOS,,Utilities,Text,"text, font"
+iOS,,Utilities,Image,picture
+IOS,,Utilities,Video,"movie, audio"
+IOS,,Utilities,Files,pdf
+IOS,,Utilities,Link/URL,
+Desktop,,Bookmark,Bookmark,"Book mark, favorite, marked site"
+Desktop,,General,Firefox Browser,"Firefox, Browser, Like, Update, Touch, mobile, gesture, Use, Thank, icon, Menu, button, fast, app, support, extension, addon, integration, look, interface, logo, Quantum, design, menu, version, ui, safari, chrome, navigation, happy, hate, suck, pretty,beautical,ugly, elegant,good looking,good-looking,nice,pleasant,awful,great,design, user interface, user experience, ux, slow,lag,laggy,quick,speed,smooth,crash, frozen,abort,abandon,freeze,dead,died,update,release,updated,new version,compatible, windows, mac"
+Desktop,,History,History/cookies/cache,"History/cookies/cache,cook"
+Desktop,1,New Tab/Home page,Top Sites,"top sites, topsite, top websites, frequent visit, frequent site, high visit"
+Desktop,1,New Tab/Home page,Highlights,"highlight, recent visit, recent site, recent bookmark, latest visit, latest site, latest bookmark"
+Desktop,1,New Tab/Home page,Pocket,"pocket, save video, recommended by pocket"
+Desktop,,Performance,Slowness,"slow,fast,lag,laggy,quick,speed,smooth"
+Desktop,,Performance,Crashes,"crash, frozen,abort,abandon,freeze,dead,died"
+Desktop,,UX design,Color,"color, red, orange, yellow, green, blue, purple, brown, magenta, tan, cyan, olive, maroon, navy, aquamarine, turquoise, silver, lime, teal, indigo, violet, pink, white, black"
+Desktop,,UX design,Preferences,"fonts&color, save files to, default browser, general, language, application download, performance settings, scrollling, default search engine, remember log in, history setting, suggest browing history, suggest bookmarks, suggest open tabs, cached web content, set tracking protection, firefox data collection and use, block dangerous content, block dangerous downloads,"

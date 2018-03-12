@@ -21,13 +21,15 @@ def summarize(text_list):
 def create_cluster(df, thresh=0.3):
     texts = df['Translated Reviews']
     texts_processed = process_texts_for_clustering(texts)
-    similarity_matrix = measure_sim_tfidf(texts_processed, viz=False)
-    return cluster_based_on_similarity(similarity_matrix, sim_thresh=0.3, size_thresh=4)
+    similarity_matrix = measure_sim_tfidf(texts_processed)
+    return cluster_based_on_similarity(similarity_matrix, sim_thresh=thresh, size_thresh=4)
 
 
-def extract_keywords(texts, top_k=4):
-    categorization_Dict = get_categorization_input()
-    pre_defined_keywords_list = categorization_Dict.keywords
+def extract_keywords(texts, store_name, top_k=1):
+    categorization_dict = get_categorization_input(store_name)
+    pre_defined_keywords_list = categorization_dict.keywords
+    keyissue_dict = get_key_issue_input(store_name)
+    pre_defined_keywords_list = pre_defined_keywords_list + keyissue_dict.keywords
 
     if len(texts) < 5:
         top_k = 1
@@ -54,22 +56,20 @@ def select_keywords(keywords, counts, top_k):
     return keywords_selected
 
 
-def update_df_key_issue(df, ID, component, key_issues):
+def update_df_key_issue(df, ID, key_issues):
     for key_issue in key_issues:
-        df.loc[len(df)] = [ID, component, key_issue]
+        df.loc[len(df)] = ['Bottom-Up', ID, key_issue]  # Append at the bottom
     return df
 
 
 def prepare_text(df, cluster):
     VP = [df['Verb Phrases'].iloc[i] for i in cluster]
     NP = [df['Noun Phrases'].iloc[i] for i in cluster]
-    Actions = [df['Actions'].iloc[i] for i in cluster]
     texts = []
     for i in range(len(cluster)):
         text = ''
         text = text + VP[i] + ', ' if isinstance(VP[i], str) else text
         text = text + NP[i] + ', ' if isinstance(NP[i], str) else text
-        text = text + Actions[i] + ', ' if isinstance(Actions[i], str) else text
         if len(text) > 0:
             texts.append(text)
     # if len(texts) == 0:
@@ -146,6 +146,17 @@ def process_texts_for_clustering(texts):
 
 
 def extract_user_defined_issue(df):
+    store_list = df['Store'].unique()
+    df_key_issues = pd.DataFrame()
+    for store in store_list:
+        df_by_store = df[df['Store'] == store]
+        df_by_store = df_by_store.reset_index(drop=True)
+        df_key_issues_by_store = extract_issue_by_store(df_by_store, store)
+        df_key_issues = pd.concat([df_key_issues, df_key_issues_by_store])  # Merged the dataframes
+    return df_key_issues
+
+
+def extract_issue_by_store(df, store_name):
     """
     Function to extract user-defined issues from the given feedbbacks (top-down approach)
     :param df: df contains ID and translated feedbacks
@@ -165,7 +176,7 @@ def extract_user_defined_issue(df):
                 return [issue]
         return issue
 
-    keyissueDict = get_key_issue_input()
+    keyissueDict = get_key_issue_input(store_name)
     keywords_found_text_list = find_words(df['Translated Reviews'], keyissueDict.keywords)
     id_list = []
     issues_list = []
@@ -188,24 +199,27 @@ def extract_user_defined_issue(df):
         {
             'ID': id_list,
             'Issue': issues_list,
+
         }
     )
 
 
-def cluster_and_summarize(df_feedbacks, df_categorization):
-    #  df_join = df_feedbacks.merge(df_categorization, on='ID')
+def cluster_and_summarize(df_feedbacks):
     df_key_issue = extract_user_defined_issue(df_feedbacks)
     """
-    components = df_join.Component.unique()
-    for component in components:
-        df_selected = df_join[df_join['Component'] == component]
-        clusters = create_cluster(df_selected)
-        for cluster in clusters:
-            texts = prepare_text(df_selected, cluster)
-            keywords = extract_keywords(texts)
-            if len(keywords) > 0:
-                for i in cluster:
-                    ID = df_selected['ID'].iloc[i]
-                    df_key_issue = update_df_key_issue(df_key_issue, ID, component, keywords)
+    store_list = df_feedbacks['Store'].unique()
+    for store in store_list:
+        df_by_store = df_feedbacks[df_feedbacks['Store'] == store]
+        device_type_list = df_by_store['Device'].unique()
+        for device_type in device_type_list:
+            df = df_by_store[df_by_store['Device'] == device_type]
+            clusters = create_cluster(df)
+            for cluster in clusters:
+                texts = prepare_text(df, cluster)
+                keywords = extract_keywords(texts, store)
+                if len(keywords) > 0:
+                    for i in cluster:
+                        ID = df['ID'].iloc[i]
+                        df_key_issue = update_df_key_issue(df_key_issue, ID, keywords)
     """
     return df_key_issue

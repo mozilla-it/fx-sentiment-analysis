@@ -5,6 +5,7 @@ from src.pre_processing.Sentiment import measure_sentiments
 
 def preprocess(df):
     df = spam_filter(df, colname='Original Reviews')
+    df = remove_duplicate_feedbacks(df, colname='Original Reviews')
     df = translate_reviews(df)  # Translate non-English reviews
     df = measure_sentiments(df)  # Sentiment Analysis
     df['ID'] = np.arange(len(df))  # Add ID Column
@@ -68,3 +69,7 @@ def spam_filter(df, colname='Translated Reviews'):
     df_filtered = df_filtered.reset_index(drop=True)
     df_filtered[colname] = feedbacks
     return df_filtered
+
+
+def remove_duplicate_feedbacks(df, colname='Original Reviews'):
+    return df.drop_duplicates([colname])

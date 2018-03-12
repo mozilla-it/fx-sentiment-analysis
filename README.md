@@ -28,3 +28,31 @@ The data pipeline has been build into the [data_processing](https://github.com/I
 
 ### Output
 Output data will be saved in a SQLite database in the Output folder (which does not required to be created manually). If no database is found (as in the current case), a new database file will be automatically created in the target folder. All the results from the later jobs will be automatically updated in the database.
+
+<br>
+
+## Specification and Extension of Input Data
+Not all of our data sources have the same format in columns and data structure; therefore, users need to provide specification of the input data. 
+
+In this tool we have included the data specification for the following type of datasets. We will use them as examples to help users understand the data specification and extend the tool for new data sources. 
+- iOS feedback data from Appbot
+- iOS feedback data from SurveyGizmo
+- Desktop feedback data from SurveyGizmo
+
+### Specificaiton of Column Names
+First, users need to map the column names in the input data with the required column names so that the system can know where to extract the right information. 
+Here we already taken into account that not every column is available in all the datasets, and most of the column requires pre-processing. Therefore,
+the specification will provide inputs to the processing functions, instead of hardcode it in the system. The complete list of column names including:
+- `Device`: the name of the column that contains the device information, aka "iPhone", "Windows"
+- `Store`: the name of the column that contains the store information, aka "iOS", "Desktop"
+- `Country`: the name of the column that contains the country information
+- `Date`: the name of the column that contains the review date information
+- `Rating`: the name of the column that contains the review rating information
+- `Version`: the name of the column that contains the App Version information
+- `Original Reviews`: the name of the column that contains the reviews texts
+
+As examples, the specification of column names in the SurveyGizmo and Appbot datasets can be found in [SurveyGizmo](/spec/input_data_columns/survey_gizmo.py) and [Appbot](/spec/input_data_columns/appbot.py)
+
+
+### Specification of Device Types and Store 
+Each data source may provide us feedbacks for more than one device type and stores. For example, SurveyGizmo gives us feedbacks for iPhone, iPad, 

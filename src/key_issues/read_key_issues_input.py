@@ -22,7 +22,8 @@ def process_keywords_for_bug_issue(keywords):
     :return: an enriched list of keywords
     """
     auxiliary_verb_lib = "doesn’t, doesnot, does not, didn't, did not, don't, donot, do not, can't, cannot, can not, " \
-                         "couldn't, couldnot, could not, will not, won't, wouldn't, would not, wouldnot, isn't, is not"
+                         "couldn't, couldnot, could not, will not, won't, wouldn't, would not, wouldnot, isn't, is not," \
+                         "aren't, wasn't, weren't"
     auxiliary_verb_list = split_input_words(auxiliary_verb_lib)
     output_keywords_list = ['bug']
     for verb in auxiliary_verb_list:
@@ -31,9 +32,9 @@ def process_keywords_for_bug_issue(keywords):
     return output_keywords_list
 
 
-def get_key_issue_input():
-    df = read_key_issue_file(key_issue_file_path)
-
+def get_key_issue_input(store_name):
+    df_master = read_key_issue_file(key_issue_file_path)
+    df = df_master[df_master['Store'] == store_name]
     key_issues = list(df['Issue'])
 
     keywords = []
@@ -52,6 +53,3 @@ def get_key_issue_input():
                                                                    keyword2issues)
         keywords = list(set(keywords))
     return KeyIssueDict(key_issues, keywords, keyword2issues)
-
-
-dict = get_key_issue_input()

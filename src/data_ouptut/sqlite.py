@@ -66,6 +66,7 @@ def check_tables(conn):
         sql_create_reviews_table = """ CREATE TABLE IF NOT EXISTS reviews (
                                                     ID text PRIMARY KEY,
                                                     Store text NOT NULL,
+                                                    Device text NOT NULL,
                                                     Source text NOT NULL,
                                                     Country text,
                                                     'Review Date' DATE NOT NULL,
@@ -119,9 +120,9 @@ def check_tables(conn):
 
 def insert_review_list(conn, initial_id, df_reviews):
     def insert_review(conn, review):
-        sql = ''' INSERT INTO reviews(ID, Store, Source, Country, 'Review Date', Version, Rating, 'Original Reviews', 
+        sql = ''' INSERT INTO reviews(ID, Store, Device, Source, Country, 'Review Date', Version, Rating, 'Original Reviews', 
                   'Translated Reviews', Sentiment, Spam, 'Verb Phrases', 'Noun Phrases', 'Clear Filters')
-                  VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?) '''
+                  VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) '''
         cur = conn.cursor()
         cur.execute(sql, review)
         return cur.lastrowid
@@ -130,6 +131,7 @@ def insert_review_list(conn, initial_id, df_reviews):
         if not isNaN(row['Translated Reviews']):
             id_value = str(row['ID'] + initial_id)
             store_value = row['Store']
+            device_value = row['Device']
             source_value = row['Source']
             country_value = row['Country']
             date_value = row['Date']
@@ -142,7 +144,7 @@ def insert_review_list(conn, initial_id, df_reviews):
             verb_phrases_value = row['Verb Phrases']
             noun_phrases_value = row['Noun Phrases']
             clear_filters = 'Clear Filters'
-            review = (id_value, store_value, source_value, country_value, date_value, version_value, rating_value,
+            review = (id_value, store_value, device_value, source_value, country_value, date_value, version_value, rating_value,
                           original_reviews_value, translated_reviews_value, sentiment_value, spam_value,
                           verb_phrases_value, noun_phrases_value, clear_filters)
             insert_review(conn, review)

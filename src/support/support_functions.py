@@ -103,7 +103,6 @@ def get_stop_words(process_word=True, additional_stop_words=[]):
 
     if len(additional_stop_words) > 0:
         stop_words += additional_stop_words
-
     if process_word:
         stop_words = [word_process(word) for word in stop_words]
     stop_words = remove_duplicate(stop_words)
@@ -153,7 +152,7 @@ def compute_keywords_freq(texts, additional_stop_words=[], process_word=True):
         if process_word:
             counter.update([word_process(word)
                             for word in re.findall(r'\w+', text)
-                            if word.lower() not in stop_words and len(word) > 2])
+                            if word_process(word).lower() not in stop_words and len(word) > 2])
         else:
             counter.update([word for word in re.findall(r'\w+', text)
                             if word.lower() not in stop_words and len(word) > 2])
@@ -279,7 +278,7 @@ def find_words(texts, target_words):
         text = [word for word in re.findall(r'\w+', text)]  # convert text in string to a list of words
         words_in_text = []
         for words in words_processed:
-            if isinstance(words, list):  # Is a Phrase
+            if isinstance(words, list) and len(words) > 1:  # Is a Phrase
                 found = find_phrase_in_text(text, words)
                 if found:
                     words_in_text.append(words_processed_dict[repr(words)])

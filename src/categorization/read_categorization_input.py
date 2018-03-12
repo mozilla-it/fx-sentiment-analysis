@@ -33,13 +33,13 @@ def update_keyword_to_component(keyword, component, keywords, keywords2component
     return keywords, keywords2components
 
 
-def get_categorization_input():
+def get_categorization_input(store_name):
     """
     Function to read content from the categorization file
     :return: cate: an instance of categorization that stores all the pre-defined content
     """
-    df = read_categorization_file(cate_file_path)
-
+    df_master = read_categorization_file(cate_file_path)
+    df = df_master[df_master['Store'] == store_name]
     components = df['Component'].unique()  # Read components
     features = df['Feature'].unique()
 

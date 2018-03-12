@@ -1,21 +1,9 @@
 from src.support.support_functions import *
-from spec.input_data_columns.appbot import get_appbot_column_names
-from spec.input_data_columns.survey_gizmo import get_survey_gizmo_columns
+from spec.input_data_columns.data_inputs_spec import get_data_spec
 
 
 input_data_path = 'input/'
-columns = ['Store', 'Source', 'Country', 'Date', 'Version', 'Rating', 'Original Reviews', 'Translated Reviews', 'Sentiment']
-global data_specs
-data_specs = {
-    'SurveyGizmo':{
-        'column_name_mapper': get_survey_gizmo_columns(),
-        'dates_covered': []
-    },
-    'Appbot':{
-        'column_name_mapper': get_appbot_column_names(),
-        'dates_covered': []
-    }
-}
+columns = ['Store', 'Device', 'Source', 'Country', 'Date', 'Version', 'Rating', 'Original Reviews', 'Translated Reviews', 'Sentiment']
 
 
 def read_all_data():
@@ -63,15 +51,17 @@ def identify_data_source(df):
     :param df: input dataframe
     :return: name of the data source in string
     """
+    data_spec = get_data_spec()
+
     def match_colnames(input_colname, data_source_name):
-        colname_mapper = data_specs[data_source_name]['column_name_mapper']
+        colname_mapper = data_spec[data_source_name]['column_name_mapper']
         for key, colname in colname_mapper.items():
             if isinstance(colname, str) and len(colname) > 0:
                 if not colname in input_colname:
                     return False
         return True
 
-    for data_source_name in data_specs.keys():
+    for data_source_name in data_spec.keys():
         if match_colnames(df.columns, data_source_name):
             return data_source_name
     return 'Unknown'
@@ -81,43 +71,74 @@ def process_surveygizmo_df(df):
     """
     Function to Process the SurveyGizmo Dataframe
     """
+    data_spec = get_data_spec()
 
-    def extract_version_SG(SG_Col):
+    def extract_store_and_device(df, df_output):
+        colname_mapper = data_spec['SurveyGizmo']['column_name_mapper']
+        df_output['device_temp'] = df[colname_mapper['Device']]
+        df_output['Store'] = ''
+        df_output['Device'] = ''
+        specified_devices = data_spec['SurveyGizmo']['device']
+        device2store = data_spec['SurveyGizmo']['store']
+        for i, row in df_output.iterrows():
+            for device_name in specified_devices:
+                if device_name in row['device_temp']:
+                    row['Store'] = device2store[device_name]
+                    row['Device'] = device_name
+        df_output = df_output[df_output['Store'] != '']
+        df_output = df_output.reset_index(drop=True)
+        df_output = df_output.drop(['device_temp'], axis=1)
+        return df_output
+
+    def extract_version(df, df_output):
         """
         Function to extract the version information from the Corresponding Column in SurveyGizmo
         """
-        version_list = []
-        for i in range(len(SG_Col)):
-            string = SG_Col[i]  # Extract the string in the current row
-            locator = string.find("FxiOS/")  # Locate the target term in each string
-            if locator > 0:  # Find the keyword
+        df_output['version_temp'] = df[colname_mapper['Version']]
+        df_output['Version'] = ''
+        for i, row in df_output.iterrows():
+            string = row['version_temp']  # Extract the string in the current row
+            ios_locator = string.find("FxiOS/")  # Locate the ios-related term in string
+            desktop_locator = string.find("Firefox/")  # Locate the desktop-related term in string
+            if ios_locator > 0:  # Find the keyword
                 version_code = string.split("FxiOS/", 1)[1].split(' ')[0]  # Example: 10.0b6373
                 version = re.findall("^\d+\.\d+\.\d+|^\d+\.\d+", version_code)[
                     0]  # Extract the float number in the string with multiple dot
                 digits = version.split('.')
                 if len(digits) >= 2:  # 10.1 or 10.0.1
-                    version = float(digits[0] + '.' + digits[
-                        1])  # Temporary use - just capture the first two digits so that we can return as a number
+                    version = float(digits[0] + '.' + digits[1])
+                    # Just capture the first two digits so that we can return as a number
+                else:
+                    version = int(version)
+            elif desktop_locator > 0:
+                version_code = string.split("Firefox/", 1)[1].split(' ')[0]  # Example: 57.0
+                version = re.findall("^\d+\.\d+\.\d+|^\d+\.\d+", version_code)[
+                    0]  # Extract the float number in the string with multiple dot
+                digits = version.split('.')
+                if len(digits) >= 2:  # 10.1 or 10.0.1
+                    version = float(digits[0] + '.' + digits[1])
+                    # Just capture the first two digits so that we can return as a number
                 else:
                     version = int(version)
             else:
                 version = 0
-            version_list.append(version)
-            # print('Origin: ' + string + ', Version: ' + str(version))
-        return version_list
+            row['Version'] = version
+        df_output = df_output[df_output['Version'] != 0]
+        df_output = df_output.drop(['version_temp'], axis=1)
+        df_output = df_output.reset_index(drop=True)
+        return df_output
 
-
-    colname_mapper = data_specs['SurveyGizmo']['column_name_mapper']
+    colname_mapper = data_spec['SurveyGizmo']['column_name_mapper']
     df_output = pd.DataFrame(index=range(len(df)))
-    df_output['Store'] = 'iOS'
+    df_output = extract_store_and_device(df, df_output)
     df_output['Source'] = 'SurveyGizmo'
     df_output['Date'] = pd.to_datetime(df[colname_mapper['Date']]).dt.date
-    df_output['Version'] = extract_version_SG(df[colname_mapper['Version']])
+    df_output = extract_version(df, df_output)
     df_output['Original Reviews'] = df[colname_mapper['Original Reviews']].apply(
         lambda x: '{}{}'.format(x[0], x[1]), axis=1)
     df_output['Translated Reviews'] = ''
+    df_output['Rating'] = ''
     df_output['Country'] = process_country(df[colname_mapper['Country']])
-    df_output = update_dates_processed(df_output, 'SurveyGizmo')
     return df_output
 
 
@@ -125,17 +146,23 @@ def process_appbot_df(df):
     """
     Function to Process the Appbot Dataframe
     """
-    colname_mapper = data_specs['Appbot']['column_name_mapper']
+    data_spec = get_data_spec()
+
+    def extract_store_and_device(df, df_output):
+        df_output['Store'] = df[colname_mapper['Store']]
+        df_output['Device'] = 'Unknown'
+        return df_output
+
+    colname_mapper = data_spec['Appbot']['column_name_mapper']
     df_output = pd.DataFrame(index=range(len(df)))
-    df_output['Store'] = 'iOS'
+    df_output = extract_store_and_device(df, df_output)
     df_output['Source'] = 'Appbot'
     df_output['Date'] = pd.to_datetime(df[colname_mapper['Date']]).dt.date
     df_output['Version'] = df[colname_mapper['Version']]
     df_output['Rating'] = df[colname_mapper['Rating']]
     df_output['Original Reviews'] = df[colname_mapper['Original Reviews']].apply(lambda x: '{}. {}'.format(x[0], x[1]),
                                                                              axis=1)
-    df_output['Country'] = df[colname_mapper['Country']]
-    df_output = update_dates_processed(df_output, 'Appbot')
+    df_output['Country'] = process_country(df[colname_mapper['Country']])
     return df_output
 
 
@@ -147,21 +174,3 @@ def process_country(Countries):
     """
     Countries.replace(to_replace=dict(USA='United States'), inplace=True)
     return Countries
-
-
-def update_dates_processed(df, source_name, colname='Date'):
-    """
-    Remove dates that have been processed, and update the list of processed datas
-    :param df:
-    :param source_name:
-    :param colname:
-    :return:
-    """
-    dates_in_process = df[colname].unique()
-    for date in dates_in_process:
-        if date in data_specs[source_name]['dates_covered']:  # This date has been processed
-            df[df[colname] != date]  # Remove the correponding content
-        else:
-            data_specs[source_name]['dates_covered'].append(date)  # Mark this date as been processed
-    df = df.reset_index(drop=True)  # Reset the index as we have removed contents
-    return df

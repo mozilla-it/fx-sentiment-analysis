@@ -3,13 +3,13 @@ from src.pre_processing.preprocessing import preprocess
 from src.categorization.categorization import categorize
 from src.key_issues.summarization import cluster_and_summarize
 from src.data_ouptut.sqlite import load_into_database
-
+import pandas as pd
 
 def data_processing():
     df = read_all_data()
     df = preprocess(df)
     df_categorization, df = categorize(df)
-    df_key_issue = cluster_and_summarize(df, df_categorization)
+    df_key_issue = cluster_and_summarize(df)
     load_into_database(df, df_categorization, df_key_issue)
 
 
