@@ -56,3 +56,5 @@ As examples, the specification of column names in the SurveyGizmo and Appbot dat
 
 ### Specification of Device Types and Store 
 Each data source may provide us feedbacks for more than one device type and stores. For example, SurveyGizmo gives us feedbacks for iPhone, iPad, 
+
+[WIP]
