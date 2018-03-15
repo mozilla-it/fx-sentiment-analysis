@@ -55,8 +55,6 @@ def categorize_by_store(df, store_name):
     features_found_list = []
     components_found_list = []
     actions_found_list = []
-    print(store_name)
-    print(len(df))
     for i, row in df.iterrows():
         components_found = []
         components_dict = {}

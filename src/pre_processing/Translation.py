@@ -14,6 +14,8 @@ def translate_reviews(df):
                 translate_client.translate(original_review, target_language='en')['translatedText']
         except:
             translated_review = 'Error: no language detected!'
+        if (i % 800 == 0 and i > 0):
+            time.sleep(120)
         translated_reviews.append(translated_review)
     df['Translated Reviews'] = translated_reviews
     return df

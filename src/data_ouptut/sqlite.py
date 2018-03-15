@@ -3,10 +3,14 @@ from sqlite3 import Error
 from src.support.support_functions import *
 from src.data_ouptut.output_processing import filter_by_date
 
-db = "Output/reviews.sqlite"
+output_path = 'Output/'
+db = output_path + "reviews.sqlite"
 
 
 def load_into_database(df_reviews, df_categorization, df_key_issue):
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
+
     # create a database connection
     conn = create_connection(db)
 
@@ -23,8 +27,6 @@ def load_into_database(df_reviews, df_categorization, df_key_issue):
         print('Error! Cannot create the database connection!')
     conn.commit()
     conn.close()
-
-
 
 
 def get_max_date(conn):
@@ -87,7 +89,7 @@ def check_tables(conn):
                                                     ID text NOT NULL,
                                                     Feature text NOT NULL,
                                                     Component text NOT NULL,
-                                                    theAction text NOT NULL
+                                                    theAction text
                                                 ); """
         return sql_create_categorization_table
 
@@ -162,7 +164,7 @@ def insert_categorization_list(conn, initial_id, df_categorization):
         id_value = str(row['ID'] + initial_id)
         feature_value = row['Feature']
         component_value = row['Component']
-        action_value = row['Actions']
+        action_value = ', '.join(map(str, row['Actions']))
         new_cate = (id_value, feature_value, component_value, action_value)
         insert_categorization(conn, new_cate)
 
@@ -266,7 +268,7 @@ def remove_db(db):
     os.remove(db)
 
 
-def extract_contents_from_db():
+def extract_contents_from_db(db=db):
     conn = create_connection(db)
     df_reviews = pd.read_sql_query("SELECT * FROM reviews", conn)
     df_reviews['ID'] = df_reviews['ID'].astype(int)

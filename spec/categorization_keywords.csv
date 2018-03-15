@@ -1,32 +1,32 @@
 Store,Tier,Feature,Component,Keywords
 iOS,1,Bookmark,Bookmark,"Book mark, favorite, marked site"
-IOS,,General,Firefox Browser,"Firefox, Browser, Like, Thank, fast, look, able to, compatible, sync, Update, Touch, mobile, gesture, Download, Release, Thank, Crash, icon, Menu, button, fast, app, support, extension, addon, integration, look, iphone, interface, logo, Quantum, design, fast, menu, version, ui, safari, chrome, ie, navigation, happy, hate, suck, pretty,beautical,ugly, elegant,good looking,good-looking,nice,pleasant,awful,great,design, user interface, user experience, ux, slow,lag,laggy,quick,speed,smooth,crash, frozen,abort,abandon,freeze,dead,died,update,release,updated,new version,compatible"
-IOS,,History,History/cookies/cache,cook
-IOS,1,New Tab,Top Sites,"trending, suggestion, top sites, topsite, top websites, frequent visit, frequent site, high visit"
-IOS,1,New Tab,Highlights,"recommend, highlight, recent visit, recent site, recent bookmark, latest visit, latest site, latest bookmark"
-IOS,1,New Tab,Pocket,"pocket, save video, recommended by pocket"
+iOS,,General,Firefox Browser,"Firefox, Browser, Like, Thank, fast, look, able to, compatible, sync, Update, Touch, mobile, gesture, Download, Release, Thank, Crash, icon, Menu, button, fast, app, support, extension, addon, integration, look, iphone, interface, logo, Quantum, design, fast, menu, version, ui, safari, chrome, ie, navigation, happy, hate, suck, pretty,beautical,ugly, elegant,good looking,good-looking,nice,pleasant,awful,great,design, user interface, user experience, ux, slow,lag,laggy,quick,speed,smooth,crash, frozen,abort,abandon,freeze,dead,died,update,release,updated,new version,compatible"
+iOS,,History,History/cookies/cache,cook
+iOS,1,New Tab,Top Sites,"trending, suggestion, top sites, topsite, top websites, frequent visit, frequent site, high visit"
+iOS,1,New Tab,Highlights,"recommend, highlight, recent visit, recent site, recent bookmark, latest visit, latest site, latest bookmark"
+iOS,1,New Tab,Pocket,"pocket, save video, recommended by pocket"
 iOS,1,Privacy/Security,Private Mode,"private browsing,  private window, private page"
-IOS,1,Privacy/Security,Log in,
-IOS,1,Privacy/Security,Touch ID/Passcode,password
-IOS,1,Privacy/Security,Tracking Protection,"track, track data, collect data"
-IOS,,Reading List,Reading List,reading mode
-IOS,,Settings,Night Mode,"Night, dark mode"
+iOS,1,Privacy/Security,Log in,
+iOS,1,Privacy/Security,Touch ID/Passcode,password
+iOS,1,Privacy/Security,Tracking Protection,"track, track data, collect data"
+iOS,,Reading List,Reading List,reading mode
+iOS,,Settings,Night Mode,"Night, dark mode"
 iOS,,Settings,Default search engine,
-IOS,,Settings,Home page,
-IOS,,Settings,Email,
-IOS,,Settings,Block Pop-up windows,"pop-up, pop, block window"
-IOS,,Settings,Save Logins,"save log in, save account"
-IOS,1,Sync and Accounts,Accounts,"account, sign-in, sign in, sync"
+iOS,,Settings,Home page,
+iOS,,Settings,Email,mail
+iOS,,Settings,Block Pop-up windows,"pop-up, pop, block window"
+iOS,,Settings,Save Logins,"save log in, save account"
+iOS,1,Sync and Accounts,Accounts,"account, sign-in, sign in, sync"
 iOS,1,Tabs,Tabs,Tab
-IOS,,Utilities,Reading View,
-IOS,,Utilities,Desktop View,"Desktop Site, Desktop Mode"
-IOS,,Utilities,QR code,
-IOS,,Utilities,Page,"webpage, web page"
-IOS,,Utilities,Text,"text, font"
+iOS,,Utilities,Reading View,
+iOS,,Utilities,Desktop View,"Desktop Site, Desktop Mode"
+iOS,,Utilities,QR code,
+iOS,,Utilities,Page,"webpage, web page"
+iOS,,Utilities,Text,"text, font"
 iOS,,Utilities,Image,picture
-IOS,,Utilities,Video,"movie, audio"
-IOS,,Utilities,Files,pdf
-IOS,,Utilities,Link/URL,
+iOS,,Utilities,Video,"movie, audio"
+iOS,,Utilities,Files,pdf
+iOS,,Utilities,Link/URL,
 Desktop,,Bookmark,Bookmark,"Book mark, favorite, marked site"
 Desktop,,General,Firefox Browser,"Firefox, Browser, Like, Update, Touch, mobile, gesture, Use, Thank, icon, Menu, button, fast, app, support, extension, addon, integration, look, interface, logo, Quantum, design, menu, version, ui, safari, chrome, navigation, happy, hate, suck, pretty,beautical,ugly, elegant,good looking,good-looking,nice,pleasant,awful,great,design, user interface, user experience, ux, slow,lag,laggy,quick,speed,smooth,crash, frozen,abort,abandon,freeze,dead,died,update,release,updated,new version,compatible, windows, mac"
 Desktop,,History,History/cookies/cache,"History/cookies/cache,cook"

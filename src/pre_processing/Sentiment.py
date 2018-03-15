@@ -24,8 +24,8 @@ def sentiment_analysize(texts, client):
     sent_magnitudes_list = []
     count = 0
     for i, review in enumerate(texts):
-        if (i % 500 == 0 and i > 0):
-            time.sleep(60)
+        if (i % 800 == 0 and i > 0):
+            time.sleep(120)
         scores[i], magnitudes[i], sent_scores, sent_magnitudes = get_sentiment(client, review)
         sent_scores_list.append(sent_scores)
         sent_magnitudes_list.append(sent_magnitudes)

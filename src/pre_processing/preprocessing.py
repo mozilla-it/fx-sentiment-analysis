@@ -4,12 +4,28 @@ from src.pre_processing.Sentiment import measure_sentiments
 
 
 def preprocess(df):
+    print('# inputs: ')
+    print(len(df))
+
     df = spam_filter(df, colname='Original Reviews')
+    print('\nAfter 1st spam filtering: ')
+    print(len(df))
+
     df = remove_duplicate_feedbacks(df, colname='Original Reviews')
+    print('\nAfter remvoing the duplicates: ')
+    print(len(df))
+
     df = translate_reviews(df)  # Translate non-English reviews
     df = measure_sentiments(df)  # Sentiment Analysis
-    df['ID'] = np.arange(len(df))  # Add ID Column
+    print('\nAfter translation and sentiment analysis: ')
+    print(len(df))
+
+
     df = spam_filter(df)
+    print('\nAfter 2nd round of spam filtering: ')
+    print(len(df))
+
+    df['ID'] = np.arange(len(df))  # Add ID Column
     return df
 
 
