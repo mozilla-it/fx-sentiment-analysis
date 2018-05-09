@@ -9,6 +9,8 @@ This tool is developed by the UofT Capstone team to help clients in Mozilla anal
 - scikit-learn 0.19.1
 - scipy 1.0.0
 - sqlite 3.22.0
+- Google Cloud SDK
+- vertica-python 0.7.3
 
 ### Google Cloud API
 The tool uses Google Translation API for translation and Google Natural Language API for sentiment analysis. Therefore, it requires a setup of Google Cloud in the local environment. 
