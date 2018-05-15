@@ -9,6 +9,8 @@ This tool is developed by the UofT Capstone team to help clients in Mozilla anal
 - scikit-learn 0.19.1
 - scipy 1.0.0
 - sqlite 3.22.0
+- Google Cloud SDK
+- vertica-python 0.7.3
 
 ### Google Cloud API
 The tool uses Google Translation API for translation and Google Natural Language API for sentiment analysis. Therefore, it requires a setup of Google Cloud in the local environment. 
@@ -28,6 +30,9 @@ The data pipeline has been build into the [data_processing](https://github.com/I
 
 ### Output
 Output data will be saved in a SQLite database in the Output folder (which does not required to be created manually). If no database is found (as in the current case), a new database file will be automatically created in the target folder. All the results from the later jobs will be automatically updated in the database.
+
+### Command to run the job
+python3 data_processing.py --u {VerticaUsername} -p {VerticaPassword} --host {VerticaHostName} -db {VerticaDatabase}
 
 <br>
 
