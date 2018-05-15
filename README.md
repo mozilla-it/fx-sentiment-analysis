@@ -62,4 +62,14 @@ As examples, the specification of column names in the SurveyGizmo and Appbot dat
 ### Specification of Device Types and Store 
 Each data source may provide us feedbacks for more than one device type and stores. For example, SurveyGizmo gives us feedbacks for iPhone, iPad, 
 
+### Example: Vertica Records
+SELECT * from reviews
+WHERE ID ='20180510000015';
+
+SELECT * from categorization
+WHERE ID ='20180510000015';
+
+SELECT * from key_issue
+WHERE ID ='20180510000015';
+
 [WIP]
