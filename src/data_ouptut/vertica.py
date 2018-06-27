@@ -20,7 +20,7 @@ def load_into_database(df_reviews, df_categorization, df_key_issue,user,pwd,host
         df_reviews, df_categorization, df_key_issue = filter_by_date(
             df_reviews, df_categorization, df_key_issue, max_date)
         initial_id = initiate_id(conn)
-        insert_review_list(conn, initial_id, df_reviews)
+        insert_review_list_vertica(conn, initial_id, df_reviews)
         insert_categorization_list(conn, initial_id, df_categorization)
         insert_key_issue_list(conn, initial_id, df_key_issue)
     else:
@@ -119,7 +119,33 @@ def check_tables(conn):
     create_table(conn, sql_create_categorization_table)
     create_table(conn, sql_create_key_issue_table)
 
+    
+def insert_review_list_vertica(conn, initial_id, df_reviews):
+    def insert_review(conn, review):
+        sql = ''' INSERT INTO reviews(ID, Store, Device, Source, Country, "Review Date", Version, Rating, "Original Reviews",
+                  "Translated Reviews", Sentiment, Spam, "Verb Phrases", "Noun Phrases", "Clear Filters")
+                  VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'''
+        cur = conn.cursor()
+        cur.execute(sql,list(review))
 
+    df = df_reviews[df_reviews["Translated Reviews"].notnull()]
+    print("# reviews to insert: ",len(df))
+
+    df["Original Reviews"] = df["Original Reviews"].str[:4000]
+    df["Translated Reviews"] = df["Translated Reviews"].str[:4000]
+    df["ID"] += initial_id
+    df["ID"] = df["ID"].astype(str)
+    df['clear_filters'] = 'Clear Filters'
+    df['Spam'] = df['Spam'].astype(int)
+    df['Translated Reviews'] = df['Translated Reviews'].replace('|',' ')
+    df['Original Reviews'] = df['Original Reviews'].replace('|',' ')
+
+    for i, row in df.iterrows():
+        date_value = row['Date'].strftime('%m-%d-%Y')
+        review = (row["ID"], row["Store"], row["Device"], row["Source"], row["Country"], date_value, row["Version"], row["Rating"],row["Original Reviews"],row["Translated Reviews"],row["Sentiment"],row["Spam"],row["Verb Phrases"],row["Noun Phrases"],row["clear_filters"])
+        insert_review(conn, review)
+
+    
 def insert_review_list(conn, initial_id, df_reviews):
     def insert_review(conn, review):
         sql = ''' INSERT INTO reviews(ID, Store, Device, Source, Country, "Review Date", Version, Rating, "Original Reviews", 
