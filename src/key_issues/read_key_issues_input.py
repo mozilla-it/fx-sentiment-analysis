@@ -2,7 +2,7 @@ from src.categorization.read_categorization_input import *
 
 
 # global cate_file_path
-key_issue_file_path = 'Spec/key_issues_keywords.csv'
+key_issue_file_path = 'spec/key_issues_keywords.csv'
 
 class KeyIssueDict:
     def __init__(self, key_issues, keywords, keyword2issues):
