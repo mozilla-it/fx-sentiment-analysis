@@ -3,7 +3,7 @@ from src.support.support_functions import *
 
 
 # global cate_file_path
-cate_file_path = 'Spec/categorization_keywords.csv'
+cate_file_path = 'spec/categorization_keywords.csv'
 
 class CategorizationDict:
     def __init__(self, features, components, keywords, components2tiers, components2features, keywords2components):
