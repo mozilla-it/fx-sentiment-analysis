@@ -272,7 +272,7 @@ def initiate_id(conn):
         max_result = extraction if extraction else 0
         max_id = max(max_id, max_result)
 
-        sql = ''' SELECT MAX(CAST(ID AS Int)) from key_issue'''
+        sql = ''' SELECT MAX(to_number(ID)) from key_issue'''
         cur = conn.cursor()
         cur.execute(sql)
         extraction = cur.fetchone()[0]
