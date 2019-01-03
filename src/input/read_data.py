@@ -85,8 +85,7 @@ def process_surveygizmo_df(df):
                 if device_name in row['device_temp']:
                     row['Store'] = device2store[device_name]
                     row['Device'] = device_name
-        df_output = df_output[df_output['Store'] != '']
-        df_output = df_output.reset_index(drop=True)
+        df_output['Device'].replace('','Unknown',inplace=True)
         df_output = df_output.drop(['device_temp'], axis=1)
         return df_output
 
@@ -123,7 +122,6 @@ def process_surveygizmo_df(df):
             else:
                 version = 0
             row['Version'] = version
-        df_output = df_output[df_output['Version'] != 0]
         df_output = df_output.drop(['version_temp'], axis=1)
         df_output = df_output.reset_index(drop=True)
         return df_output
