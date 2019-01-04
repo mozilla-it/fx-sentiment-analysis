@@ -89,7 +89,7 @@ pyasn1-modules==0.2.1
 Pygments==2.2.0
 python-dateutil==2.6.1
 pytz==2018.3
-PyYAML==3.12
+pyyaml>=4.2b1
 pyzmq==16.0.3
 qtconsole==4.3.1
 requests>=2.20.0
