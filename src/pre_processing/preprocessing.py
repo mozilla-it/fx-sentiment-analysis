@@ -1,29 +1,31 @@
 from src.support.support_functions import *
 from src.pre_processing.Translation import translate_reviews
 from src.pre_processing.Sentiment import measure_sentiments
+import logging
 
+logger = logging.getLogger(__name__)
 
 def preprocess(df):
-    print('# inputs: ')
-    print(len(df))
+    logger.info('# inputs: ')
+    logger.info(len(df))
 
     df = spam_filter(df, colname='Original Reviews')
-    print('\nAfter 1st spam filtering: ')
-    print(len(df))
+    logger.info('\nAfter 1st spam filtering: ')
+    logger.info(len(df))
 
     df = remove_duplicate_feedbacks(df, colname='Original Reviews')
-    print('\nAfter remvoing the duplicates: ')
-    print(len(df))
+    logger.info('\nAfter remvoing the duplicates: ')
+    logger.info(len(df))
 
     df = translate_reviews(df)  # Translate non-English reviews
     df = measure_sentiments(df)  # Sentiment Analysis
-    print('\nAfter translation and sentiment analysis: ')
-    print(len(df))
+    logger.info('\nAfter translation and sentiment analysis: ')
+    logger.info(len(df))
 
 
     df = spam_filter(df)
-    print('\nAfter 2nd round of spam filtering: ')
-    print(len(df))
+    logger.info('\nAfter 2nd round of spam filtering: ')
+    logger.info(len(df))
 
     df['ID'] = np.arange(len(df))  # Add ID Column
     return df

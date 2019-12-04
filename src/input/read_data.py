@@ -1,18 +1,18 @@
 from src.support.support_functions import *
 from spec.input_data_columns.data_inputs_spec import get_data_spec
+import logging
 
+logger = logging.getLogger(__name__)
 
-input_data_path = 'input/'
 columns = ['Store', 'Device', 'Source', 'Country', 'Date', 'Version', 'Rating', 'Original Reviews', 'Translated Reviews', 'Sentiment']
 
 
-def read_all_data():
+def read_all_data(input_data_path='Input'):
     """
     Function to read through all the datasets in the target folder
     """
-    input_data_path = 'Input/'
     df = pd.DataFrame()
-    file_paths = glob.glob(input_data_path + '*')
+    file_paths = glob.glob(input_data_path + '/*')
     for file_path in file_paths:
         df = read_input_file(file_path, df)
     return df
@@ -32,12 +32,12 @@ def read_input_file(file_path, df):
     elif file_format == 'csv':
         df_input = pd.read_csv(file_path).fillna('')
     else:
-        print('The input file format ' + file_format + ' is not supported!')
+        logger.error('The input file format ' + file_format + ' is not supported!')
         return None
 
     data_source = identify_data_source(df_input)
     if data_source == 'Unknown':
-        print('Cannot identify the source of the input data ' + file_path + ', please check the column names@')
+        logger.error('Cannot identify the source of the input data ' + file_path + ', please check the column names@')
     elif data_source =='SurveyGizmo':
         df_processed = process_surveygizmo_df(df_input)
     elif data_source == 'Appbot':
