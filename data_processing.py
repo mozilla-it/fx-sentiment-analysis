@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 from src.input.read_data import read_all_data
 from src.pre_processing.preprocessing import preprocess
 from src.categorization.categorization import categorize
