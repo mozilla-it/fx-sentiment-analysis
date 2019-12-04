@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 def _insert_bq(table,stuff):
     if len(stuff) == 0:
         return
-    table_ref = bq.dataset("sentiments").table(table)
+    table_ref = bq.dataset("fxsentiment").table(table)
     _table = bq.get_table(table_ref)
     logger.debug(bq.insert_rows(_table,stuff))
 
@@ -28,7 +28,7 @@ def get_max_date():
     Get the latest review dates in the database - we will not cover the previous loaded one if there are overlap
     :return: a date
     """
-    sql = ''' SELECT MAX(Review_Date) AS review_date from sentiments.reviews'''
+    sql = ''' SELECT MAX(Review_Date) AS review_date from fxsentiment.reviews'''
     query_job = bq.query(sql)
     results = list(query_job.result())
     if len(results) > 0:
@@ -96,9 +96,9 @@ def initiate_id():
 
     # Check if a set of data has already been imported today
     max_id = max([
-        select_max_id_from_table('sentiments.reviews'),
-        select_max_id_from_table('sentiments.categorization'),
-        select_max_id_from_table('sentiments.key_issue'),
+        select_max_id_from_table('fxsentiment.reviews'),
+        select_max_id_from_table('fxsentiment.categorization'),
+        select_max_id_from_table('fxsentiment.key_issue'),
         ])
     if max_id > 0:
         if int(str(max_id)[:8]) == current_date:
