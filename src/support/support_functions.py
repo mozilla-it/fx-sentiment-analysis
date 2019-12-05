@@ -3,7 +3,7 @@ import pandas as pd
 import os, os.path
 import glob
 import re
-from google.cloud import translate
+from google.cloud import translate_v2 as translate
 from google.oauth2 import service_account
 from google.cloud import language
 from google.cloud.language import enums

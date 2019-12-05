@@ -1,47 +1,34 @@
+#!/usr/bin/python3
+
 from src.input.read_data import read_all_data
 from src.pre_processing.preprocessing import preprocess
 from src.categorization.categorization import categorize
 from src.key_issues.summarization import cluster_and_summarize
-from src.data_ouptut.vertica import load_into_database
+from src.data_ouptut.bq import load_into_database
+from src.extract.appbot import get_appbot_csv
+from src.extract import get_csv_from_url
 import pandas as pd
-import argparse
+import os
+import logging
 
-parser = argparse.ArgumentParser()
-parser.add_argument('-u','--username',
-                    action='store',         
-                    help='The Vertica username for authentication.')
-parser.add_argument('-p','--password',
-                    action='store',           
-                    help='The Vertica password for authentication.')
-parser.add_argument('--host',
-                    action='store',
-                    help='The Vertica server')
-parser.add_argument('-db','--database',
-                    action='store',
-                    help='The Vertica database')
-args = parser.parse_args()
+APPBOT_USERNAME = os.environ.get('APPBOT_USERNAME','')
+APPBOT_PASSWORD = os.environ.get('APPBOT_PASSWORD','')
+SURVEYGIZMO_URL = os.environ.get('SURVEYGIZMO_URL','')
 
-if not args.username:
-	print("Vertica username is missing")
-elif not args.password:
-	print("Vertica password is missing")
-elif not args.host:
-	print("The hostname is missing")
-elif not args.database:
-	print("The database is missing")
-else:
-	vu =args.username #Vertica Username
-	vp = args.password #Vertica Password
-	vdb = args.database
-	vh = args.host
-	def data_processing():
-    		df = read_all_data()
-    		df = preprocess(df)
-    		df_categorization, df = categorize(df)
-    		df_key_issue = cluster_and_summarize(df)
-    		load_into_database(df, df_categorization, df_key_issue,vu,vp,vh,vdb)
-		
+logging.basicConfig(level=logging.INFO)
 
-	if __name__ == '__main__':
-    		data_processing()
+def main():
+  logging.info("Copying Appbot file")
+  get_appbot_csv(APPBOT_USERNAME,APPBOT_PASSWORD,'/workspace/Input/appbot.csv')
 
+  logging.info("Copying SurveyGizmo file")
+  get_csv_from_url(SURVEYGIZMO_URL,'/workspace/Input/surveygizmo.csv')
+
+  df = read_all_data('/workspace/Input')
+  df = preprocess(df)
+  df_categorization, df = categorize(df)
+  df_key_issue = cluster_and_summarize(df)
+  load_into_database(df, df_categorization, df_key_issue)
+
+if __name__ == '__main__':
+  main()
