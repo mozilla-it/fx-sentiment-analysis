@@ -56,7 +56,17 @@ def get_appbot_csv(appbot_username="",appbot_password="",output_filename=""):
 
     time.sleep(10)
 
-    logging.info("Copying CSV")
-    os.system("cp {}/review_export_report.csv {}".format(tmpdir,output_filename))
+    tries = 99
+    i = 0
+    while i < tries:
+        logging.info("[{}] Copying CSV".format(i))
+        if os.path.exists("{}/review_export_report.csv".format(tmpdir)):
+            os.system("cp {}/review_export_report.csv {}".format(tmpdir,output_filename))
+            break
+        i+=1
+        time.sleep(3)
 
     browser.quit()
+    if os.path.exists(output_filename):
+        return True
+    return False
