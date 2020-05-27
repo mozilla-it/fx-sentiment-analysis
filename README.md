@@ -44,7 +44,7 @@ In this tool we have included the data specification for the following type of d
 - iOS feedback data from SurveyGizmo
 - Desktop feedback data from SurveyGizmo
 
-### Specificaiton of Column Names
+### Specification of Column Names
 First, users need to map the column names in the input data with the required column names so that the system can know where to extract the right information. 
 Here we already taken into account that not every column is available in all the datasets, and most of the column requires pre-processing. Therefore,
 the specification will provide inputs to the processing functions, instead of hardcode it in the system. The complete list of column names including:
