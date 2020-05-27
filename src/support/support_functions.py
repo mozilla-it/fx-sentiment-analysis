@@ -401,7 +401,7 @@ def extract_phrases(texts, target_phrase_type):
     :param target_phrase_type: define the type of the phrases to catch, e.g. VP, NP
     :return: a list of phrases identified
     """
-    texts = texts.as_matrix()
+    texts = texts.to_numpy()
     phrases_list = []
     for text in texts:
         phrases = get_phrases(text, target_phrase_type)
@@ -435,7 +435,7 @@ def cut_feedbacks(feedbacks, length=2):
     :param length: maximum length of a group of sentences
     :return: a list of cut sentences and a dictionary that map each sentence ID to feedback ID
     """
-    feedbacks = feedbacks.as_matrix()
+    feedbacks = feedbacks.to_numpy()
     sentence_to_feedback = {}
     sentences_list = []
     for i, text in enumerate(feedbacks):
@@ -574,7 +574,7 @@ def cut_feedbacks(feedbacks, length = 2):
     :param length: maximum length of a group of sentences
     :return: a list of cut sentences and a dictionary that map each sentence ID to feedback ID
     """
-    feedbacks = df['Translated Reviews'].as_matrix()
+    feedbacks = df['Translated Reviews'].to_numpy()
     sentence_to_feedback = {}
     sentences_list = []
     for i, text in enumerate(feedbacks):
