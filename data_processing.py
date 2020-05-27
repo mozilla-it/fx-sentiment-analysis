@@ -18,8 +18,11 @@ SURVEYGIZMO_URL = os.environ.get('SURVEYGIZMO_URL','')
 logging.basicConfig(level=logging.INFO)
 
 def main():
-  logging.info("Copying Appbot file")
-  get_appbot_csv(APPBOT_USERNAME,APPBOT_PASSWORD,'/workspace/Input/appbot.csv')
+  # Commenting this out because the Appbot account we have ("nawong@mozilla.com")'s trial
+  # period has expired and cannot view any data.
+  #
+  #logging.info("Copying Appbot file")
+  #get_appbot_csv(APPBOT_USERNAME,APPBOT_PASSWORD,'/workspace/Input/appbot.csv')
 
   logging.info("Copying SurveyGizmo file")
   get_csv_from_url(SURVEYGIZMO_URL,'/workspace/Input/surveygizmo.csv')
